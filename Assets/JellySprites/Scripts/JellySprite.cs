@@ -362,13 +362,40 @@ public abstract class JellySprite : MonoBehaviour
 		m_Transform = this.transform;
 	}
 
+	//MODIFIED: allow manual initialization
+	public bool isInit { get; private set; }
+
+	//MODIFIED: apply color to mesh
+	public void SetColor(Color color) {
+		if(m_Color != color) {
+			m_Color = color;
+			if(m_SpriteMesh && m_Colors != null) {
+				for(int i = 0; i < m_Colors.Length; i++)
+					m_Colors[i] = m_Color;
+
+				m_SpriteMesh.colors = m_Colors;
+			}
+			else
+				InitMesh();
+		}
+	}
+
 	/// <summary>
 	/// Start this instance.
 	/// </summary>
 	void Start()
 	{
-		if(m_FreeModeBodyPositions == null)
-		{
+		//MODIFIED: allow manual initialization
+		Init();
+	}
+
+	//MODIFIED: allow manual initialization
+	public void Init() 
+	{
+		if(isInit) return;
+		isInit = true;
+
+		if(m_FreeModeBodyPositions == null) {
 			m_FreeModeBodyPositions = new List<Vector3>();
 			m_FreeModeBodyPositions.Add(Vector3.zero);
 
@@ -380,32 +407,27 @@ public abstract class JellySprite : MonoBehaviour
 		}
 
 		// Maintaining support for users upgrading from 1.07 to 1.08
-		if(m_FreeModeBodyKinematic.Count != m_FreeModeBodyPositions.Count)
-		{
+		if(m_FreeModeBodyKinematic.Count != m_FreeModeBodyPositions.Count) {
 			m_FreeModeBodyKinematic = new List<bool>();
 
-			for(int loop = 0; loop < m_FreeModeBodyPositions.Count; loop++)
-			{
+			for(int loop = 0; loop < m_FreeModeBodyPositions.Count; loop++) {
 				m_FreeModeBodyKinematic.Add(false);
 			}
 		}
 
 		Bounds spriteBounds = new Bounds();
 
-		if(IsSpriteValid())
-		{
+		if(IsSpriteValid()) {
 			spriteBounds = GetSpriteBounds();
 			InitVertices(spriteBounds);
 			InitMaterial();
 			InitMesh();
 		}
-		else
-		{
+		else {
 			MeshFilter meshFilter = GetComponent<MeshFilter>();
 
 			// If the user hasn't supplied a mesh, attempt to extract it from the meshfilter
-			if(Application.isPlaying && meshFilter.sharedMesh != null)
-			{
+			if(Application.isPlaying && meshFilter.sharedMesh != null) {
 				m_SpriteMesh = meshFilter.sharedMesh;
 				m_Vertices = m_SpriteMesh.vertices;
 				m_InitialVertexPositions = m_SpriteMesh.vertices;
@@ -415,8 +437,7 @@ public abstract class JellySprite : MonoBehaviour
 				spriteBounds = m_SpriteMesh.bounds;
 				m_SpriteScale = Vector3.one;
 			}
-			else if(Application.isPlaying)
-			{
+			else if(Application.isPlaying) {
 				Debug.LogError("Failed to initialize Jelly Sprite " + name + " - no valid sprite or mesh");
 				this.enabled = false;
 				return;
@@ -426,8 +447,7 @@ public abstract class JellySprite : MonoBehaviour
 		m_InitialAttachPointPositions = new Vector3[m_AttachPoints.Length];
 		m_IsAttachPointJellySprite = new bool[m_AttachPoints.Length];
 
-		if(Application.isPlaying)
-		{
+		if(Application.isPlaying) {
 			Vector3 spriteAngle = m_Transform.eulerAngles;
 			m_Transform.eulerAngles = Vector3.zero;
 
@@ -444,35 +464,32 @@ public abstract class JellySprite : MonoBehaviour
 
 			m_ReferencePoints = new List<ReferencePoint>();
 
-			switch(m_Style)
-			{
-			case PhysicsStyle.Circle:
-				CreateRigidBodiesCircle(spriteBounds);
-				break;
-			case PhysicsStyle.Triangle:
-				CreateRigidBodiesTriangle(spriteBounds);
-				break;
-			case PhysicsStyle.Rectangle:
-				CreateRigidBodiesRectangle(spriteBounds);
-				break;
-            case PhysicsStyle.Line:
-                CreateRigidBodiesLine(spriteBounds);
-                break;
-			case PhysicsStyle.Grid:
-				CreateRigidBodiesGrid(spriteBounds);
-				break;
-			case PhysicsStyle.Free:
-				CreateRigidBodiesFree(spriteBounds);
-				break;
+			switch(m_Style) {
+				case PhysicsStyle.Circle:
+					CreateRigidBodiesCircle(spriteBounds);
+					break;
+				case PhysicsStyle.Triangle:
+					CreateRigidBodiesTriangle(spriteBounds);
+					break;
+				case PhysicsStyle.Rectangle:
+					CreateRigidBodiesRectangle(spriteBounds);
+					break;
+				case PhysicsStyle.Line:
+					CreateRigidBodiesLine(spriteBounds);
+					break;
+				case PhysicsStyle.Grid:
+					CreateRigidBodiesGrid(spriteBounds);
+					break;
+				case PhysicsStyle.Free:
+					CreateRigidBodiesFree(spriteBounds);
+					break;
 			}
 
-			if(m_CentralPoint != null)
-			{
+			if(m_CentralPoint != null) {
 				m_CentralPoint.GameObject.name = this.name + " Central Ref Point";
 			}
 
-			if(m_Style != PhysicsStyle.Free)
-			{
+			if(m_Style != PhysicsStyle.Free) {
 				UpdateRotationLock();
 			}
 
@@ -483,10 +500,8 @@ public abstract class JellySprite : MonoBehaviour
 
 			m_ReferencePointOffsets = new Vector3[m_ReferencePoints.Count];
 
-			foreach(ReferencePoint referencePoint in m_ReferencePoints)
-			{
-				if(!referencePoint.IsDummy)
-				{
+			foreach(ReferencePoint referencePoint in m_ReferencePoints) {
+				if(!referencePoint.IsDummy) {
 					Vector3 referencePointPosition = referencePoint.transform.position;
 					Vector3 centralPointPosition = m_Transform.position;
 					referencePoint.transform.position = centralPointPosition + (Quaternion.Euler(spriteAngle) * (referencePointPosition - centralPointPosition));
@@ -514,6 +529,10 @@ public abstract class JellySprite : MonoBehaviour
 
 		foreach(Transform attachPointTransform in m_AttachPoints)
 		{
+			//MODIFIED: fail-safe
+			if(!attachPointTransform)
+				continue;
+
 			JellySprite attachedJellySprite = attachPointTransform.GetComponent<JellySprite>();
             Vector3 position = m_CentralPoint.transform.InverseTransformPoint(attachPointTransform.position);
             position.x /= m_Transform.localScale.x;
@@ -528,7 +547,10 @@ public abstract class JellySprite : MonoBehaviour
 			{
 				m_IsAttachPointJellySprite[index] = false;                
                 m_InitialAttachPointPositions[index++] = position;
-				attachPointTransform.parent = m_Transform;
+
+				//MODIFIED: proper parent setting
+				attachPointTransform.SetParent(m_Transform, true);
+				//attachPointTransform.parent = m_Transform;
 			}
 		}
 
@@ -1726,11 +1748,14 @@ public abstract class JellySprite : MonoBehaviour
 	/// </summary>
 	void InitMesh()
 	{
-		MeshFilter meshFilter = GetComponent<MeshFilter>();
-		m_SpriteMesh = new Mesh();
-		m_SpriteMesh.name = "JellySprite Mesh";
-		m_SpriteMesh.MarkDynamic();
-		meshFilter.mesh = m_SpriteMesh;
+		//MODIFIED: probably want to recycle previous mesh
+		if(!m_SpriteMesh) {
+			MeshFilter meshFilter = GetComponent<MeshFilter>();
+			m_SpriteMesh = new Mesh();
+			m_SpriteMesh.name = "JellySprite Mesh";
+			m_SpriteMesh.MarkDynamic();
+			meshFilter.mesh = m_SpriteMesh;
+		}
 
 		m_SpriteMesh.Clear();
 		m_SpriteMesh.vertices = m_Vertices;

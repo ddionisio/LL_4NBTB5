@@ -1,12 +1,20 @@
-﻿using UnityEngine;
+﻿//MODIFIED: remove clutter
+//#define JELLYSPRITE_SENDCOLLISIONMESSAGE
+
+using UnityEngine;
 using System.Collections;
 
 public class JellySpriteReferencePoint : MonoBehaviour 
 {
 	public GameObject ParentJellySprite { get; set; }
+
+#if JELLYSPRITE_SENDCOLLISIONMESSAGE
 	public bool SendCollisionMessages { get { return m_SendCollisionMessages; } set { m_SendCollisionMessages = value; } }
+#endif
+
 	public int Index { get; set; }
 
+#if JELLYSPRITE_SENDCOLLISIONMESSAGE
 	JellySprite.JellyCollision m_JellyCollision = new JellySprite.JellyCollision();
 	JellySprite.JellyCollision2D m_JellyCollision2D = new JellySprite.JellyCollision2D();
 
@@ -130,4 +138,5 @@ public class JellySpriteReferencePoint : MonoBehaviour
 			ParentJellySprite.SendMessage("OnJellyTriggerStay2D", m_JellyCollider2D, SendMessageOptions.DontRequireReceiver);
 		}
 	}
+#endif
 }

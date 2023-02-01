@@ -47,6 +47,8 @@ namespace LoLExt {
 
         public const string settingsSpeechMuteKey = "sp";
 
+        public const string scoreKey = "score";
+
         private const string questionsJSONFilePath = "questions.json";
         private const string startGameJSONFilePath = "startGame.json";
 
@@ -324,6 +326,8 @@ namespace LoLExt {
 
             curScore = score;
 
+            _userData.SetInt(scoreKey, curScore);
+
             _userData.Save();
 
             ProgressCallback();
@@ -426,7 +430,9 @@ namespace LoLExt {
                     yield return null;
                 }
 
-                mCurScore = _userData.score;
+                //mCurScore = _userData.score;
+                mCurScore = _userData.GetInt(scoreKey, _userData.score);
+
                 mCurProgress = _userData.currentProgress;
             }
 

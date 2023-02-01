@@ -15,10 +15,28 @@ using System.Collections.Generic;
 public class UnityJellySprite : JellySprite
 {
 	public Sprite m_Sprite;
-	
-	// Rendering materials - cached to enable reuse where possible
-	static List<Material> s_MaterialList = new List<Material>();
-	
+
+	//MODIFIED: allow custom material
+	public Material m_Material;
+
+	//MODIFIED: allow custom material
+	struct MaterialCache {
+		public Material materialRef;
+		public Material materialInst;
+	}
+
+	static List<MaterialCache> s_MaterialList = new List<MaterialCache>();
+
+	//MODIFIED: cache MeshRenderer
+	public MeshRenderer meshRenderer {
+		get {
+			if(!mMeshRenderer)
+				mMeshRenderer = GetComponent<MeshRenderer>();
+			return mMeshRenderer;
+		}
+	}
+	private MeshRenderer mMeshRenderer;
+
 	/// <summary>
 	/// Jelly sprites share materials wherever possible in order to ensure that dynamic batching is maintained when
 	/// eg. slicing lots of sprites that share the same sprite sheet. If you want to clear out this list 
@@ -26,6 +44,12 @@ public class UnityJellySprite : JellySprite
 	/// </summary>
 	public static void ClearMaterials()
 	{
+		//MODIFIED: allow custom material
+		for(int i = 0; i < s_MaterialList.Count; i++) {
+			if(s_MaterialList[i].materialInst)
+				Destroy(s_MaterialList[i].materialInst);
+		}
+
 		s_MaterialList.Clear();
 	}
 	
@@ -55,33 +79,64 @@ public class UnityJellySprite : JellySprite
 	
 	protected override void GetMinMaxTextureRect(out Vector2 min, out Vector2 max)
 	{
-		Rect textureRect = m_Sprite.textureRect;
-		min = new Vector2(textureRect.xMin/(float)m_Sprite.texture.width, textureRect.yMin/(float)m_Sprite.texture.height);
-		max = new Vector2(textureRect.xMax/(float)m_Sprite.texture.width, textureRect.yMax/(float)m_Sprite.texture.height);
+		//MODIFIED: fix when using atlas
+		if(m_Sprite.textureRect.size == Vector2.zero) { //TODO: probably better way to check if using atlas
+			if(m_Sprite.uv != null && m_Sprite.uv.Length > 0) {
+				min = new Vector2(float.MaxValue, float.MaxValue);
+				max = new Vector2(float.MinValue, float.MinValue);
+				for(int i = 0; i < m_Sprite.uv.Length; i++) {
+					var p = m_Sprite.uv[i];
+					if(p.x < min.x) min.x = p.x;
+					if(p.x > max.x) max.x = p.x;
+					if(p.y < min.y) min.y = p.y;
+					if(p.y > max.y) max.y = p.y;
+				}
+			}
+			else {
+				min = max = Vector2.zero;
+			}
+		}
+		else {
+			Rect textureRect = m_Sprite.textureRect;
+			min = new Vector2(textureRect.xMin / (float)m_Sprite.texture.width, textureRect.yMin / (float)m_Sprite.texture.height);
+			max = new Vector2(textureRect.xMax / (float)m_Sprite.texture.width, textureRect.yMax / (float)m_Sprite.texture.height);
+		}
 	}
 	
 	protected override void InitMaterial()
 	{
-		MeshRenderer meshRenderer = GetComponent<MeshRenderer>();
+		//MODIFIED: allow custom material
+		//MeshRenderer meshRenderer = GetComponent<MeshRenderer>();
 		Material material = null;
-		
+
 		// Grab a material from the cache, generate a new one if none exist
-		for(int loop = 0; loop < s_MaterialList.Count; loop++)
-		{
-			if(s_MaterialList[loop] != null && s_MaterialList[loop].mainTexture.GetInstanceID() == m_Sprite.texture.GetInstanceID())
+		for(int loop = 0; loop < s_MaterialList.Count; loop++) {
+			//MODIFIED: allow custom material
+			var matDat = s_MaterialList[loop];
+			if(matDat.materialRef == m_Material && matDat.materialInst && matDat.materialInst.mainTexture.GetInstanceID() == m_Sprite.texture.GetInstanceID()) {
+				material = matDat.materialInst;
+				break;
+			}
+			/*if(s_MaterialList[loop] != null && s_MaterialList[loop].mainTexture.GetInstanceID() == m_Sprite.texture.GetInstanceID())
 			{
 				material = s_MaterialList[loop];
-			}
+			}*/
 		}
-		
-		if(material == null)
-		{
-			material = new Material(Shader.Find("Sprites/Default"));
+
+		if(material == null) {
+			//MODIFIED: allow custom material
+			material = m_Material ? new Material(m_Material) : new Material(Shader.Find("Sprites/Default"));
 			material.mainTexture = m_Sprite.texture;
 			material.name = m_Sprite.texture.name + "_Jelly";
-			s_MaterialList.Add(material);
+
+			s_MaterialList.Add(new MaterialCache { materialRef = m_Material, materialInst = material });
+
+			/*material = new Material(Shader.Find("Sprites/Default"));
+			material.mainTexture = m_Sprite.texture;
+			material.name = m_Sprite.texture.name + "_Jelly";
+			s_MaterialList.Add(material);*/
 		}
-		
+
 		meshRenderer.sharedMaterial = material;
 	}
 
