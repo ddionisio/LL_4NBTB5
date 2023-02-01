@@ -10,3 +10,6 @@
 [submodule "Assets/M8SpreadsheetParser"]
 	path = Assets/M8SpreadsheetParser
 	url = https://github.com/ddionisio/MateSpreadsheetParser.git
+[submodule "Assets/M8AnimatorExt"]
+	path = Assets/M8AnimatorExt
+	url = https://github.com/ddionisio/MateAnimatorExt.git
