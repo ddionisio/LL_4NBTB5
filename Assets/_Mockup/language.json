@@ -1,0 +1,12 @@
+{
+  "_meta": {
+    "maxChars": {
+      "welcome": "50"
+    }
+  },
+  "en": {
+    "welcome": "Welcome!",
+    "title": "Attack on Blob: Mega Multiply",
+    "credits_desc": "Written by: David Dionisio\nMusic from: Kevin Macleod"
+  }
+}
