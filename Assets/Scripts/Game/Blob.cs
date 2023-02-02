@@ -1,8 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.EventSystems;
+
+using TMPro;
 
 /// <summary>
 /// Blob number
@@ -62,7 +63,7 @@ public class Blob : MonoBehaviour, M8.IPoolSpawn, M8.IPoolDespawn {
 
     [Header("UI")]
     public GameObject highlightGO; //active during enter and dragging
-    public Text numericText;
+    public TMP_Text numericText;
 
     [Header("Animation")]
     public M8.Animator.Animate animator;
@@ -302,7 +303,8 @@ public class Blob : MonoBehaviour, M8.IPoolSpawn, M8.IPoolDespawn {
 
         if(state == State.Normal) {
             //highlight on
-            ApplyJellySpriteMaterial(hoverDragMaterial);
+            if(hoverDragMaterial)
+                ApplyJellySpriteMaterial(hoverDragMaterial);
 
             if(highlightGO) highlightGO.SetActive(true);
         }
@@ -395,7 +397,8 @@ public class Blob : MonoBehaviour, M8.IPoolSpawn, M8.IPoolDespawn {
     }
 
     IEnumerator DoCorrect() {
-        ApplyJellySpriteMaterial(correctMaterial);
+        if(correctMaterial)
+            ApplyJellySpriteMaterial(correctMaterial);
 
         if(correctStartDelay > 0f)
             yield return new WaitForSeconds(correctStartDelay);
@@ -415,7 +418,8 @@ public class Blob : MonoBehaviour, M8.IPoolSpawn, M8.IPoolDespawn {
 
     IEnumerator DoError() {
         //error highlight
-        ApplyJellySpriteMaterial(errorMaterial);
+        if(errorMaterial)
+            ApplyJellySpriteMaterial(errorMaterial);
 
         yield return new WaitForSeconds(errorDuration);
 
@@ -506,7 +510,8 @@ public class Blob : MonoBehaviour, M8.IPoolSpawn, M8.IPoolDespawn {
         //display stuff, sound, etc.
         RefreshMouthSprite();
 
-        ApplyJellySpriteMaterial(hoverDragMaterial);
+        if(hoverDragMaterial)
+            ApplyJellySpriteMaterial(hoverDragMaterial);
     }
 
     private void DragUpdate(PointerEventData eventData, int index) {
@@ -640,5 +645,12 @@ public class Blob : MonoBehaviour, M8.IPoolSpawn, M8.IPoolDespawn {
 
         if(highlightGO) highlightGO.SetActive(false);
         isHighlighted = false;
+    }
+
+    void OnDrawGizmosSelected() {
+        if(radius > 0f) {
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawWireSphere(transform.position, radius);
+        }
     }
 }

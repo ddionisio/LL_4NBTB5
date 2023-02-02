@@ -39,13 +39,14 @@ SpriteAtlas:
       blockOffset: 1
       allowAlphaSplitting: 0
       enableRotation: 1
-      enableTightPacking: 1
+      enableTightPacking: 0
     secondaryTextureSettings: {}
     variantMultiplier: 1
     packables:
     - {fileID: 102900000, guid: d009d026b2fc9ae4caa12de4bf9786ef, type: 3}
     - {fileID: 102900000, guid: efc7db50417ce66478965fe13eaba82e, type: 3}
     - {fileID: 102900000, guid: 1752d9d272a3d0c41bb751343a2c0a2d, type: 3}
+    - {fileID: 102900000, guid: ed20d182ff55d054f89b0173a56290cf, type: 3}
     bindAsDefault: 1
     isAtlasV2: 0
     cachedData: {fileID: 0}
@@ -92,6 +93,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 6e46d65c795b56344b389f1886fb3982, type: 3}
   - {fileID: 21300000, guid: 71070d9cb8e6b574a8e999cb3dde2157, type: 3}
   - {fileID: 21300000, guid: 36ce24ec9ae04524289ce0e80bf270be, type: 3}
+  - {fileID: 21300000, guid: 045d323db38cd114ebbe8393a77f4ce0, type: 3}
   - {fileID: 21300000, guid: c5a54a7e88b59e547a8905c1ad93d892, type: 3}
   - {fileID: 21300000, guid: d100bf3fba8e48343b4f69fe5447d682, type: 3}
   - {fileID: 21300000, guid: 49f63cbf9fa458c4cbc656fbdbb5124a, type: 3}
@@ -137,6 +139,7 @@ SpriteAtlas:
   - devicerMouthClose
   - blob1
   - circleGlowTiny
+  - board_frame
   - edge_shade
   - tutorialHandPoint
   - devicerMouthOpen

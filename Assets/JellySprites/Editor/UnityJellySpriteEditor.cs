@@ -7,22 +7,37 @@ class UnityJellySpriteEditor : JellySpriteEditor
 {
 	public SerializedProperty m_Sprite;
 	public Object m_InitialSprite;
-	
+
+	//MODIFIED: allow custom material
+	public SerializedProperty m_Material;
+	public Object m_InitialMaterial;
+
 	protected override void OnEnable() 
 	{
 		base.OnEnable();
 		m_Sprite = serializedObject.FindProperty("m_Sprite");
+
+		//MODIFIED: allow custom material
+		m_Material = serializedObject.FindProperty("m_Material");
 	}
 	
 	protected override void DisplayInspectorGUI()
 	{
 		EditorGUILayout.PropertyField(m_Sprite, new GUIContent("Sprite"));
+
+		//MODIFIED: allow custom material
+		EditorGUILayout.PropertyField(m_Material, new GUIContent("Material"));
+
 		base.DisplayInspectorGUI();
 	}
 
 	protected override void StoreInitialValues()
 	{
 		m_InitialSprite = m_Sprite.objectReferenceValue;
+
+		//MODIFIED: allow custom material
+		m_InitialMaterial = m_Material.objectReferenceValue;
+
 		base.StoreInitialValues();
 	}
 
@@ -40,7 +55,11 @@ class UnityJellySpriteEditor : JellySpriteEditor
             targetObject.m_CentralBodyOffset = targetObject.m_SoftBodyOffset = new Vector3(pivotX * bounds.extents.x * targetObject.m_SpriteScale.x, pivotY * bounds.extents.y * targetObject.m_SpriteScale.y, 0.0f);
             targetObject.RefreshMesh();
         }
-    }    
+		//MODIFIED: allow custom material
+		else if(m_InitialMaterial != m_Material.objectReferenceValue) {
+			targetObject.ReInitMaterial();
+		}
+	}    
 
 	void OnSceneGUI ()
 	{

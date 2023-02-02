@@ -3,7 +3,9 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Blob
+  - DragIndicator
   layers:
   - Default
   - TransparentFX
@@ -11,9 +13,9 @@ TagManager:
   - 
   - Water
   - UI
-  - 
-  - 
-  - 
+  - Touch
+  - Jelly
+  - Connect
   - 
   - 
   - 
@@ -38,6 +40,21 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: Background
+    uniqueID: 1056326083
+    locked: 0
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Entity
+    uniqueID: 4102293051
+    locked: 0
+  - name: Foreground
+    uniqueID: 1961344341
+    locked: 0
+  - name: FX
+    uniqueID: 1462915299
+    locked: 0
+  - name: Interface
+    uniqueID: 1952997841
     locked: 0

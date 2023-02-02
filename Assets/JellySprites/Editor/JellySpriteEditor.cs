@@ -295,9 +295,11 @@ public class JellySpriteEditor : Editor
             foreach (UnityEngine.Object targetObject in targets)
             {
                 JellySprite targetObjectSprite = targetObject as JellySprite;
-                targetObjectSprite.GetComponent<Renderer>().sharedMaterial.color = m_Color.colorValue;
-            }
-        }        
+				//MODIFIED: proper recoloring
+				targetObjectSprite.RefreshMesh();
+				//targetObjectSprite.GetComponent<Renderer>().sharedMaterial.color = m_Color.colorValue;
+			}
+		}        
 	}
 
 	protected virtual void DisplayInspectorGUI()

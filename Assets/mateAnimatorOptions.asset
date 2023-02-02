@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 66b108e1756e60d48a8e41779ed18f64, type: 3}
+  m_Name: mateAnimatorOptions
+  m_EditorClassIdentifier: 
+  time_numbering: 0
+  scrubby_zoom_cursor: 0
+  scrubby_zoom_slider: 1
+  ignoreMinSize: 0
+  showWarningForLostReferences: 1
+  disableTimelineActions: 0
+  disableTimelineActionsTooltip: 0
+  showFramesForCollapsedTracks: 1
+  resetTakeOnClose: 1
+  gizmo_size: 0.05
+  framesPerSecondDefault: 30
+  framesPerPage: 60
+  maxPage: 2
+  pixelPerUnitDefault: 100
+  spriteInsertFramePerSecond: 6
