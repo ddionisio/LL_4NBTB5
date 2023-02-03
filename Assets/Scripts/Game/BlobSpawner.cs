@@ -6,10 +6,44 @@ public class BlobSpawner : MonoBehaviour {
     [System.Serializable]
     public class TemplateGroup {
         public string name;
+        public bool isEnabled = true;
+
+        [Header("Templates")]
         public GameObject[] templates;
+        public int poolCapacity = 3;
+
+        [Header("Spawn Info")]
+        public Transform spawnPointsRoot;
+        public float spawnPointCheckRadius;
+
+        private Vector2[] mSpawnPoints;
+        private int mCurSpawnPtInd;
 
         public GameObject template {
             get { return templates.Length > 0 ? templates[Random.Range(0, templates.Length)] : null; }
+        }
+
+        public Vector2 spawnPoint {
+            get {
+                var pt = mSpawnPoints[mCurSpawnPtInd];
+
+                mCurSpawnPtInd++;
+                if(mCurSpawnPtInd == mSpawnPoints.Length)
+                    mCurSpawnPtInd = 0;
+
+                return pt;
+            }
+        }
+
+        public void InitSpawnPoints(bool isShuffle) {
+            mSpawnPoints = new Vector2[spawnPointsRoot.childCount];
+            for(int i = 0; i < spawnPointsRoot.childCount; i++)
+                mSpawnPoints[i] = spawnPointsRoot.GetChild(i).position;
+
+            if(isShuffle)
+                M8.ArrayUtil.Shuffle(mSpawnPoints);
+
+            mCurSpawnPtInd = 0;
         }
     }
 
@@ -23,10 +57,9 @@ public class BlobSpawner : MonoBehaviour {
     public TemplateGroup[] templateGroups;
 
     [Header("Spawn")]
-    public Transform spawnPointsRoot; //grab child for spawn point
+    public int spawnActiveCount = 6;
     public bool spawnPointsShuffle = true;
-    public LayerMask spawnPointCheckMask; //ensure spot is fine to spawn
-    public float spawnPointCheckRadius;
+    public LayerMask spawnPointCheckMask; //ensure spot is fine to spawn    
     public float spawnDelay = 0.3f;
 
     public int spawnQueueCount { get { return mSpawnQueue.Count; } }
@@ -36,9 +69,6 @@ public class BlobSpawner : MonoBehaviour {
     public M8.CacheList<Blob> blobActives { get { return mBlobActives; } }
 
     private M8.PoolController mPool;
-
-    private Vector2[] mSpawnPts;
-    private int mCurSpawnPtInd;
 
     private Queue<SpawnInfo> mSpawnQueue = new Queue<SpawnInfo>();
     private Coroutine mSpawnRout;
@@ -148,28 +178,20 @@ public class BlobSpawner : MonoBehaviour {
     }
 
     void Awake() {
+        mBlobActives = new M8.CacheList<Blob>(spawnActiveCount);
 
-        int blobCapacity = GameData.instance.blobSpawnCount;
-
-        mBlobActives = new M8.CacheList<Blob>(blobCapacity);
-
-        //setup pool
+        //setup templates (pool init, spawn points)
         mPool = M8.PoolController.CreatePool(poolGroup);
         for(int i = 0; i < templateGroups.Length; i++) {
             var grp = templateGroups[i];
-            for(int j = 0; j < grp.templates.Length; j++)
-                mPool.AddType(grp.templates[j], blobCapacity, blobCapacity);
+            if(grp.isEnabled) {
+                for(int j = 0; j < grp.templates.Length; j++)
+                    mPool.AddType(grp.templates[j], grp.poolCapacity, grp.poolCapacity);
+
+                //generate spawn points
+                grp.InitSpawnPoints(spawnPointsShuffle);
+            }
         }
-
-        //generate spawn points
-        mSpawnPts = new Vector2[spawnPointsRoot.childCount];
-        for(int i = 0; i < spawnPointsRoot.childCount; i++)
-            mSpawnPts[i] = spawnPointsRoot.GetChild(i).position;
-
-        if(spawnPointsShuffle)
-            M8.ArrayUtil.Shuffle(mSpawnPts);
-
-        mCurSpawnPtInd = 0;
     }
 
     IEnumerator DoSpawnQueue() {
@@ -183,17 +205,16 @@ public class BlobSpawner : MonoBehaviour {
 
             var spawnInfo = mSpawnQueue.Dequeue();
 
+            var templateGrp = templateGroups[spawnInfo.templateIndex];
+
             //find valid spawn point
             Vector2 spawnPt = Vector2.zero;
 
             while(true) {
-                var pt = mSpawnPts[mCurSpawnPtInd];
-                mCurSpawnPtInd++;
-                if(mCurSpawnPtInd == mSpawnPts.Length)
-                    mCurSpawnPtInd = 0;
+                var pt = templateGrp.spawnPoint;
 
                 //check if valid
-                var coll = Physics2D.OverlapCircle(pt, spawnPointCheckRadius, spawnPointCheckMask);
+                var coll = Physics2D.OverlapCircle(pt, templateGrp.spawnPointCheckRadius, spawnPointCheckMask);
                 if(!coll) {
                     spawnPt = pt;
                     break;
@@ -207,7 +228,7 @@ public class BlobSpawner : MonoBehaviour {
             mSpawnParms[JellySpriteSpawnController.parmPosition] = spawnPt;
             mSpawnParms[Blob.parmNumber] = spawnInfo.number;
 
-            var template = templateGroups[spawnInfo.templateIndex].template;
+            var template = templateGrp.template;
 
             mBlobNameCache.Clear();
             mBlobNameCache.Append(template.name);

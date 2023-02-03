@@ -13,24 +13,6 @@ public class PlayHUD : MonoBehaviour {
 
     [Header("Display")]
     public GameObject readySetGoDisplayGO;
-    public Button linkDisconnectButton;
-
-    [Header("Operator Display")]
-    public GameObject opCurrentTabMultiplyGO;
-    public GameObject opCurrentTabDivideGO;
-
-    public GameObject opNextTabMultiplyGO;
-    public GameObject opNextTabDivideGO;
-
-    public TMP_Text[] opSymbolTexts;
-    public GameObject opSymbolGO;
-    public string opSymbolMultiply = "x";
-    public string opSymbolDivide = "÷";
-
-    [M8.Localize]
-    public string opTextSpeakRefMultiply;
-    [M8.Localize]
-    public string opTextSpeakRefDivide;
 
     [Header("Equation Display")]
     public M8.Animator.Animate equationOp1Anim; //play take index 0 when highlight
@@ -65,7 +47,6 @@ public class PlayHUD : MonoBehaviour {
     public GameObject comboGO;
     public TMP_Text comboCountText;
     public string comboCountFormat = "x{0}";
-    public Image comboTimeFill;
 
     public M8.Animator.Animate comboAnimator;
     [M8.Animator.TakeSelector(animatorField = "comboAnimator")]
@@ -103,15 +84,12 @@ public class PlayHUD : MonoBehaviour {
     [Header("Signal Invoke")]
     public M8.Signal signalInvokePlayStart;
 
-    private Coroutine mChangeOpRout;
     private Coroutine mComboDisplayRout;
     private Coroutine mEquationRout;
 
     private BlobConnectController.Group mEquationGrp = null;
 
     private int mCurComboCountDisplay = 0;
-
-    private OperatorType mCurOpTypeDisplay = OperatorType.None;
 
     private struct PopUpData {
         public int op1;
@@ -174,7 +152,6 @@ public class PlayHUD : MonoBehaviour {
         //initial display state
         if(scoreCounter) scoreCounter.SetCountImmediate(0);
         if(comboGO) comboGO.SetActive(false);
-        if(opSymbolGO) opSymbolGO.SetActive(false);
 
         if(equationOp1Text) equationOp1Text.text = "";
         if(equationOp2Text) equationOp2Text.text = "";
@@ -185,8 +162,6 @@ public class PlayHUD : MonoBehaviour {
 
         if(correctEqPopAnimator) correctEqPopAnimator.gameObject.SetActive(false);
         if(incorrectEqPopAnimator) incorrectEqPopAnimator.gameObject.SetActive(false);
-
-        ApplyOpCurrentDisplay();
         
         //hide stuff
         if(readySetGoDisplayGO) readySetGoDisplayGO.SetActive(false);
@@ -198,8 +173,6 @@ public class PlayHUD : MonoBehaviour {
             if(!string.IsNullOrEmpty(takeChangeOp))
                 animator.ResetTake(takeChangeOp);
         }
-
-        linkDisconnectButton.interactable = false;
 
         signalListenGameMode.callback += OnSignalGameMode;
         signalListenPlayEnd.callback += OnSignalPlayEnd;
@@ -216,14 +189,6 @@ public class PlayHUD : MonoBehaviour {
     }
 
     void OnSignalPlayEnd() {
-        //change operation to none
-        if(mCurOpTypeDisplay != OperatorType.None) {
-            if(mChangeOpRout != null)
-                StopCoroutine(mChangeOpRout);
-
-            mChangeOpRout = StartCoroutine(DoOpChange(OperatorType.None));
-        }
-
         //stop combo update
         if(mComboDisplayRout != null) {
             StopCoroutine(mComboDisplayRout);
@@ -234,15 +199,7 @@ public class PlayHUD : MonoBehaviour {
     }
 
     void OnRoundBegin() {
-        var playerCtrl = PlayController.instance;
-
-        //setup op
-        if(mCurOpTypeDisplay != playerCtrl.curRoundOp) {
-            if(mChangeOpRout != null)
-                StopCoroutine(mChangeOpRout);
-
-            mChangeOpRout = StartCoroutine(DoOpChange(playerCtrl.curRoundOp));
-        }
+        //var playerCtrl = PlayController.instance;
     }
 
     void OnRoundEnd() {
@@ -308,53 +265,6 @@ public class PlayHUD : MonoBehaviour {
         signalInvokePlayStart.Invoke();
 
         SetEquationUpdateActive(true);
-
-        linkDisconnectButton.interactable = true;
-    }
-
-    IEnumerator DoOpChange(OperatorType opNext) {
-        if(opSymbolGO) opSymbolGO.gameObject.SetActive(false);
-
-        //wait for animator to finish
-        if(animator) {
-            while(animator.isPlaying)
-                yield return null;
-
-            //setup display for next
-            ApplyOpNextDisplay(opNext);
-
-            if(!string.IsNullOrEmpty(takeChangeOp)) {
-                //animate
-                yield return animator.PlayWait(takeChangeOp);
-
-                //reset
-                animator.ResetTake(takeChangeOp);
-            }
-        }
-
-        //apply next to current
-        mCurOpTypeDisplay = opNext;
-        ApplyOpCurrentDisplay();
-        ApplyOpNextDisplay(OperatorType.None);
-
-        //play symbol display
-        if(opSymbolGO)
-            opSymbolGO.SetActive(mCurOpTypeDisplay == OperatorType.Multiply || mCurOpTypeDisplay == OperatorType.Divide);
-
-        //speak text
-        switch(mCurOpTypeDisplay) {
-            case OperatorType.Multiply:
-                if(!string.IsNullOrEmpty(opTextSpeakRefMultiply))
-                    LoLManager.instance.SpeakText(opTextSpeakRefMultiply);
-                break;
-
-            case OperatorType.Divide:
-                if(!string.IsNullOrEmpty(opTextSpeakRefDivide))
-                    LoLManager.instance.SpeakText(opTextSpeakRefDivide);
-                break;
-        }
-
-        mChangeOpRout = null;
     }
 
     IEnumerator DoComboDisplay() {
@@ -375,8 +285,6 @@ public class PlayHUD : MonoBehaviour {
                 if(comboAnimator && !string.IsNullOrEmpty(comboTakeUpdate))
                     comboAnimator.Play(comboTakeUpdate);
             }
-
-            if(comboTimeFill) comboTimeFill.fillAmount = 1.0f - Mathf.Clamp01(playCtrl.comboCurTime / comboDuration);
 
             yield return null;
         }
@@ -603,34 +511,6 @@ public class PlayHUD : MonoBehaviour {
         mCurComboCountDisplay = PlayController.instance.comboCount;
 
         if(comboCountText) comboCountText.text = string.Format(comboCountFormat, mCurComboCountDisplay + 1);
-    }
-
-    private void ApplyOpCurrentDisplay() {
-        if(opCurrentTabMultiplyGO) opCurrentTabMultiplyGO.SetActive(mCurOpTypeDisplay == OperatorType.Multiply);
-        if(opCurrentTabDivideGO) opCurrentTabDivideGO.SetActive(mCurOpTypeDisplay == OperatorType.Divide);
-
-        string opSymbolStr;
-        switch(mCurOpTypeDisplay) {
-            case OperatorType.Multiply:
-                opSymbolStr = opSymbolMultiply;
-                break;
-            case OperatorType.Divide:
-                opSymbolStr = opSymbolDivide;
-                break;
-            default:
-                opSymbolStr = "";
-                break;
-        }
-
-        for(int i = 0; i < opSymbolTexts.Length; i++) {
-            if(opSymbolTexts[i])
-                opSymbolTexts[i].text = opSymbolStr;
-        }
-    }
-
-    private void ApplyOpNextDisplay(OperatorType nextOp) {
-        if(opNextTabMultiplyGO) opNextTabMultiplyGO.SetActive(nextOp == OperatorType.Multiply);
-        if(opNextTabDivideGO) opNextTabDivideGO.SetActive(nextOp == OperatorType.Divide);
     }
 
     private void SetEquationUpdateActive(bool isActive) {
