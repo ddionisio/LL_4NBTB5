@@ -6,27 +6,33 @@ using LoLExt;
 public class PlayController : GameModeController<PlayController> {
     [System.Serializable]
     public class NumberGroup {
-        public string name;
-        public int templateIndex;
+        public BlobTemplateData blobData;
         public int[] numbers;
-        public bool isBonus;
 
-        public int number { 
+        public int templateIndex { get; private set; }
+
+        public int number {
             get {
-                var num = numbers[mCurNumIndex];
+                if(mCurNumIndex < numbers.Length) {
+                    var num = numbers[mCurNumIndex];
 
-                mCurNumIndex++;
-                if(mCurNumIndex == numbers.Length)
-                    mCurNumIndex = 0;
+                    mCurNumIndex++;
 
-                return num;
-            } 
+                    return num;
+                }
+                else
+                    return numbers[numbers.Length - 1];
+            }
         }
+
+        public bool isFinish { get { return mCurNumIndex == numbers.Length; } }
 
         private int mCurNumIndex;
 
-        public void Init() {
+        public void Init(BlobSpawner blobSpawner) {
             M8.ArrayUtil.Shuffle(numbers);
+
+            templateIndex = blobSpawner.GetTemplateIndex(blobData);
 
             mCurNumIndex = 0;
         }
@@ -39,7 +45,7 @@ public class PlayController : GameModeController<PlayController> {
 
     [Header("Numbers")]
     public NumberGroup[] numberGroups;
-    public int[] numberIndexLookups; //index to number group
+    public NumberGroup numberBonusGroup; //set numbers to none to disable bonus
 
     [Header("Controls")]
     public BlobConnectController connectControl;
@@ -77,6 +83,8 @@ public class PlayController : GameModeController<PlayController> {
 
     public float curPlayTime { get { return Time.time - mPlayLastTime; } }
 
+    public bool isBonusEnabled { get { return numberBonusGroup.blobData == null || numberBonusGroup.numbers.Length == 0; } }
+
     //callbacks
     public event System.Action roundBeginCallback;
     public event System.Action roundEndCallback;
@@ -107,12 +115,16 @@ public class PlayController : GameModeController<PlayController> {
         base.OnInstanceInit();
 
         //setup numbers
+        int numberCount = 0;
+
         for(int i = 0; i < numberGroups.Length; i++) {
             var grp = numberGroups[i];
-            grp.Init();
+            grp.Init(blobSpawner);
+
+            numberCount += grp.numbers.Length;
         }
 
-        mRoundCount = Mathf.FloorToInt(numberIndexLookups.Length / 2.0f);
+        mRoundCount = Mathf.FloorToInt(numberCount / 2.0f);
 
         //init rounds display
         int roundsDisplayCount = Mathf.Min(mRoundCount, roundsRoot.childCount);
@@ -200,25 +212,47 @@ public class PlayController : GameModeController<PlayController> {
     }
 
     IEnumerator DoBlobSpawn() {
-        curNumberIndex = 0;
+        var maxBlobCount = GameData.instance.blobSpawnCount;
 
-        while(curNumberIndex < numberIndexLookups.Length) {
-            var maxBlobCount = GameData.instance.blobSpawnCount;
+        int curGroupNumberIndex = 0;
 
-            var numGrp = numberGroups[numberIndexLookups[curNumberIndex]];
+        bool isComplete = false;
+        while(!isComplete) {
+            //check if we have enough on the board
+            while(blobSpawner.blobActives.Count + blobSpawner.spawnQueueCount < maxBlobCount) {
+                var numGrp = numberGroups[curGroupNumberIndex];
+                if(!numGrp.isFinish) {
+                    var newNumber = numGrp.number;
 
-            //check if we have enough on the board, or the current one is a bonus
-            while(blobSpawner.blobActives.Count + blobSpawner.spawnQueueCount < maxBlobCount || numGrp.isBonus) {
-                var newNumber = numGrp.number;
+                    blobSpawner.Spawn(numGrp.templateIndex, newNumber);
+                }
 
-                blobSpawner.Spawn(numGrp.templateIndex, newNumber);
+                curGroupNumberIndex++;
+                if(curGroupNumberIndex == numberGroups.Length) {
+                    curGroupNumberIndex = 0;
 
-                curNumberIndex++;
-                if(curNumberIndex == numberIndexLookups.Length)
-                    break;
+                    //check if we are finish with all the groups
+                    int finishCount = 0;
+                    for(int i = 0; i < numberGroups.Length; i++) {
+                        if(numberGroups[i].isFinish)
+                            finishCount++;
+                    }
+
+                    if(finishCount == numberGroups.Length) {
+                        isComplete = true;
+                        break;
+                    }
+                }
             }
 
             yield return null;
+        }
+
+        //spawn bonus blob as last blob
+        if(isBonusEnabled) {
+            var bonusNumber = numberBonusGroup.number;
+
+            blobSpawner.Spawn(numberBonusGroup.blobData, bonusNumber);
         }
 
         mSpawnRout = null;

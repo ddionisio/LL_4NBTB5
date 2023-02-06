@@ -5,23 +5,16 @@ using UnityEngine;
 public class BlobSpawner : MonoBehaviour {
     [System.Serializable]
     public class TemplateGroup {
-        public string name;
-        public bool isEnabled = true;
-
-        [Header("Templates")]
-        public GameObject[] templates;
+        public BlobTemplateData blobData;
         public int poolCapacity = 3;
+
+        public bool isEnabled = true;
 
         [Header("Spawn Info")]
         public Transform spawnPointsRoot;
-        public float spawnPointCheckRadius;
 
         private Vector2[] mSpawnPoints;
         private int mCurSpawnPtInd;
-
-        public GameObject template {
-            get { return templates.Length > 0 ? templates[Random.Range(0, templates.Length)] : null; }
-        }
 
         public Vector2 spawnPoint {
             get {
@@ -138,18 +131,24 @@ public class BlobSpawner : MonoBehaviour {
         mSpawnQueue.Clear();
     }
 
-    public void Spawn(string templateName, int number) {
-        //grab template index
+    public int GetTemplateIndex(BlobTemplateData blobData) {
         int templateIndex = -1;
         for(int i = 0; i < templateGroups.Length; i++) {
-            if(templateGroups[i].name == templateName) {
+            if(templateGroups[i].blobData == blobData) {
                 templateIndex = i;
                 break;
             }
         }
 
+        return templateIndex;
+    }
+
+    public void Spawn(BlobTemplateData blobData, int number) {
+        //grab template index
+        int templateIndex = GetTemplateIndex(blobData);
+
         if(templateIndex == -1) {
-            Debug.LogWarning("No template for: " + templateName);
+            Debug.LogWarning("No template for: " + blobData.name);
             return;
         }
 
@@ -185,8 +184,7 @@ public class BlobSpawner : MonoBehaviour {
         for(int i = 0; i < templateGroups.Length; i++) {
             var grp = templateGroups[i];
             if(grp.isEnabled) {
-                for(int j = 0; j < grp.templates.Length; j++)
-                    mPool.AddType(grp.templates[j], grp.poolCapacity, grp.poolCapacity);
+                grp.blobData.InitPool(mPool, grp.poolCapacity);
 
                 //generate spawn points
                 grp.InitSpawnPoints(spawnPointsShuffle);
@@ -214,7 +212,7 @@ public class BlobSpawner : MonoBehaviour {
                 var pt = templateGrp.spawnPoint;
 
                 //check if valid
-                var coll = Physics2D.OverlapCircle(pt, templateGrp.spawnPointCheckRadius, spawnPointCheckMask);
+                var coll = Physics2D.OverlapCircle(pt, templateGrp.blobData.spawnPointCheckRadius, spawnPointCheckMask);
                 if(!coll) {
                     spawnPt = pt;
                     break;
@@ -228,7 +226,7 @@ public class BlobSpawner : MonoBehaviour {
             mSpawnParms[JellySpriteSpawnController.parmPosition] = spawnPt;
             mSpawnParms[Blob.parmNumber] = spawnInfo.number;
 
-            var template = templateGrp.template;
+            var template = templateGrp.blobData.template;
 
             mBlobNameCache.Clear();
             mBlobNameCache.Append(template.name);

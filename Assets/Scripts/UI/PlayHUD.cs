@@ -16,13 +16,13 @@ public class PlayHUD : MonoBehaviour {
 
     [Header("Equation Display")]
     public M8.Animator.Animate equationOp1Anim; //play take index 0 when highlight
-    public Text equationOp1Text;
+    public TMP_Text equationOp1Text;
 
     public M8.Animator.Animate equationOp2Anim; //play take index 0 when highlight
-    public Text equationOp2Text;
+    public TMP_Text equationOp2Text;
 
     public M8.Animator.Animate equationAnsAnim; //play take index 0 when highlight
-    public Text equationAnsText;
+    public TMP_Text equationAnsText;
 
     public GameObject equationOpGO;
     public GameObject equationEqGO;
@@ -33,8 +33,6 @@ public class PlayHUD : MonoBehaviour {
     public string takeEnter;
     [M8.Animator.TakeSelector(animatorField = "animator")]
     public string takeReadySetGo;
-    [M8.Animator.TakeSelector(animatorField = "animator")]
-    public string takeChangeOp;
 
     [Header("Score Display")]
     public M8.TextMeshPro.TextMeshProCounter scoreCounter;
@@ -56,10 +54,11 @@ public class PlayHUD : MonoBehaviour {
     [M8.Animator.TakeSelector(animatorField = "comboAnimator")]
     public string comboTakeExit;
 
-    [Header("Equation Pop Up")]
+    [Header("Correct Equation Pop Up")]
+    public GameObject correctEqPopRoot;
     public TMP_Text correctEqPopText;
     public float correctEqPopShowDelay = 1.5f;
-    public M8.Animator.Animate correctEqPopAnimator; //also treat it as the root display
+    public M8.Animator.Animate correctEqPopAnimator;
     [M8.Animator.TakeSelector(animatorField = "correctEqPopAnimator")]
     public string correctEqPopTakeEnter;
     [M8.Animator.TakeSelector(animatorField = "correctEqPopAnimator")]
@@ -67,6 +66,8 @@ public class PlayHUD : MonoBehaviour {
     [M8.Animator.TakeSelector(animatorField = "correctEqPopAnimator")]
     public string correctEqPopTakeExit;
 
+    [Header("Incorrect Equation Pop Up")]
+    public GameObject incorrectEqPopRoot;
     public TMP_Text incorrectEqPopText;
     public float incorrectEqPopShowDelay = 1.5f;
     public M8.Animator.Animate incorrectEqPopAnimator; //also treat it as the root display
@@ -160,8 +161,8 @@ public class PlayHUD : MonoBehaviour {
         if(equationOpGO) equationOpGO.SetActive(false);
         if(equationEqGO) equationEqGO.SetActive(false);
 
-        if(correctEqPopAnimator) correctEqPopAnimator.gameObject.SetActive(false);
-        if(incorrectEqPopAnimator) incorrectEqPopAnimator.gameObject.SetActive(false);
+        if(correctEqPopRoot) correctEqPopRoot.SetActive(false);
+        if(incorrectEqPopRoot) incorrectEqPopRoot.SetActive(false);
         
         //hide stuff
         if(readySetGoDisplayGO) readySetGoDisplayGO.SetActive(false);
@@ -169,9 +170,6 @@ public class PlayHUD : MonoBehaviour {
         if(animator) {
             if(!string.IsNullOrEmpty(takeEnter))
                 animator.ResetTake(takeEnter);
-
-            if(!string.IsNullOrEmpty(takeChangeOp))
-                animator.ResetTake(takeChangeOp);
         }
 
         signalListenGameMode.callback += OnSignalGameMode;
@@ -450,15 +448,15 @@ public class PlayHUD : MonoBehaviour {
                 correctEqPopText.text = dat.GetString(true);
 
             //show/update
-            if(correctEqPopAnimator) {
-                if(!correctEqPopAnimator.gameObject.activeSelf) {
-                    correctEqPopAnimator.gameObject.SetActive(true);
+            if(correctEqPopRoot) {
+                if(!correctEqPopRoot.activeSelf) {
+                    correctEqPopRoot.SetActive(true);
 
-                    if(!string.IsNullOrEmpty(correctEqPopTakeEnter))
+                    if(correctEqPopAnimator && !string.IsNullOrEmpty(correctEqPopTakeEnter))
                         yield return correctEqPopAnimator.PlayWait(correctEqPopTakeEnter);
                 }
 
-                if(!string.IsNullOrEmpty(correctEqPopTakeUpdate))
+                if(correctEqPopAnimator && !string.IsNullOrEmpty(correctEqPopTakeUpdate))
                     yield return correctEqPopAnimator.PlayWait(correctEqPopTakeUpdate);
             }
 
@@ -466,12 +464,11 @@ public class PlayHUD : MonoBehaviour {
 
             //hide
             if(mCorrectPopUpQueue.Count == 0) {
-                if(correctEqPopAnimator) {
-                    if(!string.IsNullOrEmpty(correctEqPopTakeExit))
-                        yield return correctEqPopAnimator.PlayWait(correctEqPopTakeExit);
+                if(correctEqPopAnimator && !string.IsNullOrEmpty(correctEqPopTakeExit))
+                    yield return correctEqPopAnimator.PlayWait(correctEqPopTakeExit);
 
-                    correctEqPopAnimator.gameObject.SetActive(false);
-                }
+                if(correctEqPopRoot)
+                    correctEqPopRoot.SetActive(false);
             }
         }
 
@@ -482,27 +479,26 @@ public class PlayHUD : MonoBehaviour {
         var wait = new WaitForSeconds(incorrectEqPopShowDelay);
 
         //show/update
-        if(incorrectEqPopAnimator) {
-            if(!incorrectEqPopAnimator.gameObject.activeSelf) {
-                incorrectEqPopAnimator.gameObject.SetActive(true);
+        if(incorrectEqPopRoot) {
+            if(!incorrectEqPopRoot.activeSelf) {
+                incorrectEqPopRoot.SetActive(true);
 
-                if(!string.IsNullOrEmpty(incorrectEqPopTakeEnter))
+                if(incorrectEqPopAnimator && !string.IsNullOrEmpty(incorrectEqPopTakeEnter))
                     yield return incorrectEqPopAnimator.PlayWait(incorrectEqPopTakeEnter);
             }
 
-            if(!string.IsNullOrEmpty(incorrectEqPopTakeUpdate))
+            if(incorrectEqPopAnimator && !string.IsNullOrEmpty(incorrectEqPopTakeUpdate))
                 yield return incorrectEqPopAnimator.PlayWait(incorrectEqPopTakeUpdate);
         }
 
         yield return wait;
 
         //hide
-        if(incorrectEqPopAnimator) {
-            if(!string.IsNullOrEmpty(incorrectEqPopTakeExit))
-                yield return incorrectEqPopAnimator.PlayWait(incorrectEqPopTakeExit);
+        if(incorrectEqPopAnimator && !string.IsNullOrEmpty(incorrectEqPopTakeExit))
+            yield return incorrectEqPopAnimator.PlayWait(incorrectEqPopTakeExit);
 
-            incorrectEqPopAnimator.gameObject.SetActive(false);
-        }
+        if(incorrectEqPopRoot)
+            incorrectEqPopRoot.SetActive(false);
 
         mIncorrectPopUpRout = null;
     }
