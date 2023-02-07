@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 004af2abbc62598489491e31a35b8644, type: 3}
+  m_Name: gameData
+  m_EditorClassIdentifier: 
+  ranks:
+  - grade: S+
+    scale: 0.95
+  - grade: S
+    scale: 0.9
+  - grade: A
+    scale: 0.8
+  - grade: B
+    scale: 0.6
+  - grade: C
+    scale: 0.5
+  - grade: D
+    scale: 0
+  rankIndexRetry: 4
+  hintDelay: 25
+  hintErrorCount: 5
+  blobSpawnCount: 4
+  correctPoints: 100
+  correctDecayPoints: 50
+  perfectPoints: 1000
+  timeParPerRound: 18
+  timeParPerRoundRanking: 12
+  timeBonus: 25
+  maxRetryCount: 2

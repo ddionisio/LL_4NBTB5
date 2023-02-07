@@ -233,7 +233,7 @@ GameObject:
   - component: {fileID: 7123958330251997803}
   - component: {fileID: 7123958330251997800}
   - component: {fileID: 7123958330251997801}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: blobBaseLarge
   m_TagString: Untagged
   m_Icon: {fileID: 0}

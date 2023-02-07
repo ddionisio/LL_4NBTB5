@@ -273,8 +273,6 @@ public class PlayHUD : MonoBehaviour {
         if(comboAnimator && !string.IsNullOrEmpty(comboTakeEnter))
             yield return comboAnimator.PlayWait(comboTakeEnter);
 
-        var comboDuration = GameData.instance.comboDuration;
-
         var playCtrl = PlayController.instance;
         while(playCtrl.comboIsActive) {
             if(mCurComboCountDisplay != playCtrl.comboCount) {

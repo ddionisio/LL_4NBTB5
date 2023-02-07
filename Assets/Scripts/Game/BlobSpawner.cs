@@ -8,8 +8,6 @@ public class BlobSpawner : MonoBehaviour {
         public BlobTemplateData blobData;
         public int poolCapacity = 3;
 
-        public bool isEnabled = true;
-
         [Header("Spawn Info")]
         public Transform spawnPointsRoot;
 
@@ -71,6 +69,25 @@ public class BlobSpawner : MonoBehaviour {
     private M8.CacheList<Blob> mBlobActives;
 
     private System.Text.StringBuilder mBlobNameCache = new System.Text.StringBuilder();
+
+    public void InitBlobTemplate(BlobTemplateData blobTemplateData) {
+        if(!mPool)
+            mPool = M8.PoolController.CreatePool(poolGroup);
+
+        //setup template (pool init, spawn points)
+        int templateInd = GetTemplateIndex(blobTemplateData);
+        if(templateInd == -1) {
+            Debug.LogError("Template Not Found: " + blobTemplateData.name);
+            return;
+        }
+
+        var grp = templateGroups[templateInd];
+
+        grp.blobData.InitPool(mPool, grp.poolCapacity);
+
+        //generate spawn points
+        grp.InitSpawnPoints(spawnPointsShuffle);
+    }
 
     public bool CheckAnyBlobActiveState(params Blob.State[] states) {
         for(int i = 0; i < mBlobActives.Count; i++) {
@@ -178,18 +195,6 @@ public class BlobSpawner : MonoBehaviour {
 
     void Awake() {
         mBlobActives = new M8.CacheList<Blob>(spawnActiveCount);
-
-        //setup templates (pool init, spawn points)
-        mPool = M8.PoolController.CreatePool(poolGroup);
-        for(int i = 0; i < templateGroups.Length; i++) {
-            var grp = templateGroups[i];
-            if(grp.isEnabled) {
-                grp.blobData.InitPool(mPool, grp.poolCapacity);
-
-                //generate spawn points
-                grp.InitSpawnPoints(spawnPointsShuffle);
-            }
-        }
     }
 
     IEnumerator DoSpawnQueue() {

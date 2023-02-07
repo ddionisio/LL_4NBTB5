@@ -25,13 +25,9 @@ public class GameData : M8.SingletonScriptableObject<GameData> {
     public int correctPoints = 100;
     public int correctDecayPoints = 25; //if hint was shown
     public int perfectPoints = 1000;
-    public float comboDuration = 2.0f;
     public float timeParPerRound = 6f; //in seconds
     public float timeParPerRoundRanking; //in seconds, used for ranking, make sure it's less than timeParPerRound
     public int timeBonus = 50; //per second based on (timePar - time)
-
-    public int bonusRoundScore = 1500;
-    public float bonusRoundDuration = 60f;
 
     public int maxRetryCount = 2;
 
@@ -52,8 +48,6 @@ public class GameData : M8.SingletonScriptableObject<GameData> {
             maxScore += (i + 1) * correctPoints;
 
         maxScore += perfectPoints;
-
-        maxScore += bonusRoundScore;
 
         float timePar = timeParPerRound * roundCount;
         float rankTime = timeParPerRoundRanking * roundCount;

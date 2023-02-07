@@ -48,7 +48,7 @@ GameObject:
   - component: {fileID: 8983797535604395072}
   - component: {fileID: 8983797535604395103}
   - component: {fileID: 8983797535604395102}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: blobBase
   m_TagString: Untagged
   m_Icon: {fileID: 0}

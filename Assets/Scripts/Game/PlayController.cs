@@ -96,8 +96,6 @@ public class PlayController : GameModeController<PlayController> {
 
     private float mPlayLastTime;
 
-    private int mMistakeRoundCount;
-
     private M8.SpriteColorFromPalette[] mSpriteColorFromPalettes;
 
     private Coroutine mSpawnRout;
@@ -108,17 +106,25 @@ public class PlayController : GameModeController<PlayController> {
 
         signalListenPlayStart.callback -= OnSignalPlayBegin;
 
+        if(mSpawnRout != null) {
+            StopCoroutine(mSpawnRout);
+            mSpawnRout = null;
+        }
+
         base.OnInstanceDeinit();
     }
 
     protected override void OnInstanceInit() {
         base.OnInstanceInit();
 
-        //setup numbers
+        //setup template and numbers
         int numberCount = 0;
 
         for(int i = 0; i < numberGroups.Length; i++) {
             var grp = numberGroups[i];
+
+            blobSpawner.InitBlobTemplate(grp.blobData);
+
             grp.Init(blobSpawner);
 
             numberCount += grp.numbers.Length;
@@ -171,8 +177,6 @@ public class PlayController : GameModeController<PlayController> {
 
             var roundBeginLastTime = Time.time;
 
-            mMistakeRoundCount = 0;
-                        
             //wait for correct answer
             mIsAnswerCorrectWait = true;
             while(mIsAnswerCorrectWait) {
@@ -315,7 +319,6 @@ public class PlayController : GameModeController<PlayController> {
                 comboCount--;
 
             mistakeCount++;
-            mMistakeRoundCount++;
         }
 
         connectControl.ClearGroup(grp);
