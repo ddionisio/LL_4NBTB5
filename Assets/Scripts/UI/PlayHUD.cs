@@ -26,6 +26,8 @@ public class PlayHUD : MonoBehaviour {
 
     public GameObject equationOpGO;
     public GameObject equationEqGO;
+
+    public bool equationSortFactors; //if true, set first factor display to be the higher value.
         
     [Header("Animation")]
     public M8.Animator.Animate animator;
@@ -346,10 +348,38 @@ public class PlayHUD : MonoBehaviour {
                 if(equationOp2Anim) equationOp2Anim.Stop();
 
                 isOpActive = true;
-                                
-                string op1Text = grp.blobOpLeft ? grp.blobOpLeft.number.ToString() : "";
-                string op2Text = grp.blobOpRight ? grp.blobOpRight.number.ToString() : "";
-                                
+
+                string op1Text, op2Text;
+
+                if(equationSortFactors) {
+                    if(grp.blobOpLeft && grp.blobOpRight) {
+                        if(grp.blobOpRight.number > grp.blobOpLeft.number) {
+                            op1Text = grp.blobOpRight.number.ToString();
+                            op2Text = grp.blobOpLeft.number.ToString();
+                        }
+                        else {
+                            op1Text = grp.blobOpLeft.number.ToString();
+                            op2Text = grp.blobOpRight.number.ToString();
+                        }
+                    }
+                    else if(grp.blobOpLeft) {
+                        op1Text = grp.blobOpLeft.number.ToString();
+                        op2Text = "";
+                    }
+                    else if(grp.blobOpRight) {
+                        op1Text = grp.blobOpRight.number.ToString();
+                        op2Text = "";
+                    }
+                    else {
+                        op1Text = "";
+                        op2Text = "";
+                    }
+                }
+                else {
+                    op1Text = grp.blobOpLeft ? grp.blobOpLeft.number.ToString() : "";
+                    op2Text = grp.blobOpRight ? grp.blobOpRight.number.ToString() : "";
+                }
+
                 //check answer blob
                 if(grp.blobEq) {
                     if(equationAnsAnim) equationAnsAnim.Stop();
@@ -402,16 +432,35 @@ public class PlayHUD : MonoBehaviour {
                 if(equationAnsAnim) equationAnsAnim.Stop();
                                 
                 if(blobDragging) {
-                    if(equationOp1Text) equationOp1Text.text = blobDragging.number.ToString();
+                    if(equationSortFactors) {
+                        if(blobHighlight) {
+                            if(blobHighlight.number > blobDragging.number) {
+                                if(equationOp1Text) equationOp1Text.text = blobHighlight.number.ToString();
+                                if(equationOp2Text) equationOp2Text.text = blobDragging.number.ToString();
+                            }
+                            else {
+                                if(equationOp1Text) equationOp1Text.text = blobDragging.number.ToString();
+                                if(equationOp2Text) equationOp2Text.text = blobHighlight.number.ToString();
+                            }
+                        }
+                        else {
+                            if(equationOp1Text) equationOp1Text.text = blobDragging.number.ToString();
+                            if(equationOp2Text) equationOp2Text.text = "";
+                        }
 
-                    isOpActive = true;
-
-                    if(blobHighlight) {
-                        if(equationOp2Text) equationOp2Text.text = blobHighlight.number.ToString();
                     }
                     else {
-                        if(equationOp2Text) equationOp2Text.text = "";
+                        if(equationOp1Text) equationOp1Text.text = blobDragging.number.ToString();
+
+                        if(blobHighlight) {
+                            if(equationOp2Text) equationOp2Text.text = blobHighlight.number.ToString();
+                        }
+                        else {
+                            if(equationOp2Text) equationOp2Text.text = "";
+                        }
                     }
+
+                    isOpActive = true;
                 }
                 else if(blobHighlight) {
                     if(equationOp1Text) equationOp1Text.text = blobHighlight.number.ToString();

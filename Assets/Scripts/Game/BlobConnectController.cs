@@ -382,15 +382,20 @@ public class BlobConnectController : MonoBehaviour {
 
             //determine op
             var toOp = mCurOp;
-            if(curGroupDragging != null) {
-                if(curGroupDragging.IsBlobOp(curBlobDragging)) {
-                    //cancel if dragging to the same group as ops
-                    if(curGroupDragging.IsBlobOp(endBlob))
-                        toOp = OperatorType.None;
-                    else
-                        toOp = OperatorType.Equal;
+
+            if(!endBlob.inputLocked) {
+                if(curGroupDragging != null) {
+                    if(curGroupDragging.IsBlobOp(curBlobDragging)) {
+                        //cancel if dragging to the same group as ops
+                        if(curGroupDragging.IsBlobOp(endBlob))
+                            toOp = OperatorType.None;
+                        else
+                            toOp = OperatorType.Equal;
+                    }
                 }
             }
+            else
+                toOp = OperatorType.None;
 
             //update link groups
             if(toOp != OperatorType.None) {

@@ -50,9 +50,11 @@ SpriteAtlas:
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
   - {fileID: 21300000, guid: c97157f336e5bb84d9e29fe4be35418a, type: 3}
+  - {fileID: 21300000, guid: 8ae44408907a0f848b49e5640074886d, type: 3}
   - {fileID: 21300000, guid: 4aa116c9273467440b33e6b07bdf6a62, type: 3}
   m_PackedSpriteNamesToIndex:
   - blobBaseLargeTest
+  - blobBaseMediumTest
   - blobBaseTest
   m_RenderDataMap: {}
   m_Tag: test

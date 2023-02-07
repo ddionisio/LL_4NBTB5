@@ -59,6 +59,8 @@ public class BlobSpawner : MonoBehaviour {
 
     public M8.CacheList<Blob> blobActives { get { return mBlobActives; } }
 
+    public bool isSpawning { get { return mSpawnRout != null; } }
+
     private M8.PoolController mPool;
 
     private Queue<SpawnInfo> mSpawnQueue = new Queue<SpawnInfo>();

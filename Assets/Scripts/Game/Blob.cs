@@ -61,8 +61,11 @@ public class Blob : MonoBehaviour, M8.IPoolSpawn, M8.IPoolDespawn {
     [Header("Hint Settings")]
     public GameObject hintActiveGO;
 
-    [Header("UI")]
+    [Header("Highlight Display")]
     public GameObject highlightGO; //active during enter and dragging
+    public GameObject highlightLockGO; //active if isHighlightLock is true
+
+    [Header("UI")]    
     public TMP_Text numericText;
 
     [Header("Animation")]
@@ -170,7 +173,19 @@ public class Blob : MonoBehaviour, M8.IPoolSpawn, M8.IPoolDespawn {
         }
     }
 
-    public bool isHighlighted { get; private set; }
+    public bool isHighlighted { get { return mIsHighlight; } }
+
+    public bool highlightLock {
+        get { return mIsHighlightLocked; }
+        set {
+            if(mIsHighlightLocked != value) {
+                mIsHighlightLocked = value;
+
+                if(highlightLockGO)
+                    highlightLockGO.SetActive(mIsHighlightLocked);
+            }
+        }
+    }
 
     private int mNumber;
 
@@ -189,6 +204,9 @@ public class Blob : MonoBehaviour, M8.IPoolSpawn, M8.IPoolDespawn {
     private bool mInputLockedInternal;
 
     private bool mIsConnected;
+
+    private bool mIsHighlight;
+    private bool mIsHighlightLocked;
 
     /// <summary>
     /// Get an approximate edge towards given point, relies on reference points to provide edge.
@@ -299,7 +317,7 @@ public class Blob : MonoBehaviour, M8.IPoolSpawn, M8.IPoolDespawn {
         if(inputLocked)
             return;
 
-        isHighlighted = true;
+        mIsHighlight = true;
 
         if(state == State.Normal) {
             //highlight on
@@ -314,7 +332,7 @@ public class Blob : MonoBehaviour, M8.IPoolSpawn, M8.IPoolDespawn {
         if(inputLocked)
             return;
 
-        isHighlighted = false;
+        mIsHighlight = false;
 
         //highlight off
         if(state == State.Normal) {
@@ -579,7 +597,7 @@ public class Blob : MonoBehaviour, M8.IPoolSpawn, M8.IPoolDespawn {
             //clear pointer highlight
             //update highlight
             if(highlightGO) highlightGO.SetActive(false);
-            isHighlighted = false;
+            mIsHighlight = false;
 
             if(isDragging)
                 DragInvalidate();
@@ -636,18 +654,21 @@ public class Blob : MonoBehaviour, M8.IPoolSpawn, M8.IPoolDespawn {
                 break;
         }
 
+        if(highlightGO) highlightGO.SetActive(false);
+        mIsHighlight = false;
+
+        if(highlightLockGO) highlightLockGO.SetActive(false);
+        mIsHighlightLocked = false;
+
         if(isDragInvalid)
             DragInvalidate();
 
         mIsConnected = false;
 
         RefreshMouthSprite();
-
-        if(highlightGO) highlightGO.SetActive(false);
-        isHighlighted = false;
     }
 
-    void OnDrawGizmosSelected() {
+    void OnDrawGizmos() {
         if(radius > 0f) {
             Gizmos.color = Color.yellow;
             Gizmos.DrawWireSphere(transform.position, radius);

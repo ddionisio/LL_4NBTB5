@@ -46,6 +46,7 @@ public class PlayController : GameModeController<PlayController> {
     [Header("Numbers")]
     public NumberGroup[] numberGroups;
     public NumberGroup numberBonusGroup; //set numbers to none to disable bonus
+    public bool numberCriteriaUnlocked; //if true, no blob connect restriction is made
 
     [Header("Controls")]
     public BlobConnectController connectControl;
@@ -68,6 +69,8 @@ public class PlayController : GameModeController<PlayController> {
 
     [Header("Signal Listen")]
     public M8.Signal signalListenPlayStart;
+    public SignalBlob signalListenBlobDragBegin;
+    public SignalBlob signalListenBlobDragEnd;
 
     [Header("Signal Invoke")]
     public M8.Signal signalInvokePlayEnd;
@@ -101,10 +104,14 @@ public class PlayController : GameModeController<PlayController> {
     private Coroutine mSpawnRout;
 
     protected override void OnInstanceDeinit() {
-        if(connectControl)
+        if(connectControl) {
+            connectControl.groupAddedCallback -= OnGroupAdded;
             connectControl.evaluateCallback -= OnGroupEval;
+        }
 
         signalListenPlayStart.callback -= OnSignalPlayBegin;
+        signalListenBlobDragBegin.callback -= OnSignalBlobDragBegin;
+        signalListenBlobDragEnd.callback -= OnSignalBlobDragEnd;
 
         if(mSpawnRout != null) {
             StopCoroutine(mSpawnRout);
@@ -142,9 +149,12 @@ public class PlayController : GameModeController<PlayController> {
         for(int i = roundsDisplayCount; i < roundsRoot.childCount; i++) //deactivate the rest
             roundsRoot.GetChild(i).gameObject.SetActive(false);
 
+        connectControl.groupAddedCallback += OnGroupAdded;
         connectControl.evaluateCallback += OnGroupEval;
 
         signalListenPlayStart.callback += OnSignalPlayBegin;
+        signalListenBlobDragBegin.callback += OnSignalBlobDragBegin;
+        signalListenBlobDragEnd.callback += OnSignalBlobDragEnd;
     }
 
     protected override IEnumerator Start() {
@@ -165,6 +175,38 @@ public class PlayController : GameModeController<PlayController> {
         mSpawnRout = StartCoroutine(DoBlobSpawn());
 
         mPlayLastTime = Time.time;
+    }
+
+    void OnSignalBlobDragBegin(Blob blob) {
+        var blobActives = blobSpawner.blobActives;
+        for(int i = 0; i < blobActives.Count; i++) {
+            var blobActive = blobActives[i];
+            if(blobActive == blob)
+                continue;
+
+            if(numberCriteriaUnlocked || CheckBlobConnectCriteria(blob, blobActive)) {
+                blobActive.highlightLock = true;
+            }
+            else {
+                blobActive.inputLocked = true;
+            }
+        }
+    }
+
+    void OnSignalBlobDragEnd(Blob blob) {
+        var blobActives = blobSpawner.blobActives;
+        for(int i = 0; i < blobActives.Count; i++) {
+            var blobActive = blobActives[i];
+            if(blobActive == blob)
+                continue;
+
+            if(numberCriteriaUnlocked || CheckBlobConnectCriteria(blob, blobActive)) {
+                blobActive.highlightLock = false;
+            }
+            else {
+                blobActive.inputLocked = false;
+            }
+        }
     }
 
     IEnumerator DoRounds() {
@@ -222,6 +264,9 @@ public class PlayController : GameModeController<PlayController> {
 
         bool isComplete = false;
         while(!isComplete) {
+            while(blobSpawner.isSpawning)
+                yield return null;
+
             //check if we have enough on the board
             while(blobSpawner.blobActives.Count + blobSpawner.spawnQueueCount < maxBlobCount) {
                 var numGrp = numberGroups[curGroupNumberIndex];
@@ -260,6 +305,15 @@ public class PlayController : GameModeController<PlayController> {
         }
 
         mSpawnRout = null;
+    }
+
+    void OnGroupAdded(BlobConnectController.Group grp) {
+        if(grp.isOpFilled) {
+            Debug.Log("Launch attack: " + grp.blobOpLeft.number + " x " + grp.blobOpRight.number);
+        }
+        else {
+            Debug.Log("Can't attack yet!");
+        }
     }
 
     void OnGroupEval(BlobConnectController.Group grp) {
@@ -324,5 +378,19 @@ public class PlayController : GameModeController<PlayController> {
         connectControl.ClearGroup(grp);
 
         groupEvalCallback?.Invoke(new Operation { operand1=(int)op1, operand2= (int)op2, op=op }, (int)eq, isCorrect);
+    }
+
+    private bool CheckBlobConnectCriteria(Blob blobSource, Blob blobTarget) {
+        var blobSrcVal = blobSource.number;
+        var blobTgtVal = blobTarget.number;
+
+        if(blobSrcVal > 9) {
+            //can only connect to single digit values
+            return blobTgtVal < 10;
+        }
+        else {
+            //can only connect to two or more digit values
+            return blobTgtVal > 9;
+        }
     }
 }
