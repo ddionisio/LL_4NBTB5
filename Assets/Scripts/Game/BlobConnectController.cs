@@ -33,6 +33,18 @@ public class BlobConnectController : MonoBehaviour {
             }
         }
 
+        public bool isOpLeftGreaterThanRight {
+            get {
+                if(!blobOpLeft)
+                    return false;
+
+                if(!blobOpRight)
+                    return true;
+
+                return blobOpLeft.number > blobOpRight.number;
+            }
+        }
+
         public void GetBlobOrder(out Blob blobOpLeft, out Blob blobOpRight, out Blob blobEqual) {
             blobEqual = blobEq;
             blobOpRight = connectEq.GetLinkedBlob(blobEqual);
@@ -242,6 +254,25 @@ public class BlobConnectController : MonoBehaviour {
         return null;
     }
 
+    public void SetGroupEqual(Group group, bool isConnectLeft, Blob blob) {
+        //create a connect
+        mConnectSpawnParms.Clear();
+        //params?
+
+        var connect = mPool.Spawn<BlobConnect>(connectTemplate.name, "", null, mConnectSpawnParms);
+
+        var blobSource = isConnectLeft ? group.blobOpLeft : group.blobOpRight;
+
+        connect.op = OperatorType.Equal;
+        connect.ApplyLink(blobSource, blob);
+
+        group.SetEq(blob, connect);
+    }
+
+    public void GroupEvaluate(Group group) {
+        evaluateCallback?.Invoke(group);
+    }
+
     void OnDestroy() {
         signalListenBlobDragBegin.callback -= OnBlobDragBegin;
         signalListenBlobDragEnd.callback -= OnBlobDragEnd;
@@ -430,8 +461,14 @@ public class BlobConnectController : MonoBehaviour {
                             RemoveBlobFromGroup(endGroup, endBlob);
 
                             var newGrp = NewGroup();
-                            newGrp.SetOp(blob, endBlob, mCurConnectDragging);
-                            groupAddedCallback?.Invoke(newGrp);
+                            if(newGrp != null) {
+                                newGrp.SetOp(blob, endBlob, mCurConnectDragging);
+                                groupAddedCallback?.Invoke(newGrp);
+                            }
+                            else { //can't create a new group
+                                mCurConnectDragging.Release();
+                                mCurConnectDragging = null;
+                            }
                         }
                     }
                 }
@@ -447,13 +484,21 @@ public class BlobConnectController : MonoBehaviour {
                 else {
                     //create new group
                     var newGrp = NewGroup();
-                    newGrp.SetOp(blob, endBlob, mCurConnectDragging);
-                    groupAddedCallback?.Invoke(newGrp);
+                    if(newGrp != null) {
+                        newGrp.SetOp(blob, endBlob, mCurConnectDragging);
+                        groupAddedCallback?.Invoke(newGrp);
+                    }
+                    else { //can't create a new group
+                        mCurConnectDragging.Release();
+                        mCurConnectDragging = null;
+                    }
                 }
 
                 //setup link
-                mCurConnectDragging.op = toOp;
-                mCurConnectDragging.ApplyLink(blob, endBlob);
+                if(mCurConnectDragging) {
+                    mCurConnectDragging.op = toOp;
+                    mCurConnectDragging.ApplyLink(blob, endBlob);
+                }
             }
             else //cancel
                 mCurConnectDragging.Release();

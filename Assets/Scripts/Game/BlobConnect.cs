@@ -42,7 +42,8 @@ public class BlobConnect : MonoBehaviour, M8.IPoolSpawn, M8.IPoolDespawn, IPoint
     public Rigidbody2D body;
     public Collider2D coll;
     public float springDampingRatio = 0f;
-    public float springDistance = 2.5f;
+    public float springRefPointScale = 2f;
+    public float springDistanceOfs = 1f;
     public float springFrequency = 1f;
 
     [Header("Drag")]
@@ -225,7 +226,7 @@ public class BlobConnect : MonoBehaviour, M8.IPoolSpawn, M8.IPoolDespawn, IPoint
         joint.dampingRatio = springDampingRatio;
         joint.frequency = springFrequency;
         joint.autoConfigureDistance = false;
-        joint.distance = springDistance;
+        joint.distance = (refPt.Radius * springRefPointScale) + springDistanceOfs;
         joint.connectedBody = refPt.Body2D;
         joint.autoConfigureConnectedAnchor = false;
         joint.connectedAnchor = refPt.transform.worldToLocalMatrix.MultiplyPoint3x4(refPtPos);

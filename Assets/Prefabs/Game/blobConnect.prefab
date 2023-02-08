@@ -862,7 +862,8 @@ MonoBehaviour:
   body: {fileID: 1688722151603163009}
   coll: {fileID: 691892998175430359}
   springDampingRatio: 0.3
-  springDistance: 2
+  springRefPointScale: 2
+  springDistanceOfs: 1
   springFrequency: 2
   dragLayerMask:
     serializedVersion: 2

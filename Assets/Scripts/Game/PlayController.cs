@@ -25,7 +25,7 @@ public class PlayController : GameModeController<PlayController> {
             }
         }
 
-        public bool isFinish { get { return mCurNumIndex == numbers.Length; } }
+        public bool isFinish { get { return mCurNumIndex >= numbers.Length; } }
 
         private int mCurNumIndex;
 
@@ -34,19 +34,25 @@ public class PlayController : GameModeController<PlayController> {
 
             templateIndex = blobSpawner.GetTemplateIndex(blobData);
 
+            blobSpawner.InitBlobTemplate(templateIndex);
+
             mCurNumIndex = 0;
         }
     }
+
+    public const string blobAttackName = "attackBlob";
 
     [Header("Settings")]
     public int levelIndex;
     public string modalVictory = "victory";    
     public M8.SceneAssetPath nextScene; //after victory
 
-    [Header("Numbers")]
+    [Header("Numbers")]    
     public NumberGroup[] numberGroups;
     public NumberGroup numberBonusGroup; //set numbers to none to disable bonus
+    public BlobTemplateData blobAttackTemplate; //used for spawning an attack blob
     public bool numberCriteriaUnlocked; //if true, no blob connect restriction is made
+    public int blobSpawnCount = 4;
 
     [Header("Controls")]
     public BlobConnectController connectControl;
@@ -86,12 +92,14 @@ public class PlayController : GameModeController<PlayController> {
 
     public float curPlayTime { get { return Time.time - mPlayLastTime; } }
 
-    public bool isBonusEnabled { get { return numberBonusGroup.blobData == null || numberBonusGroup.numbers.Length == 0; } }
+    public bool isBonusEnabled { get { return numberBonusGroup.blobData != null && numberBonusGroup.numbers.Length > 0; } }
 
     //callbacks
     public event System.Action roundBeginCallback;
     public event System.Action roundEndCallback;
     public event System.Action<Operation, int, bool> groupEvalCallback; //params: equation, answer, isCorrect
+
+    private int mBlobAttackTemplateInd;
 
     private int mRoundCount;
 
@@ -102,6 +110,7 @@ public class PlayController : GameModeController<PlayController> {
     private M8.SpriteColorFromPalette[] mSpriteColorFromPalettes;
 
     private Coroutine mSpawnRout;
+    private Coroutine mAttackRout;
 
     protected override void OnInstanceDeinit() {
         if(connectControl) {
@@ -118,6 +127,11 @@ public class PlayController : GameModeController<PlayController> {
             mSpawnRout = null;
         }
 
+        if(mAttackRout != null) {
+            StopCoroutine(mAttackRout);
+            mAttackRout = null;
+        }
+
         base.OnInstanceDeinit();
     }
 
@@ -130,12 +144,14 @@ public class PlayController : GameModeController<PlayController> {
         for(int i = 0; i < numberGroups.Length; i++) {
             var grp = numberGroups[i];
 
-            blobSpawner.InitBlobTemplate(grp.blobData);
-
             grp.Init(blobSpawner);
 
             numberCount += grp.numbers.Length;
         }
+
+        mBlobAttackTemplateInd = blobSpawner.GetTemplateIndex(blobAttackTemplate);
+        if(mBlobAttackTemplateInd != -1)
+            blobSpawner.InitBlobTemplate(mBlobAttackTemplateInd);
 
         mRoundCount = Mathf.FloorToInt(numberCount / 2.0f);
 
@@ -258,8 +274,6 @@ public class PlayController : GameModeController<PlayController> {
     }
 
     IEnumerator DoBlobSpawn() {
-        var maxBlobCount = GameData.instance.blobSpawnCount;
-
         int curGroupNumberIndex = 0;
 
         bool isComplete = false;
@@ -268,7 +282,7 @@ public class PlayController : GameModeController<PlayController> {
                 yield return null;
 
             //check if we have enough on the board
-            while(blobSpawner.blobActives.Count + blobSpawner.spawnQueueCount < maxBlobCount) {
+            while(blobSpawner.blobActives.Count + blobSpawner.spawnQueueCount < blobSpawnCount) {
                 var numGrp = numberGroups[curGroupNumberIndex];
                 if(!numGrp.isFinish) {
                     var newNumber = numGrp.number;
@@ -307,13 +321,47 @@ public class PlayController : GameModeController<PlayController> {
         mSpawnRout = null;
     }
 
+    IEnumerator DoAttack(BlobConnectController.Group grp) {
+        yield return null;
+
+        mAttackRout = null;
+    }
+
+    IEnumerator DoAttackAutoGenerateAttackDebug(BlobConnectController.Group grp) {
+        //generate attack blob
+        blobSpawner.Spawn(blobAttackName, mBlobAttackTemplateInd, grp.blobOpLeft.number * grp.blobOpRight.number);
+
+        while(blobSpawner.isSpawning)
+            yield return null;
+
+        yield return new WaitForSeconds(1f);
+
+        var attackBlob = blobSpawner.GetBlobActiveByName(blobAttackName);
+
+        //connect
+        connectControl.SetGroupEqual(grp, !grp.isOpLeftGreaterThanRight, attackBlob);
+
+        yield return new WaitForSeconds(1f);
+
+        //evaluate
+        connectControl.GroupEvaluate(grp);
+
+        mAttackRout = null;
+    }
+
     void OnGroupAdded(BlobConnectController.Group grp) {
         if(grp.isOpFilled) {
-            Debug.Log("Launch attack: " + grp.blobOpLeft.number + " x " + grp.blobOpRight.number);
+            //Debug.Log("Launch attack: " + grp.blobOpLeft.number + " x " + grp.blobOpRight.number);
+            if(mAttackRout == null) {
+                if(!GameData.instance.debugAutoGenerateAttackBlob)
+                    mAttackRout = StartCoroutine(DoAttack(grp));
+                else
+                    mAttackRout = StartCoroutine(DoAttackAutoGenerateAttackDebug(grp));
+            }
         }
-        else {
-            Debug.Log("Can't attack yet!");
-        }
+        //else {
+            //Debug.Log("Can't attack yet!");
+        //}
     }
 
     void OnGroupEval(BlobConnectController.Group grp) {

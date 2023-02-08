@@ -36,3 +36,4 @@ MonoBehaviour:
   timeParPerRoundRanking: 12
   timeBonus: 25
   maxRetryCount: 2
+  debugAutoGenerateAttackBlob: 1

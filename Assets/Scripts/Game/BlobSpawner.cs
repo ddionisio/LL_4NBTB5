@@ -39,6 +39,7 @@ public class BlobSpawner : MonoBehaviour {
     }
 
     public struct SpawnInfo {
+        public string nameOverride; //ignored if null or empty
         public int templateIndex;
         public int number;
     }
@@ -72,16 +73,20 @@ public class BlobSpawner : MonoBehaviour {
 
     private System.Text.StringBuilder mBlobNameCache = new System.Text.StringBuilder();
 
-    public void InitBlobTemplate(BlobTemplateData blobTemplateData) {
-        if(!mPool)
-            mPool = M8.PoolController.CreatePool(poolGroup);
-
-        //setup template (pool init, spawn points)
+    public void InitBlobTemplate(BlobTemplateData blobTemplateData) {        
         int templateInd = GetTemplateIndex(blobTemplateData);
         if(templateInd == -1) {
             Debug.LogError("Template Not Found: " + blobTemplateData.name);
             return;
         }
+
+        InitBlobTemplate(templateInd);
+    }
+
+    public void InitBlobTemplate(int templateInd) {
+        //setup template (pool init, spawn points)
+        if(!mPool)
+            mPool = M8.PoolController.CreatePool(poolGroup);
 
         var grp = templateGroups[templateInd];
 
@@ -121,6 +126,22 @@ public class BlobSpawner : MonoBehaviour {
         }
 
         return count;
+    }
+
+    public Blob GetBlobActiveByName(string blobName) {
+        if(mBlobActives == null)
+            return null;
+
+        for(int i = 0; i < mBlobActives.Count; i++) {
+            var blob = mBlobActives[i];
+            if(!blob)
+                continue;
+
+            if(blob.name == blobName)
+                return blob;
+        }
+
+        return null;
     }
 
     public void DespawnAllBlobs() {
@@ -174,13 +195,36 @@ public class BlobSpawner : MonoBehaviour {
         Spawn(templateIndex, number);
     }
 
-    public void Spawn(int templateIndex, int number) {        
+    public void Spawn(string nameOverride, BlobTemplateData blobData, int number) {
+        //grab template index
+        int templateIndex = GetTemplateIndex(blobData);
+
+        if(templateIndex == -1) {
+            Debug.LogWarning("No template for: " + blobData.name);
+            return;
+        }
+
+        Spawn(nameOverride, templateIndex, number);
+    }
+
+    public void Spawn(int templateIndex, int number) {
         if(templateIndex < 0 || templateIndex >= templateGroups.Length) {
             Debug.LogWarning("Invalid template index: " + templateIndex);
             return;
         }
 
         mSpawnQueue.Enqueue(new SpawnInfo { templateIndex = templateIndex, number = number });
+        if(mSpawnRout == null)
+            mSpawnRout = StartCoroutine(DoSpawnQueue());
+    }
+
+    public void Spawn(string nameOverride, int templateIndex, int number) {
+        if(templateIndex < 0 || templateIndex >= templateGroups.Length) {
+            Debug.LogWarning("Invalid template index: " + templateIndex);
+            return;
+        }
+
+        mSpawnQueue.Enqueue(new SpawnInfo { nameOverride = nameOverride, templateIndex = templateIndex, number = number });
         if(mSpawnRout == null)
             mSpawnRout = StartCoroutine(DoSpawnQueue());
     }
@@ -235,12 +279,20 @@ public class BlobSpawner : MonoBehaviour {
 
             var template = templateGrp.blobData.template;
 
-            mBlobNameCache.Clear();
-            mBlobNameCache.Append(template.name);
-            mBlobNameCache.Append(' ');
-            mBlobNameCache.Append(spawnInfo.number);
+            string blobName;
 
-            var blob = mPool.Spawn<Blob>(template.name, mBlobNameCache.ToString(), null, mSpawnParms);
+            if(string.IsNullOrEmpty(spawnInfo.nameOverride)) {
+                mBlobNameCache.Clear();
+                mBlobNameCache.Append(template.name);
+                mBlobNameCache.Append(' ');
+                mBlobNameCache.Append(spawnInfo.number);
+
+                blobName = mBlobNameCache.ToString();
+            }
+            else
+                blobName = spawnInfo.nameOverride;
+
+            var blob = mPool.Spawn<Blob>(template.name, blobName, null, mSpawnParms);
 
             blob.poolData.despawnCallback += OnBlobRelease;
 

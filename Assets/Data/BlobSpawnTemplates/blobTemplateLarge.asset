@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   templates:
   - {fileID: 7123958330251997798, guid: c45fea43e8d9c7940b3fbda80fdf4b2c, type: 3}
-  spawnPointCheckRadius: 2.5
+  spawnPointCheckRadius: 2

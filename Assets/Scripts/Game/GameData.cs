@@ -21,7 +21,6 @@ public class GameData : M8.SingletonScriptableObject<GameData> {
     [Header("Play Settings")]
     public float hintDelay = 15f;
     public int hintErrorCount = 5;
-    public int blobSpawnCount = 5;
     public int correctPoints = 100;
     public int correctDecayPoints = 25; //if hint was shown
     public int perfectPoints = 1000;
@@ -30,6 +29,9 @@ public class GameData : M8.SingletonScriptableObject<GameData> {
     public int timeBonus = 50; //per second based on (timePar - time)
 
     public int maxRetryCount = 2;
+
+    [Header("Debug")]
+    public bool debugAutoGenerateAttackBlob;
 
     public int retryCounter { get; set; }
 
