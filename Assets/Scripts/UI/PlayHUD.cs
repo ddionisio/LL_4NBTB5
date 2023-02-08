@@ -382,6 +382,8 @@ public class PlayHUD : MonoBehaviour {
 
                 //check answer blob
                 if(grp.blobEq) {
+                    isEqActive = true;
+
                     if(equationAnsAnim) equationAnsAnim.Stop();
 
                     if(equationAnsText) equationAnsText.text = grp.blobEq.number.ToString();
@@ -553,7 +555,7 @@ public class PlayHUD : MonoBehaviour {
     private void ApplyCurrentComboCountDisplay() {
         mCurComboCountDisplay = PlayController.instance.comboCount;
 
-        if(comboCountText) comboCountText.text = string.Format(comboCountFormat, mCurComboCountDisplay + 1);
+        if(comboCountText) comboCountText.text = string.Format(comboCountFormat, mCurComboCountDisplay);
     }
 
     private void SetEquationUpdateActive(bool isActive) {

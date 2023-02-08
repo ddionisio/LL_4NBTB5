@@ -165,6 +165,8 @@ public class PlayController : GameModeController<PlayController> {
         for(int i = roundsDisplayCount; i < roundsRoot.childCount; i++) //deactivate the rest
             roundsRoot.GetChild(i).gameObject.SetActive(false);
 
+        comboCount = 1;
+
         connectControl.groupAddedCallback += OnGroupAdded;
         connectControl.evaluateCallback += OnGroupEval;
 
@@ -328,6 +330,10 @@ public class PlayController : GameModeController<PlayController> {
     }
 
     IEnumerator DoAttackAutoGenerateAttackDebug(BlobConnectController.Group grp) {
+        //yield return new WaitForSeconds(1f);
+        //connectControl.GroupError(grp);
+        //yield return null;
+
         //generate attack blob
         blobSpawner.Spawn(blobAttackName, mBlobAttackTemplateInd, grp.blobOpLeft.number * grp.blobOpRight.number);
 
@@ -398,10 +404,10 @@ public class PlayController : GameModeController<PlayController> {
             connectOp.state = BlobConnect.State.Correct;
             connectEq.state = BlobConnect.State.Correct;
 
-            comboCount++;
-
             //add score
             curScore += GameData.instance.correctPoints * comboCount;
+
+            comboCount++;
 
             //go to next round
             mIsAnswerCorrectWait = false;
@@ -417,7 +423,7 @@ public class PlayController : GameModeController<PlayController> {
             connectEq.state = BlobConnect.State.Error;
 
             //decrement combo count
-            if(comboCount > 0)
+            if(comboCount > 1)
                 comboCount--;
 
             mistakeCount++;

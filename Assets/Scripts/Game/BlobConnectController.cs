@@ -273,6 +273,22 @@ public class BlobConnectController : MonoBehaviour {
         evaluateCallback?.Invoke(group);
     }
 
+    public void GroupError(Group group) {
+        if(group.blobOpLeft)
+            group.blobOpLeft.state = Blob.State.Error;
+        if(group.blobOpRight)
+            group.blobOpRight.state = Blob.State.Error;
+        if(group.blobEq)
+            group.blobEq.state = Blob.State.Error;
+
+        if(group.connectOp)
+            group.connectOp.state = BlobConnect.State.Error;
+        if(group.connectEq)
+            group.connectEq.state = BlobConnect.State.Error;
+
+        ClearGroup(group);
+    }
+
     void OnDestroy() {
         signalListenBlobDragBegin.callback -= OnBlobDragBegin;
         signalListenBlobDragEnd.callback -= OnBlobDragEnd;

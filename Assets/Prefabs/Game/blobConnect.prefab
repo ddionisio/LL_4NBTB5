@@ -1576,28 +1576,28 @@ MonoBehaviour:
       foldout: 1
       _targetPath: 
       axis: -1
-      _obj: {fileID: 0}
+      _obj: {fileID: 6687580285320746946}
     - _version: 3
       id: 2
       name: Track1
       foldout: 1
       _targetPath: 
       axis: -1
-      _obj: {fileID: 0}
+      _obj: {fileID: 6687580285320746946}
     - _version: 3
       id: 2
       name: Track1
       foldout: 1
       _targetPath: 
       axis: -1
-      _obj: {fileID: 0}
+      _obj: {fileID: 6623617147146579073}
     - _version: 3
       id: 2
       name: Track1
       foldout: 1
       _targetPath: 
       axis: -1
-      _obj: {fileID: 0}
+      _obj: {fileID: 6623617147146579073}
     _scaleKeys:
     - interp: 1
       frame: 1
