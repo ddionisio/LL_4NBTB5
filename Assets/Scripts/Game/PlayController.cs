@@ -334,6 +334,20 @@ public class PlayController : GameModeController<PlayController> {
         //connectControl.GroupError(grp);
         //yield return null;
 
+        int factorLeft, factorRight;
+
+        if(grp.blobOpLeft.number > grp.blobOpRight.number) {
+            factorLeft = grp.blobOpLeft.number;
+            factorRight = grp.blobOpRight.number;
+        }
+        else {
+            factorLeft = grp.blobOpRight.number;
+            factorRight = grp.blobOpLeft.number;
+        }
+
+        //var areaOp = new AreaOperation();
+        //areaOp.Init(factorLeft, factorRight);
+
         //generate attack blob
         blobSpawner.Spawn(blobAttackName, mBlobAttackTemplateInd, grp.blobOpLeft.number * grp.blobOpRight.number);
 

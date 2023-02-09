@@ -19,6 +19,9 @@ public class GameData : M8.SingletonScriptableObject<GameData> {
     public int rankIndexRetry; //threshold for retry    
 
     [Header("Play Settings")]
+    public int attackTryCount = 3;
+    public int areaRowCapacity = 2;
+    public int areaColCapacity = 4;
     public float hintDelay = 15f;
     public int hintErrorCount = 5;
     public int correctPoints = 100;
