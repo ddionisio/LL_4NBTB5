@@ -3,8 +3,24 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public struct Operation
-{
+public struct Operation {
+    public static char GetOperatorTypeChar(OperatorType op) {
+        switch(op) {
+            case OperatorType.Add:
+                return '+';
+            case OperatorType.Subtract:
+                return '-';
+            case OperatorType.Multiply:
+                return 'x';
+            case OperatorType.Divide:
+                return '÷';
+            case OperatorType.Equal:
+                return '=';
+            default:
+                return ' ';
+        }
+    }
+
     public int operand1;
     public OperatorType op;
     public int operand2;

@@ -2,17 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ModalAttackDistributive : MonoBehaviour
-{
-    // Start is called before the first frame update
-    void Start()
-    {
-        
+public class ModalAttackDistributive : M8.ModalController, M8.IModalPush, M8.IModalPop {
+
+    
+    void M8.IModalPush.Push(M8.GenericParams parms) {
+
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+    void M8.IModalPop.Pop() {
+
     }
 }
