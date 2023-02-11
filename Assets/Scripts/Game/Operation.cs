@@ -21,6 +21,23 @@ public struct Operation {
         }
     }
 
+    public static string GetOperatorTypeString(OperatorType op) {
+        switch(op) {
+            case OperatorType.Add:
+                return "+";
+            case OperatorType.Subtract:
+                return "-";
+            case OperatorType.Multiply:
+                return "x";
+            case OperatorType.Divide:
+                return "÷";
+            case OperatorType.Equal:
+                return "=";
+            default:
+                return "";
+        }
+    }
+
     public int operand1;
     public OperatorType op;
     public int operand2;
@@ -28,6 +45,10 @@ public struct Operation {
     public int equal {
         get {
             switch(op) {
+                case OperatorType.Add:
+                    return operand1 + operand2;
+                case OperatorType.Subtract:
+                    return operand1 - operand2;
                 case OperatorType.Multiply:
                     return operand1 * operand2;
                 case OperatorType.Divide:

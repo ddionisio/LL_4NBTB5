@@ -27,17 +27,7 @@ public class AreaOperationCellWidget : MonoBehaviour, IPointerClickHandler {
 
     public RectTransform rectTransform {
         get {
-            if(!mRectTrans)
-                mRectTrans = GetComponent<RectTransform>();
             return mRectTrans;
-        }
-    }
-
-    public Graphic graphicRoot {
-        get {
-            if(!mGraphicRoot)
-                mGraphicRoot = GetComponent<Graphic>();
-            return mGraphicRoot;
         }
     }
 
@@ -55,6 +45,11 @@ public class AreaOperationCellWidget : MonoBehaviour, IPointerClickHandler {
         RefreshDisplay();
     }
 
+    void Awake() {
+        mRectTrans = GetComponent<RectTransform>();
+        mGraphicRoot = GetComponent<Graphic>();
+    }
+
     void IPointerClickHandler.OnPointerClick(PointerEventData eventData) {
         signalInvokeClick?.Invoke(this);
     }
@@ -64,8 +59,8 @@ public class AreaOperationCellWidget : MonoBehaviour, IPointerClickHandler {
             if(_opLabel)
                 _opLabel.text = cellData.op.equal.ToString();
 
-            if(graphicRoot)
-                graphicRoot.raycastTarget = false;
+            if(mGraphicRoot)
+                mGraphicRoot.raycastTarget = false;
 
             if(_solvedRootGO)
                 _solvedRootGO.SetActive(true);
@@ -74,8 +69,8 @@ public class AreaOperationCellWidget : MonoBehaviour, IPointerClickHandler {
             if(_opLabel)
                 _opLabel.text = string.Format(_opFormat, cellData.op.operand1, Operation.GetOperatorTypeChar(cellData.op.op), cellData.op.operand2);
 
-            if(graphicRoot)
-                graphicRoot.raycastTarget = true;
+            if(mGraphicRoot)
+                mGraphicRoot.raycastTarget = true;
 
             if(_solvedRootGO)
                 _solvedRootGO.SetActive(false);

@@ -29,6 +29,6 @@ public class OpWidget : MonoBehaviour {
 
     private void RefreshDisplay() {
         if(_opLabel)
-            _opLabel.text = Operation.GetOperatorTypeChar(mOp).ToString();
+            _opLabel.text = Operation.GetOperatorTypeString(mOp);
     }
 }
