@@ -1,3 +1,6 @@
+//MODIFIED: remove references to Physics 3D
+//#define PHYSICS_3D_ENABLED
+
 //#define TOOLKIT2D_SUPPORT_ENABLED
 using UnityEngine;
 
@@ -43,15 +46,21 @@ public abstract class JellySprite : MonoBehaviour
 	public MassStyle m_MassStyle = MassStyle.PerBody;
 
 	// Physics materials for 2D/3D modes
+#if PHYSICS_3D_ENABLED
 	public PhysicMaterial m_PhysicsMaterial;
+#endif
 	public PhysicsMaterial2D m_PhysicsMaterial2D;
 
-    // Physics interpolation modes
+	// Physics interpolation modes
+#if PHYSICS_3D_ENABLED
     public RigidbodyInterpolation m_Interpolation = RigidbodyInterpolation.None;
+#endif
     public RigidbodyInterpolation2D m_Interpolation2D = RigidbodyInterpolation2D.None;
 
-    // Physics collision detection modes
+	// Physics collision detection modes
+#if PHYSICS_3D_ENABLED
     public CollisionDetectionMode m_CollisionDetectionMode = CollisionDetectionMode.Discrete;
+#endif
     public CollisionDetectionMode2D m_CollisionDetectionMode2D = CollisionDetectionMode2D.Discrete;
 
     // If enabled, the jelly sprite will not automatically position itself at the physics
@@ -81,8 +90,10 @@ public abstract class JellySprite : MonoBehaviour
 	// Gravity scale (in 2D mode)
 	public float m_GravityScale = 1.0f;
 
+#if PHYSICS_3D_ENABLED
     // Use Gravity (in 3D mode)
     public bool m_UseGravity = true;
+#endif
 
 	// Whether child bodies should collider with one another
 	public bool m_CollideConnected = false;
@@ -131,8 +142,10 @@ public abstract class JellySprite : MonoBehaviour
 	/// </summary>
 	public Vector2 m_SpriteScale = Vector2.one;
 
+#if PHYSICS_3D_ENABLED
 	// Whether to use 2D or 3D rigid bodies/colliders
 	public bool m_2DMode = false;
+#endif
 
 	// Controls whether bodies are attached to their neighboring bodies as well as to
 	// the central point
@@ -205,18 +218,26 @@ public abstract class JellySprite : MonoBehaviour
 		public Vector3 InitialOffset { get { return m_InitialOffset; } set { m_InitialOffset = value; } }
 
 		public Rigidbody2D Body2D { get { return m_RigidBody2D; } }
+#if PHYSICS_3D_ENABLED
 		public Rigidbody Body3D { get { return m_RigidBody3D; } }
+#endif
 
 		public CircleCollider2D Collider2D { get { return m_CircleCollider2D; } }
+#if PHYSICS_3D_ENABLED
 		public SphereCollider Collider { get { return m_SphereCollider; } }
+#endif
 
 		public bool IsDummy { get { return m_IsDummy; } }
 
 		Transform m_Transform;
 		Rigidbody2D m_RigidBody2D;
+#if PHYSICS_3D_ENABLED
 		Rigidbody m_RigidBody3D;
+#endif
 		CircleCollider2D m_CircleCollider2D;
+#if PHYSICS_3D_ENABLED
 		SphereCollider m_SphereCollider;
+#endif
 		Vector3 m_InitialOffset;
 		bool m_IsDummy = true;
 
@@ -237,7 +258,7 @@ public abstract class JellySprite : MonoBehaviour
                 m_IsDummy = true;
             }			
 		}
-
+#if PHYSICS_3D_ENABLED
 		/// <summary>
 		/// ReferencePoint 3D Constructor
 		/// </summary>
@@ -255,6 +276,7 @@ public abstract class JellySprite : MonoBehaviour
                 m_IsDummy = true;
             }			
 		}
+#endif
 
 		/// <summary>
 		/// Get the radius of the rigid body
@@ -267,10 +289,12 @@ public abstract class JellySprite : MonoBehaviour
 				{
 					return m_CircleCollider2D.radius;
 				}
+#if PHYSICS_3D_ENABLED
 				else if(m_SphereCollider != null)
 				{
 					return m_SphereCollider.radius;
 				}
+#endif
 				
 				return 0.0f;
 			} 
@@ -287,10 +311,12 @@ public abstract class JellySprite : MonoBehaviour
 				{
 					return m_RigidBody2D.gameObject;
 				}
+#if PHYSICS_3D_ENABLED
 				else if(m_RigidBody3D != null)
 				{
 					return m_RigidBody3D.gameObject;
 				}
+#endif
 				
 				return null;
 			}
@@ -310,13 +336,16 @@ public abstract class JellySprite : MonoBehaviour
 			{
 				m_RigidBody2D.isKinematic = kinematic;
 			}
+#if PHYSICS_3D_ENABLED
 			else if(m_RigidBody3D != null)
 			{
 				m_RigidBody3D.isKinematic = kinematic;
 			}
+#endif
 		}
 	}
 
+#if PHYSICS_3D_ENABLED
 	/// <summary>
 	/// Helper class for passing information about collisions
 	/// </summary>
@@ -325,6 +354,7 @@ public abstract class JellySprite : MonoBehaviour
 		public Collision Collision { get; set; }
 		public JellySpriteReferencePoint ReferencePoint { get; set; }
 	}
+#endif
 
 	/// <summary>
 	/// Helper class for passing information about 2D collisions
@@ -335,6 +365,7 @@ public abstract class JellySprite : MonoBehaviour
 		public JellySpriteReferencePoint ReferencePoint { get; set; }
 	}
 
+#if PHYSICS_3D_ENABLED
 	/// <summary>
 	/// Helper class for passing information about triggers
 	/// </summary>
@@ -343,6 +374,7 @@ public abstract class JellySprite : MonoBehaviour
 		public Collider Collider { get; set; }
 		public JellySpriteReferencePoint ReferencePoint { get; set; }
 	}
+#endif
 	
 	/// <summary>
 	/// Helper class for passing information about 2D collisions
@@ -891,8 +923,10 @@ public abstract class JellySprite : MonoBehaviour
 	{
 		if(m_CentralPoint != null)
 		{
+#if PHYSICS_3D_ENABLED
 			if(m_2DMode)
 			{
+#endif
 				Rigidbody2D centreRigidBody = m_CentralPoint.Body2D;
 				RigidbodyConstraints2D constraints = centreRigidBody.constraints;
 				
@@ -907,6 +941,7 @@ public abstract class JellySprite : MonoBehaviour
 				
 				centreRigidBody.constraints = constraints;
 				centreRigidBody.isKinematic = m_CentralBodyKinematic;
+#if PHYSICS_3D_ENABLED
 			}
 			else
 			{
@@ -927,6 +962,7 @@ public abstract class JellySprite : MonoBehaviour
 				centreRigidBody.constraints = constraints;
 				centreRigidBody.isKinematic = m_CentralBodyKinematic;
 			}
+#endif
 		}
 	}
 
@@ -950,8 +986,10 @@ public abstract class JellySprite : MonoBehaviour
 
 		ReferencePoint referencePoint = null;
 
+#if PHYSICS_3D_ENABLED
 		if(m_2DMode)
 		{
+#endif
 			CircleCollider2D circleCollider = referencePointObject.AddComponent<CircleCollider2D>();
 			circleCollider.radius = radius;
 			circleCollider.sharedMaterial = m_PhysicsMaterial2D;
@@ -966,6 +1004,7 @@ public abstract class JellySprite : MonoBehaviour
             newRigidBody.interpolation = m_Interpolation2D;
             newRigidBody.collisionDetectionMode = m_CollisionDetectionMode2D;
 			referencePoint = new ReferencePoint(newRigidBody);
+#if PHYSICS_3D_ENABLED
 		}
 		else
 		{
@@ -996,6 +1035,7 @@ public abstract class JellySprite : MonoBehaviour
 
 			referencePoint = new ReferencePoint(newRigidBody);
 		}
+#endif
 
 		m_ReferencePoints.Add(referencePoint);
 		return referencePoint;
@@ -1006,8 +1046,10 @@ public abstract class JellySprite : MonoBehaviour
 	/// </summary>
 	void AttachPoint(ReferencePoint point1, ReferencePoint point2)
 	{
+#if PHYSICS_3D_ENABLED
 		if(m_2DMode)
 		{
+#endif
 			SpringJoint2D joint = point1.Body2D.gameObject.AddComponent<SpringJoint2D>();
 			joint.connectedBody = point2.Body2D;
 			joint.connectedAnchor = point1.Body2D.transform.localPosition - point2.Body2D.transform.localPosition;
@@ -1022,6 +1064,7 @@ public abstract class JellySprite : MonoBehaviour
 			joint.frequency = m_Stiffness;
 			joint.dampingRatio = m_DampingRatio; 
             joint.autoConfigureDistance = false;
+#if PHYSICS_3D_ENABLED
 		}
 		else
 		{
@@ -1036,6 +1079,7 @@ public abstract class JellySprite : MonoBehaviour
 			joint.damper = m_DampingRatio;
             joint.autoConfigureConnectedAnchor = false;
 		}
+#endif
 	}
 
 	/// <summary>
@@ -1162,8 +1206,10 @@ public abstract class JellySprite : MonoBehaviour
 				{
 					if(!m_ReferencePoints[referencePointIndex].IsDummy && !m_ReferencePoints[comparisonPointIndex].IsDummy)
 					{
+#if PHYSICS_3D_ENABLED
 						if(m_2DMode)
 						{
+#endif
 							if(referencePointIndex != comparisonPointIndex)
 							{
 #if UNITY_4_3
@@ -1178,6 +1224,7 @@ public abstract class JellySprite : MonoBehaviour
 #endif
 							}
 
+#if PHYSICS_3D_ENABLED
 						}
 						else
 						{
@@ -1186,6 +1233,7 @@ public abstract class JellySprite : MonoBehaviour
 								Physics.IgnoreCollision(m_ReferencePoints[referencePointIndex].Collider, m_ReferencePoints[comparisonPointIndex].Collider);
 							}
 						}
+#endif
 					}
 				}
 			}
@@ -1432,12 +1480,14 @@ public abstract class JellySprite : MonoBehaviour
 					{						
 						referencePoint.Body2D.angularVelocity = 0.0f;					
 						referencePoint.Body2D.velocity = Vector2.zero;						
-					}					
+					}
+#if PHYSICS_3D_ENABLED
 					else if(referencePoint.Body3D)						
 					{						
 						referencePoint.Body3D.angularVelocity = Vector3.zero;
 						referencePoint.Body3D.velocity = Vector3.zero;
 					}
+#endif
 				}
 			}
 		}
@@ -1463,12 +1513,14 @@ public abstract class JellySprite : MonoBehaviour
 				{                        
 					referencePoint.Body2D.angularVelocity = 0.0f;                    
 					referencePoint.Body2D.velocity = Vector2.zero;                        
-				}                    
+				}
+#if PHYSICS_3D_ENABLED
 				else if(referencePoint.Body3D)                        
 				{                        
 					referencePoint.Body3D.angularVelocity = Vector3.zero;
 					referencePoint.Body3D.velocity = Vector3.zero;
 				}
+#endif
 			}
 		}
 		
@@ -1492,11 +1544,13 @@ public abstract class JellySprite : MonoBehaviour
 					if(referencePoint.Body2D)						
 					{						
 						referencePoint.Body2D.isKinematic = isKinematic;
-					}					
+					}
+#if PHYSICS_3D_ENABLED
 					else if(referencePoint.Body3D)						
 					{						
 						referencePoint.Body3D.isKinematic = isKinematic;
 					}
+#endif
 				}
 			}
 		}
@@ -1536,6 +1590,7 @@ public abstract class JellySprite : MonoBehaviour
 		{
 			if(!referencePoint.IsDummy)
 			{
+#if PHYSICS_3D_ENABLED
 				if(referencePoint.Collider)
 				{
 					SphereCollider sphereCollider = referencePoint.Collider;
@@ -1551,6 +1606,9 @@ public abstract class JellySprite : MonoBehaviour
 					}
 				}
 				else if(referencePoint.Collider2D)
+#else
+				if(referencePoint.Collider2D)
+#endif
 				{		
 					CircleCollider2D circleCollider = referencePoint.Collider2D;
 					Vector2 bodyPosition = referencePoint.transform.position;
@@ -1909,11 +1967,12 @@ public abstract class JellySprite : MonoBehaviour
 				{
 					referencePoint.Body2D.AddForce(force);
 				}
-				
+#if PHYSICS_3D_ENABLED
 				if(referencePoint.Body3D)
 				{
 					referencePoint.Body3D.AddForce(force);
 				}
+#endif
 			}
 		}
 	}
@@ -1931,11 +1990,12 @@ public abstract class JellySprite : MonoBehaviour
 				{
 					referencePoint.Body2D.AddForceAtPosition(force, position);
 				}
-				
+#if PHYSICS_3D_ENABLED
 				if(referencePoint.Body3D)
 				{
 					referencePoint.Body3D.AddForceAtPosition(force, position);
 				}
+#endif
 			}
 		}
 	}
@@ -2001,7 +2061,7 @@ public abstract class JellySprite : MonoBehaviour
                         referencePoint.Body2D.interpolation = m_Interpolation2D;
                         referencePoint.Body2D.collisionDetectionMode = m_CollisionDetectionMode2D;
 					}
-					
+#if PHYSICS_3D_ENABLED
 					if(referencePoint.Body3D)
 					{
 						referencePoint.Body3D.mass = mass;
@@ -2011,6 +2071,7 @@ public abstract class JellySprite : MonoBehaviour
                         referencePoint.Body3D.interpolation = m_Interpolation;
                         referencePoint.Body3D.collisionDetectionMode = m_CollisionDetectionMode;
 					}
+#endif
 				}
 			}
 		}
@@ -2040,7 +2101,7 @@ public abstract class JellySprite : MonoBehaviour
 							}
 						}
 					}
-					
+#if PHYSICS_3D_ENABLED
 					if(referencePoint.Body3D != null)
 					{
 						SpringJoint[] joints = referencePoint.Body3D.gameObject.GetComponents<SpringJoint>();
@@ -2054,6 +2115,7 @@ public abstract class JellySprite : MonoBehaviour
 							}
 						}
 					}
+#endif
 				}
 			}
 		}
@@ -2110,8 +2172,10 @@ public abstract class JellySprite : MonoBehaviour
                 refPoint.transform.position = refPointPositions[0] + ((refPointPositions[index] - refPointPositions[0]) * scaleRatio);
                 refPoint.InitialOffset *= scaleRatio;
 
+#if PHYSICS_3D_ENABLED
                 if (m_2DMode)
                 {
+#endif
                     SpringJoint2D[] springJoints = refPoint.GameObject.GetComponents<SpringJoint2D>();
 
                     for (int jointLoop = 0; jointLoop < springJoints.Length; jointLoop++)
@@ -2119,6 +2183,7 @@ public abstract class JellySprite : MonoBehaviour
                         springJoints[jointLoop].connectedAnchor = springJoints[jointLoop].connectedAnchor * scaleRatio;
                         springJoints[jointLoop].frequency *= scaleRatio;
                     }
+#if PHYSICS_3D_ENABLED
                 }
                 else
                 {
@@ -2129,6 +2194,7 @@ public abstract class JellySprite : MonoBehaviour
                         springJoints[jointLoop].connectedAnchor = springJoints[jointLoop].connectedAnchor * scaleRatio;
                     }
                 }
+#endif
             }
 
             index++;
@@ -2222,11 +2288,12 @@ public abstract class JellySprite : MonoBehaviour
 				{
 					referencePoint.Body2D.WakeUp();
 				}
-
+#if PHYSICS_3D_ENABLED
 				if(referencePoint.Body3D != null)
 				{
 					referencePoint.Body3D.WakeUp();
 				}
+#endif
 			}
 		}
 	}
@@ -2246,14 +2313,17 @@ public abstract class JellySprite : MonoBehaviour
 				{
 					if(!referencePoint.IsDummy)
 					{
+#if PHYSICS_3D_ENABLED
 						if(m_2DMode)
 						{
+#endif
 							SpringJoint2D[] springJoints = referencePoint.Body2D.GetComponents<SpringJoint2D>();
 							
 							for(int jointIndex = 0; jointIndex < springJoints.Length; jointIndex++)
 							{
 								Debug.DrawLine(springJoints[jointIndex].transform.position, springJoints[jointIndex].connectedBody.transform.position, Color.green);
 							}
+#if PHYSICS_3D_ENABLED
 						}
 						else
 						{
@@ -2264,12 +2334,13 @@ public abstract class JellySprite : MonoBehaviour
 								Debug.DrawLine(springJoints[jointIndex].transform.position, springJoints[jointIndex].connectedBody.transform.position, Color.green);
 							}
 						}
+#endif
 					}
 				}
 			}
 #endif
 
-            if(!m_ManualPositioning)
+			if(!m_ManualPositioning)
             {
                 Quaternion additionalBodyRotation = Quaternion.Euler(0, 0, m_SoftBodyRotation);
                 Vector3 rotatedPostion = additionalBodyRotation * new Vector3(-m_CentralBodyOffset.x * m_Transform.localScale.x, -m_CentralBodyOffset.y * m_Transform.localScale.y, 0);

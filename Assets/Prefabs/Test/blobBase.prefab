@@ -327,7 +327,6 @@ GameObject:
   - component: {fileID: 8983797535604395073}
   - component: {fileID: 8983797535604395072}
   - component: {fileID: 8983797535604395103}
-  - component: {fileID: 8983797535604395102}
   m_Layer: 7
   m_Name: blobBase
   m_TagString: Untagged
@@ -595,11 +594,8 @@ MonoBehaviour:
   m_FreeModeBodyRadii: []
   m_FreeModeBodyKinematic: 
   m_MassStyle: 0
-  m_PhysicsMaterial: {fileID: 0}
   m_PhysicsMaterial2D: {fileID: 6200000, guid: 432386610b2c74c4d9de04f6e5e2b3b7, type: 2}
-  m_Interpolation: 0
   m_Interpolation2D: 0
-  m_CollisionDetectionMode: 0
   m_CollisionDetectionMode2D: 0
   m_ManualPositioning: 0
   m_VertexDensity: 10
@@ -609,7 +605,6 @@ MonoBehaviour:
   m_Mass: 1
   m_LockRotation: 1
   m_GravityScale: 0
-  m_UseGravity: 1
   m_CollideConnected: 0
   m_CentralBodyKinematic: 0
   m_Drag: 0.15
@@ -623,7 +618,6 @@ MonoBehaviour:
   m_SoftBodyOffset: {x: -0, y: -0}
   m_CentralBodyOffset: {x: -0, y: -0}
   m_SpriteScale: {x: 1, y: 1}
-  m_2DMode: 1
   m_AttachNeighbors: 0
   m_FlipX: 0
   m_FlipY: 0
@@ -635,20 +629,6 @@ MonoBehaviour:
   m_ReferencePointParent: {fileID: 0}
   m_Sprite: {fileID: 21300000, guid: 4aa116c9273467440b33e6b07bdf6a62, type: 3}
   m_Material: {fileID: 0}
---- !u!114 &8983797535604395102
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8983797535604395101}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 336d234b9b75bce4294044501fad60de, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _sortingLayerName: Entity
-  _sortingOrder: 0
 --- !u!1 &8983797535900076933
 GameObject:
   m_ObjectHideFlags: 0

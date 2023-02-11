@@ -1,4 +1,7 @@
-﻿using UnityEngine;
+﻿//MODIFIED: remove references to Physics 3D
+//#define PHYSICS_3D_ENABLED
+
+using UnityEngine;
 using System.Collections;
 
 // Helper script to create a jelly sprite that hovers in mid-air and functions like
@@ -33,10 +36,12 @@ public class JellyBridge : MonoBehaviour
 					if(jellySprite.ReferencePoints[pointIndex].GameObject)
 					{
 						// Set kinematic (might be a 2D or 3D point, so check for both	
+#if PHYSICS_3D_ENABLED
 						if(jellySprite.ReferencePoints[pointIndex].Body3D)
 						{
 							jellySprite.ReferencePoints[pointIndex].Body3D.isKinematic = true;	
 						}
+#endif
 
 						if(jellySprite.ReferencePoints[pointIndex].Body2D)	
 						{
