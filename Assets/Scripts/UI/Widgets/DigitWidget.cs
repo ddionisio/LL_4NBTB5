@@ -10,11 +10,9 @@ public class DigitWidget : MonoBehaviour, IPointerClickHandler {
     [Header("Display")]
     GameObject _interactiveDisplayGO;
     [SerializeField]
-    float _nonInteractiveWidth;
+    Vector2 _nonInteractiveSizeDelta;
     [SerializeField]
     TMP_Text _numberLabel;
-
-    public event System.Action<int> clickCallback;
 
     public int index { get; private set; }
     public int number {
@@ -37,9 +35,7 @@ public class DigitWidget : MonoBehaviour, IPointerClickHandler {
             if(_interactiveDisplayGO)
                 _interactiveDisplayGO.SetActive(value);
 
-            var rectSize = rectTransform.sizeDelta;
-            rectSize.x = value ? mDefaultRectWidth : _nonInteractiveWidth;
-            rectTransform.sizeDelta = rectSize;
+            rectTransform.sizeDelta = value ? mDefaultSizeDelta : _nonInteractiveSizeDelta;
         }
     }
 
@@ -49,24 +45,34 @@ public class DigitWidget : MonoBehaviour, IPointerClickHandler {
         }
     }
 
+    public event System.Action<int> clickCallback;
+
     private RectTransform mRectTrans;
     private Graphic mGraphicRoot;
 
     private int mNumber;
-    private float mDefaultRectWidth;
+    private Vector2 mDefaultSizeDelta;
+    private bool mIsInit;
 
     public void Init(int aInd) {
         index = aInd;
+
+        if(!mIsInit) {
+            mRectTrans = GetComponent<RectTransform>();
+            mGraphicRoot = GetComponent<Graphic>();
+
+            if(mRectTrans)
+                mDefaultSizeDelta = mRectTrans.sizeDelta;
+            else
+                mDefaultSizeDelta = _nonInteractiveSizeDelta;
+
+            mIsInit = true;
+        }
     }
 
-    void Awake() {
-        mRectTrans = GetComponent<RectTransform>();
-        mGraphicRoot = GetComponent<Graphic>();
-
-        if(mRectTrans)
-            mDefaultRectWidth = mRectTrans.sizeDelta.x;
-        else
-            mDefaultRectWidth = _nonInteractiveWidth;
+    public void SetNumberEmpty() {
+        mNumber = 0;
+        if(_numberLabel) _numberLabel.text = "";
     }
 
     void OnDrawGizmos() {
@@ -77,12 +83,12 @@ public class DigitWidget : MonoBehaviour, IPointerClickHandler {
 
             var center = Vector3.Lerp(corners[0], corners[2], 0.5f);
 
-            var extX = _nonInteractiveWidth * 0.5f;
+            Vector3 ext = _nonInteractiveSizeDelta * 0.5f;
 
-            corners[0].x = center.x - extX;
-            corners[1].x = center.x - extX;
-            corners[2].x = center.x + extX;
-            corners[3].x = center.x + extX;
+            corners[0] = center - ext;
+            corners[1] = center - ext;
+            corners[2] = center + ext;
+            corners[3] = center + ext;
 
             var mtx = rTrans.localToWorldMatrix;
 

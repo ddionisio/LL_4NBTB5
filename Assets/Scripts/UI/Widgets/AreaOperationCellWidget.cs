@@ -33,10 +33,13 @@ public class AreaOperationCellWidget : MonoBehaviour, IPointerClickHandler {
 
     private RectTransform mRectTrans;
     private Graphic mGraphicRoot;
+    private bool mIsInit;
 
     public void SetCellIndex(int aRow, int aCol) {
         row = aRow;
         col = aCol;
+
+        Init();
     }
 
     public void ApplyCell(AreaOperation.Cell cell) {
@@ -45,13 +48,17 @@ public class AreaOperationCellWidget : MonoBehaviour, IPointerClickHandler {
         RefreshDisplay();
     }
 
-    void Awake() {
-        mRectTrans = GetComponent<RectTransform>();
-        mGraphicRoot = GetComponent<Graphic>();
-    }
-
     void IPointerClickHandler.OnPointerClick(PointerEventData eventData) {
         signalInvokeClick?.Invoke(this);
+    }
+
+    private void Init() {
+        if(!mIsInit) {
+            mRectTrans = GetComponent<RectTransform>();
+            mGraphicRoot = GetComponent<Graphic>();
+
+            mIsInit = true;
+        }
     }
 
     private void RefreshDisplay() {
