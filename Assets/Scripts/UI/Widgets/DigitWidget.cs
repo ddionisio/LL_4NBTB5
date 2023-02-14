@@ -7,10 +7,12 @@ using UnityEngine.EventSystems;
 using TMPro;
 
 public class DigitWidget : MonoBehaviour, IPointerClickHandler {
+    //NOTE: assume that interactive and number root have the same anchor config as the digit widget itself, so changing the size will work properly
     [Header("Display")]
-    GameObject _interactiveDisplayGO;
     [SerializeField]
-    Vector2 _nonInteractiveSizeDelta;
+    RectTransform _interactiveRoot;
+    [SerializeField]
+    RectTransform _numberRoot;
     [SerializeField]
     TMP_Text _numberLabel;
 
@@ -29,13 +31,21 @@ public class DigitWidget : MonoBehaviour, IPointerClickHandler {
     public bool interactable {
         get { return mGraphicRoot ? mGraphicRoot.raycastTarget : false; }
         set {
-            if(mGraphicRoot)
+            if(mGraphicRoot) {
                 mGraphicRoot.raycastTarget = value;
 
-            if(_interactiveDisplayGO)
-                _interactiveDisplayGO.SetActive(value);
+                if(mInteractiveGO)
+                    mInteractiveGO.SetActive(value);
 
-            rectTransform.sizeDelta = value ? mDefaultSizeDelta : _nonInteractiveSizeDelta;
+                if(value) {
+                    if(_interactiveRoot)
+                        rectTransform.sizeDelta = _interactiveRoot.sizeDelta;
+                }
+                else {
+                    if(_numberRoot)
+                        rectTransform.sizeDelta = _numberRoot.sizeDelta;
+                }
+            }
         }
     }
 
@@ -49,9 +59,9 @@ public class DigitWidget : MonoBehaviour, IPointerClickHandler {
 
     private RectTransform mRectTrans;
     private Graphic mGraphicRoot;
+    private GameObject mInteractiveGO;
 
     private int mNumber;
-    private Vector2 mDefaultSizeDelta;
     private bool mIsInit;
 
     public void Init(int aInd) {
@@ -61,45 +71,18 @@ public class DigitWidget : MonoBehaviour, IPointerClickHandler {
             mRectTrans = GetComponent<RectTransform>();
             mGraphicRoot = GetComponent<Graphic>();
 
-            if(mRectTrans)
-                mDefaultSizeDelta = mRectTrans.sizeDelta;
-            else
-                mDefaultSizeDelta = _nonInteractiveSizeDelta;
+            if(_interactiveRoot)
+                mInteractiveGO = _interactiveRoot.gameObject;
 
             mIsInit = true;
         }
+
+        interactable = false;
     }
 
     public void SetNumberEmpty() {
         mNumber = 0;
         if(_numberLabel) _numberLabel.text = "";
-    }
-
-    void OnDrawGizmos() {
-        var rTrans = GetComponent<RectTransform>();
-        if(rTrans) {
-            var corners = new Vector3[4];
-            rTrans.GetLocalCorners(corners);
-
-            var center = Vector3.Lerp(corners[0], corners[2], 0.5f);
-
-            Vector3 ext = _nonInteractiveSizeDelta * 0.5f;
-
-            corners[0] = center - ext;
-            corners[1] = center - ext;
-            corners[2] = center + ext;
-            corners[3] = center + ext;
-
-            var mtx = rTrans.localToWorldMatrix;
-
-            corners[0] = mtx.MultiplyPoint3x4(corners[0]);
-            corners[1] = mtx.MultiplyPoint3x4(corners[1]);
-            corners[2] = mtx.MultiplyPoint3x4(corners[2]);
-            corners[3] = mtx.MultiplyPoint3x4(corners[3]);
-
-            Gizmos.color = Color.yellow;
-            M8.Gizmo.DrawWireRect(corners);
-        }
     }
 
     void IPointerClickHandler.OnPointerClick(PointerEventData eventData) {
