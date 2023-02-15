@@ -24,8 +24,7 @@ public class AreaOperationCellWidget : MonoBehaviour, IPointerClickHandler {
     [Header("Data")]
     string _opFormat = "{0} {1} {2}";
 
-    [Header("Signal Invokes")]
-    public SignalAreaOperationCellWidget signalInvokeClick;
+    public event System.Action<AreaOperationCellWidget> clickCallback;
 
     public int row { get; private set; }
     public int col { get; private set; }
@@ -74,34 +73,7 @@ public class AreaOperationCellWidget : MonoBehaviour, IPointerClickHandler {
 
     private bool mIsInit;
 
-    public RectTransform GetAnchor(string anchorName) {
-        if(mAnchors == null)
-            return null;
-
-        RectTransform ret;
-        mAnchors.TryGetValue(anchorName, out ret);
-
-        return ret;
-    }
-
-    public void SetCellIndex(int aRow, int aCol) {
-        row = aRow;
-        col = aCol;
-
-        Init();
-    }
-
-    public void ApplyCell(AreaOperation.Cell cell) {
-        cellData = cell;
-
-        RefreshDisplay();
-    }
-
-    void IPointerClickHandler.OnPointerClick(PointerEventData eventData) {
-        signalInvokeClick?.Invoke(this);
-    }
-
-    private void Init() {
+    public void Init() {
         if(!mIsInit) {
             mRectTrans = GetComponent<RectTransform>();
             mGraphicRoot = GetComponent<Graphic>();
@@ -122,8 +94,33 @@ public class AreaOperationCellWidget : MonoBehaviour, IPointerClickHandler {
         }
     }
 
-    private void RefreshDisplay() {
-        if(cellData.isSolved) {
+    public RectTransform GetAnchor(string anchorName) {
+        if(mAnchors == null)
+            return null;
+
+        RectTransform ret;
+        mAnchors.TryGetValue(anchorName, out ret);
+
+        return ret;
+    }
+
+    public void SetCellIndex(int aRow, int aCol) {
+        row = aRow;
+        col = aCol;
+    }
+
+    public void ApplyCell(AreaOperation.Cell cell, bool ignoreSolved) {
+        cellData = cell;
+
+        RefreshDisplay(ignoreSolved);
+    }
+
+    void IPointerClickHandler.OnPointerClick(PointerEventData eventData) {
+        clickCallback?.Invoke(this);
+    }
+
+    private void RefreshDisplay(bool ignoreSolved) {
+        if(!ignoreSolved && cellData.isSolved) {
             if(_opLabel)
                 _opLabel.text = cellData.op.equal.ToString();
         }

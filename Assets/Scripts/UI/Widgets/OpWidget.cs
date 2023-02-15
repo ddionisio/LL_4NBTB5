@@ -20,7 +20,16 @@ public class OpWidget : MonoBehaviour {
         }
     }
 
+    public RectTransform rectTransform {
+        get {
+            if(!mRectTrans)
+                mRectTrans = GetComponent<RectTransform>();
+            return mRectTrans;
+        }
+    }
+
     private OperatorType mOp;
+    private RectTransform mRectTrans;
 
     void Awake() {
         mOp = _initialOperator;

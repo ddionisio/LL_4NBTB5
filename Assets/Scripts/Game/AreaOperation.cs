@@ -7,41 +7,39 @@ public class AreaOperation {
         public Operation op;
         public bool isSolved;
 
+        public bool isValid { get { return op.op != OperatorType.None; } }
+
+        public static Cell Invalid { get { return new Cell(new Operation { op = OperatorType.None }); } }
+
         public Cell(Operation val) {
             op = val;
             isSolved = false;
         }
     }
 
-    public Operation initialOperation { get; private set; }
+    public Operation operation { get; private set; }
 
-    public int areaRowCount {
-        get {
-            if(mAreaOperations == null)
-                return 0;
+    public int areaRowCount { get { return mAreaOperations.GetLength(0); } }
 
-            return mAreaOperations.Count;            
-        }
-    }
+    public int areaColCount { get { return mAreaOperations.GetLength(1); } }
 
-    public int areaColCount {
-        get {
-            if(mAreaOperations == null || mAreaOperations.Count == 0)
-                return 0;
-
-            return mAreaOperations[0].Count;
-        }
-    }
-
-    private List<List<Cell>> mAreaOperations; //[row, col]
+    private Cell[,] mAreaOperations; //[row, col]
 
     public void Init(int factorLeft, int factorRight) {
-        initialOperation = new Operation { operand1 = factorLeft, operand2 = factorRight, op = OperatorType.Multiply };
+        operation = new Operation { operand1 = factorLeft, operand2 = factorRight, op = OperatorType.Multiply };
 
-        mAreaOperations = new List<List<Cell>>(GameData.instance.areaRowCapacity);
-        mAreaOperations.Add(new List<Cell>(GameData.instance.areaColCapacity));
+        var factorLeftDigitCount = WholeNumber.DigitCount(factorLeft);
+        var factorRightDigitCount = WholeNumber.DigitCount(factorRight);
 
-        mAreaOperations[0].Add(new Cell(initialOperation));
+        mAreaOperations = new Cell[factorRightDigitCount, factorLeftDigitCount];
+
+        for(int r = 0; r < factorRightDigitCount - 1; r++) {
+            for(int c = 0; c < factorLeftDigitCount - 1; c++) {
+                mAreaOperations[r, c] = Cell.Invalid;
+            }
+        }
+
+        mAreaOperations[factorRightDigitCount - 1, factorLeftDigitCount - 1] = new Cell(operation);
     }
 
     /// <summary>
@@ -49,25 +47,21 @@ public class AreaOperation {
     /// </summary>
     public Cell GetAreaOperation(int row, int col) {
         if(row >= areaRowCount || col >= areaColCount)
-            return new Cell { op = new Operation { op = OperatorType.None }, isSolved = false };
+            return Cell.Invalid;
 
-        return mAreaOperations[row][col];
+        return mAreaOperations[row, col];
     }
 
     public void SetAreaOperationSolved(int row, int col, bool isSolved) {
-        if(row < areaRowCount && col < areaColCount) {
-            var areaOp = mAreaOperations[row][col];
-            areaOp.isSolved = isSolved;
-            mAreaOperations[row][col] = areaOp;
-        }
+        if(row < areaRowCount && col < areaColCount)
+            mAreaOperations[row, col].isSolved = isSolved;
     }
 
     public bool SplitAreaCol(int col, int digitCount) {
         if(areaRowCount == 0 || col >= areaColCount)
             return false;
 
-        var areaRow = mAreaOperations[0];
-        var areaOp = areaRow[col];
+        var areaOp = mAreaOperations[0, col];
 
         //grab modified number and new number
         int newNum, digitNum;
@@ -78,30 +72,18 @@ public class AreaOperation {
         if(digitNum == 0)
             return false;
 
-        //modify current col
-        for(int row = 0; row < mAreaOperations.Count; row++) {
-            areaRow = mAreaOperations[row];
+        //modify current col, and set new col
+        int insertCol = digitCount;
 
-            areaOp = areaRow[col];
+        for(int row = 0; row < areaRowCount; row++) {
+            areaOp = mAreaOperations[row, col];
             areaOp.op.operand1 = newNum;
 
-            areaRow[col] = areaOp;
-        }
+            mAreaOperations[row, col] = areaOp;
 
-        //find column to insert to
-        int colInsert;
-        for(colInsert = 0; colInsert < areaRow.Count; colInsert++) {
-            if(digitNum > areaRow[colInsert].op.operand1)
-                break;
-        }
+            int prevInsertNum = mAreaOperations[row, insertCol].op.operand1;
 
-        //add new col
-        for(int row = 0; row < mAreaOperations.Count; row++) {
-            areaRow = mAreaOperations[row];
-
-            areaOp = areaRow[col];
-
-            areaRow.Insert(colInsert, new Cell(new Operation { operand1 = digitNum, operand2 = areaOp.op.operand2, op = areaOp.op.op }));
+            mAreaOperations[row, insertCol] = new Cell(new Operation { operand1 = prevInsertNum + digitNum, operand2 = areaOp.op.operand2, op = areaOp.op.op });
         }
 
         return true;
@@ -111,8 +93,7 @@ public class AreaOperation {
         if(areaColCount == 0 || row >= areaRowCount)
             return false;
 
-        var areaRow = mAreaOperations[row];
-        var areaOp = areaRow[0];
+        var areaOp = mAreaOperations[row, 0];
 
         //grab modified number and new number
         int newNum, digitNum;
@@ -123,31 +104,19 @@ public class AreaOperation {
         if(digitNum == 0)
             return false;
 
-        //modify current row
-        for(int col = 0; col < areaRow.Count; col++) {
-            areaOp = areaRow[col];
+        //modify current row, and set new row
+        int insertRow = digitCount;
+
+        for(int col = 0; col < areaColCount; col++) {
+            areaOp = mAreaOperations[row, col];
             areaOp.op.operand2 = newNum;
 
-            areaRow[col] = areaOp;
+            mAreaOperations[row, col] = areaOp;
+
+            int prevInsertNum = mAreaOperations[insertRow, col].op.operand2;
+
+            mAreaOperations[insertRow, col] = new Cell(new Operation { operand1 = areaOp.op.operand1, operand2 = prevInsertNum + digitNum, op = areaOp.op.op });
         }
-
-        //find row to insert to
-        int rowInsert;
-        for(rowInsert = 0; rowInsert < mAreaOperations.Count; rowInsert++) {
-            if(digitNum > mAreaOperations[rowInsert][0].op.operand2)
-                break;
-        }
-
-        //add new row
-        var newAreaRow = new List<Cell>(GameData.instance.areaColCapacity);
-
-        for(int col = 0; col < areaRow.Count; col++) {
-            areaOp = areaRow[col];
-
-            newAreaRow.Add(new Cell(new Operation { operand1 = areaOp.op.operand1, operand2 = digitNum, op = areaOp.op.op }));
-        }
-
-        mAreaOperations.Insert(rowInsert, newAreaRow);
 
         return true;
     }
@@ -163,20 +132,16 @@ public class AreaOperation {
         if(colSrc >= colCount || colDest >= colCount)
             return false;
 
-        var areaSrcOp = mAreaOperations[0][colSrc];
-        var areaDestOp = mAreaOperations[0][colDest];
+        var areaSrcOp = mAreaOperations[0, colSrc];
+        var areaDestOp = mAreaOperations[0, colDest];
 
         var newDestNum = areaDestOp.op.operand1 + areaSrcOp.op.operand1;
 
-        //modify col dest, then delete source col
-        for(int row = 0; row < mAreaOperations.Count; row++) {
-            var areaRow = mAreaOperations[row];
+        //modify col dest, invalidate source col
+        for(int row = 0; row < areaRowCount; row++) {
+            mAreaOperations[row, colDest].op.operand1 = newDestNum;
 
-            var areaOp = areaRow[colDest];
-            areaOp.op.operand1 = newDestNum;
-            areaRow[colDest] = areaOp;
-
-            mAreaOperations[row].RemoveAt(colSrc);
+            mAreaOperations[row, colSrc] = Cell.Invalid;
         }
 
         return true;
@@ -193,21 +158,17 @@ public class AreaOperation {
         if(rowSrc >= rowCount || rowDest >= rowCount)
             return false;
 
-        var areaSrcOp = mAreaOperations[rowSrc][0];
-        var areaDestOp = mAreaOperations[rowDest][0];
+        var areaSrcOp = mAreaOperations[rowSrc, 0];
+        var areaDestOp = mAreaOperations[rowDest, 0];
 
         var newDestNum = areaDestOp.op.operand2 + areaSrcOp.op.operand2;
 
-        //modify row dest
-        var areaDestRow = mAreaOperations[rowDest];
-        for(int col = 0; col < areaDestRow.Count; col++) {
-            var areaOp = areaDestRow[col];
-            areaOp.op.operand2 = newDestNum;
-            areaDestRow[col] = areaOp;
-        }
+        //modify row dest, invalidate source row
+        for(int col = 0; col < areaColCount; col++) {
+            mAreaOperations[rowDest, col].op.operand2 = newDestNum;
 
-        //delete row src
-        mAreaOperations.RemoveAt(rowSrc);
+            mAreaOperations[rowSrc, col] = Cell.Invalid;
+        }
 
         return true;
     }

@@ -53,8 +53,8 @@ public class AreaGridControl : MonoBehaviour {
         }
     }
 
-    public int numRow { get { return mAreas != null ? mAreas.GetLength(0) : 0; } }
-    public int numCol { get { return mAreas != null ? mAreas.GetLength(1) : 0; } }
+    public int numRow { get { return _rowRatio.Length; } }
+    public int numCol { get { return _colRatio.Length; } }
 
     public bool isAnimating { get { return mAnimRout != null; } }
 
@@ -70,7 +70,7 @@ public class AreaGridControl : MonoBehaviour {
     private DG.Tweening.EaseFunction mAnimScaleUpFunc;
     private DG.Tweening.EaseFunction mAnimScaleDownFunc;
 
-    public void Init(bool onlyScaleLastCell) {
+    public void Init() {
         if(!mIsInit) {
             int numRow = _rowRatio != null ? _rowRatio.Length : 0,
                 numCol = _colRatio != null ? _colRatio.Length : 0;
@@ -88,38 +88,42 @@ public class AreaGridControl : MonoBehaviour {
 
             mIsInit = true;
         }
-
-        ResetAreas(onlyScaleLastCell);
     }
 
-    public void ResetAreas(bool onlyScaleLastCell) {
-        StopAnim();
+    public void RefreshAreas() {
+        var rTrans = rectTransform;
+        var rect = rTrans.rect;
 
-        for(int r = 0; r < numRow; r++) {
-            for(int c = 0; c < numCol; c++) {
-                Vector2 scale;
-                if(onlyScaleLastCell) {
-                    if(r == numRow - 1) {
-                        if(c == numCol - 1)
-                            scale = Vector2.one;
-                        else
-                            scale = new Vector2(0f, 1f);
-                    }
-                    else
-                        scale = Vector2.zero;
-                }
-                else
-                    scale = Vector2.one;
+        Vector2 lastSize = Vector2.zero;
 
-                mAreas[r, c].scale = scale;
+        int nRow = mAreas.GetLength(0), nCol = mAreas.GetLength(1);
+
+
+        for(int r = 0; r < nRow; r++) {
+            var curRowRatio = _rowRatio[r];
+
+            lastSize.x = 0.0f;
+
+            for(int c = 0; c < nCol; c++) {
+                var area = mAreas[r, c];
+
+                area.position = new Vector2 { x = -lastSize.x, y = lastSize.y };
+
+                //take into account the last cell, which will just be the leftover area size
+                area.size = new Vector2 {
+                    x = c == nCol - 1 ? rect.size.x - lastSize.x : rect.size.x * _colRatio[c] * area.scale.x,
+                    y = r == nRow - 1 ? rect.size.y - lastSize.y : rect.size.y * curRowRatio * area.scale.y
+                };
+
+                lastSize.x += area.size.x;
             }
-        }
 
-        RefreshAreas();
+            lastSize.y += mAreas[r, 0].size.y;
+        }
     }
 
     public void ApplyArea(int row, int col, RectTransform rTrans) {
-        if(row >= numRow || col >= numCol)
+        if(!mIsInit || row >= numRow || col >= numCol)
             return;
 
         rTrans.pivot = new Vector2 { x = 1f, y = 0f };
@@ -133,10 +137,19 @@ public class AreaGridControl : MonoBehaviour {
     }
 
     public Vector2 GetAreaScale(int row, int col) {
-        if(row >= numRow || col >= numCol)
+        if(!mIsInit || row >= numRow || col >= numCol)
             return Vector2.zero;
 
         return mAreas[row, col].scale;
+    }
+
+    public void SetAreaScale(int row, int col, Vector2 scale) {
+        if(!mIsInit || row >= numRow || col >= numCol)
+            return;
+
+        mAreas[row, col].scale = scale;
+
+        RefreshAreas();
     }
 
     public void ShowRow(int rowIndex) {
@@ -244,38 +257,6 @@ public class AreaGridControl : MonoBehaviour {
 
         if(mAnimQueue != null)
             mAnimQueue.Clear();
-    }
-
-    private void RefreshAreas() {
-        var rTrans = rectTransform;
-        var rect = rTrans.rect;
-
-        Vector2 lastSize = Vector2.zero;
-
-        int nRow = mAreas.GetLength(0), nCol = mAreas.GetLength(1);
-
-
-        for(int r = 0; r < nRow; r++) {
-            var curRowRatio = _rowRatio[r];
-
-            lastSize.x = 0.0f;
-
-            for(int c = 0; c < nCol; c++) {
-                var area = mAreas[r, c];
-
-                area.position = new Vector2 { x = -lastSize.x, y = lastSize.y };
-
-                //take into account the last cell, which will just be the leftover area size
-                area.size = new Vector2 {
-                    x = c == nCol - 1 ? rect.size.x - lastSize.x : rect.size.x * _colRatio[c] * area.scale.x,
-                    y = r == nRow - 1 ? rect.size.y - lastSize.y : rect.size.y * curRowRatio * area.scale.y
-                };
-
-                lastSize.x += area.size.x;
-            }
-
-            lastSize.y += mAreas[r, 0].size.y;
-        }
     }
 
     void OnDrawGizmos() {
