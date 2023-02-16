@@ -23,6 +23,15 @@ public class AreaOperation {
 
     public int areaColCount { get { return mAreaOperations.GetLength(1); } }
 
+    public Cell mainCell {
+        get {
+            if(areaRowCount == 0 || areaColCount == 0)
+                return Cell.Invalid;
+
+            return mAreaOperations[areaRowCount - 1, areaColCount - 1];
+        }
+    }
+
     private Cell[,] mAreaOperations; //[row, col]
 
     public void Init(int factorLeft, int factorRight) {

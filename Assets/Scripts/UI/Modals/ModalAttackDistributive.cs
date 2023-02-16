@@ -29,19 +29,25 @@ public class ModalAttackDistributive : M8.ModalController, M8.IModalPush, M8.IMo
     public string areaCellAnchorOpTop = "opTop";
     public string areaCellAnchorOpLeft = "opLeft";
 
-    [Header("Buttons")]
-    public Button proceedButton;
+    public AreaOperationCellWidget mainAreaCellWidget {
+        get {
+            if(mAreaOp == null)
+                return null;
+
+            return mAreaCellActives[mAreaOp.areaRowCount - 1, mAreaOp.areaColCount - 1];
+        }
+    }
 
     private AreaOperation mAreaOp;
     private int mMistakeCount;
 
     private int mAreaGridInd = -1;
 
-    private M8.CacheList<AreaOperationCellWidget> mAreaCellActives;
+    private AreaOperationCellWidget[,] mAreaCellActives; //[row, col], count is based on row and col count in mAreaOp
     private M8.CacheList<AreaOperationCellWidget> mAreaCellCache;
 
-    private List<DigitWidget> mDigitFixedHorizontalActives;
-    private List<DigitWidget> mDigitFixedVerticalActives;
+    private DigitWidget[] mDigitFixedHorizontalActives; //count is based on mAreaOp's col count
+    private DigitWidget[] mDigitFixedVerticalActives; //count is based on mAreaOp's row count
     private M8.CacheList<DigitWidget> mDigitFixedCache;
 
     private M8.CacheList<OpWidget> mOpActives;
@@ -63,7 +69,7 @@ public class ModalAttackDistributive : M8.ModalController, M8.IModalPush, M8.IMo
             //generate caches from templates
 
             //area cells
-            mAreaCellActives = new M8.CacheList<AreaOperationCellWidget>(areaCellCapacity);
+            mAreaCellActives = new AreaOperationCellWidget[areaCellCapacity, areaCellCapacity];
             mAreaCellCache = new M8.CacheList<AreaOperationCellWidget>(areaCellCapacity);
 
             for(int i = 0; i < areaCellCapacity; i++) {
@@ -77,8 +83,8 @@ public class ModalAttackDistributive : M8.ModalController, M8.IModalPush, M8.IMo
             }
 
             //digits
-            mDigitFixedHorizontalActives = new List<DigitWidget>(digitFixedCapacity);
-            mDigitFixedVerticalActives = new List<DigitWidget>(digitFixedCapacity);
+            mDigitFixedHorizontalActives = new DigitWidget[digitFixedCapacity];
+            mDigitFixedVerticalActives = new DigitWidget[digitFixedCapacity];
             mDigitFixedCache = new M8.CacheList<DigitWidget>(digitFixedCapacity);
 
             for(int i = 0; i < digitFixedCapacity; i++) {
@@ -104,12 +110,15 @@ public class ModalAttackDistributive : M8.ModalController, M8.IModalPush, M8.IMo
 
             //////////////////////////////////
             //setup digit groups
+            if(digitGroupTop) {
+                digitGroupTop.Init();
+                digitGroupTop.clickCallback += OnDigitGroupHorizontalClick;
+            }
 
-            digitGroupTop.Init();
-            digitGroupTop.clickCallback += OnDigitGroupHorizontalClick;
-
-            digitGroupLeft.Init();
-            digitGroupLeft.clickCallback += OnDigitGroupVerticalClick;
+            if(digitGroupLeft) {
+                digitGroupLeft.Init();
+                digitGroupLeft.clickCallback += OnDigitGroupVerticalClick;
+            }
 
             //////////////////////////////////
             //setup area grids
@@ -190,8 +199,58 @@ public class ModalAttackDistributive : M8.ModalController, M8.IModalPush, M8.IMo
                 }
 
                 //setup digit groups
+                var mainCell = mAreaOp.mainCell;
+                var mainCellWidget = mainAreaCellWidget;
+
+                if(mainCell.isValid && mainCellWidget) {
+                    //factor left
+                    if(digitGroupTop) {
+                        var anchorTrans = mainCellWidget.GetAnchor(areaCellAnchorTop);
+                        if(anchorTrans) {
+                            digitGroupTop.number = mainCell.op.operand1;
+                            RefreshDigitGroupInteractive(digitGroupTop);
+
+                            var rTrans = digitGroupTop.rectTransform;
+
+                            rTrans.SetParent(anchorTrans, false);
+                            rTrans.anchoredPosition = Vector2.zero;
+
+                            digitGroupTop.gameObject.SetActive(true);
+                        }
+                    }
+
+                    //factor right
+                    if(digitGroupLeft) {
+                        var anchorTrans = mainCellWidget.GetAnchor(areaCellAnchorLeft);
+                        if(anchorTrans) {
+                            digitGroupLeft.number = mainCell.op.operand2;
+                            RefreshDigitGroupInteractive(digitGroupLeft);
+
+                            var rTrans = digitGroupLeft.rectTransform;
+
+                            rTrans.SetParent(anchorTrans, false);
+                            rTrans.anchoredPosition = Vector2.zero;
+
+                            digitGroupLeft.gameObject.SetActive(true);
+                        }
+                    }
+                }
 
                 //insert digits
+
+                //top
+                for(int col = 0; col < mAreaOp.areaColCount - 1; col++) {
+                    var cell = mAreaOp.GetAreaOperation(0, col);
+                    if(cell.isValid)
+                        SetDigitFixedColumn(col, cell.op.operand1);
+                }
+
+                //left
+                for(int row = 0; row < mAreaOp.areaRowCount - 1; row++) {
+                    var cell = mAreaOp.GetAreaOperation(row, 0);
+                    if(cell.isValid)
+                        SetDigitFixedRow(row, cell.op.operand2);
+                }
             }
             else
                 Debug.LogError("Unable to find matching area grid: [row = " + mAreaOp.areaRowCount + ", col = " + mAreaOp.areaColCount + "]");
@@ -199,6 +258,16 @@ public class ModalAttackDistributive : M8.ModalController, M8.IModalPush, M8.IMo
     }
 
     void M8.IModalPop.Pop() {
+        if(digitGroupTop) {
+            digitGroupTop.transform.SetParent(transform, false);
+            digitGroupTop.gameObject.SetActive(false);
+        }
+
+        if(digitGroupLeft) {
+            digitGroupLeft.transform.SetParent(transform, false);
+            digitGroupLeft.gameObject.SetActive(false);
+        }
+
         ClearAreaCells();
         ClearDigits();
         ClearOps();
@@ -223,7 +292,20 @@ public class ModalAttackDistributive : M8.ModalController, M8.IModalPush, M8.IMo
 
     }
 
+    private void RefreshDigitGroupInteractive(DigitGroupWidget digitGroup) { //set interactivity based on number > 0, no interaction for last digit
+        int digitCount = digitGroup.digitCount;
+        if(digitCount > 0) {
+            digitGroup.SetDigitInteractive(digitCount - 1, false);
+
+            for(int i = digitCount - 2; i >= 0; i--)
+                digitGroup.SetDigitInteractive(i, digitGroup.GetDigitNumber(i) > 0);
+        }
+    }
+
     private AreaOperationCellWidget GenerateAreaCell(int row, int col) {
+        if(mAreaCellActives[row, col]) //fail-safe
+            return mAreaCellActives[row, col];
+
         if(mAreaCellCache.Count == 0)
             return null;
 
@@ -231,43 +313,102 @@ public class ModalAttackDistributive : M8.ModalController, M8.IModalPush, M8.IMo
 
         newAreaCellWidget.SetCellIndex(row, col);
 
-        mAreaCellActives.Add(newAreaCellWidget);
+        mAreaCellActives[row, col] = newAreaCellWidget;
 
         return newAreaCellWidget;
     }
 
-    private void ClearAreaCells() {
-        for(int i = 0; i < mAreaCellActives.Count; i++) {
-            var areaCellWidget = mAreaCellActives[i];
+    private void SetDigitFixedColumn(int colIndex, int number) {
+        var digitWidget = GetOrGenerateDigitFixed(mDigitFixedHorizontalActives, colIndex);
+        if(!digitWidget)
+            return;
 
-            areaCellWidget.rectTransform.SetParent(cacheRoot, false);
+        digitWidget.number = number;
 
-            mAreaCellCache.Add(areaCellWidget);
+        //setup position
+        var areaCellWidget = mAreaCellActives[0, colIndex];
+        if(areaCellWidget) {
+            var anchorTrans = areaCellWidget.GetAnchor(areaCellAnchorTop);
+
+            var rTrans = digitWidget.rectTransform;
+
+            rTrans.SetParent(anchorTrans, false);
+            rTrans.anchoredPosition = Vector2.zero;
+        }
+    }
+
+    private void SetDigitFixedRow(int rowIndex, int number) {
+        var digitWidget = GetOrGenerateDigitFixed(mDigitFixedVerticalActives, rowIndex);
+        if(!digitWidget)
+            return;
+
+        digitWidget.number = number;
+
+        //setup position
+        var areaCellWidget = mAreaCellActives[rowIndex, 0];
+        if(areaCellWidget) {
+            var anchorTrans = areaCellWidget.GetAnchor(areaCellAnchorLeft);
+
+            var rTrans = digitWidget.rectTransform;
+
+            rTrans.SetParent(anchorTrans, false);
+            rTrans.anchoredPosition = Vector2.zero;
+        }
+    }
+
+    private DigitWidget GetOrGenerateDigitFixed(DigitWidget[] digitWidgets, int index) {
+        if(index < 0 || index >= digitWidgets.Length)
+            return null;
+
+        var retDigitWidget = digitWidgets[index];
+        if(!retDigitWidget) {
+            if(mDigitFixedCache.Count != 0) {
+                retDigitWidget = mDigitFixedCache.RemoveLast();
+
+                retDigitWidget.Init(index);
+
+                digitWidgets[index] = retDigitWidget;
+            }
         }
 
-        mAreaCellActives.Clear();
+        return retDigitWidget;
+    }
+
+    private void ClearAreaCells() {
+        for(int r = 0; r < mAreaCellActives.GetLength(0); r++) {
+            for(int c = 0; c < mAreaCellActives.GetLength(1); c++) {
+                var areaCellWidget = mAreaCellActives[r, c];
+                if(areaCellWidget) {
+                    areaCellWidget.rectTransform.SetParent(cacheRoot, false);
+
+                    mAreaCellCache.Add(areaCellWidget);
+
+                    mAreaCellActives[r, c] = null;
+                }
+            }
+        }
     }
 
     private void ClearDigits() {
-        for(int i = 0; i < mDigitFixedHorizontalActives.Count; i++) {
+        for(int i = 0; i < mDigitFixedHorizontalActives.Length; i++) {
             var digitWidget = mDigitFixedHorizontalActives[i];
 
             digitWidget.rectTransform.SetParent(cacheRoot, false);
 
             mDigitFixedCache.Add(digitWidget);
+
+            mDigitFixedHorizontalActives[i] = null;
         }
 
-        mDigitFixedHorizontalActives.Clear();
-
-        for(int i = 0; i < mDigitFixedVerticalActives.Count; i++) {
+        for(int i = 0; i < mDigitFixedVerticalActives.Length; i++) {
             var digitWidget = mDigitFixedVerticalActives[i];
 
             digitWidget.rectTransform.SetParent(cacheRoot, false);
 
             mDigitFixedCache.Add(digitWidget);
-        }
 
-        mDigitFixedVerticalActives.Clear();
+            mDigitFixedVerticalActives[i] = null;
+        }
     }
 
     private void ClearOps() {

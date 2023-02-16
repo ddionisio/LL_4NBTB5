@@ -43,9 +43,18 @@ public class DigitGroupWidget : MonoBehaviour {
         }
     }
 
+    public RectTransform rectTransform {
+        get {
+            if(!mRectTrans)
+                mRectTrans = GetComponent<RectTransform>();
+            return mRectTrans;
+        }
+    }
+
     public event System.Action<int> clickCallback;
 
     private DigitWidget[] mDigitWidgets;
+    private RectTransform mRectTrans;
     
     private int mNumber;
     private int mNumberDigitCount;
