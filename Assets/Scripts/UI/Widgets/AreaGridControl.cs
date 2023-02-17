@@ -118,7 +118,7 @@ public class AreaGridControl : MonoBehaviour {
                 lastSize.x += area.size.x;
             }
 
-            lastSize.y += mAreas[r, 0].size.y;
+            lastSize.y += mAreas[r, nCol - 1].size.y;
         }
     }
 
@@ -212,6 +212,7 @@ public class AreaGridControl : MonoBehaviour {
             for(int c = 0; c < numCol; c++) {
                 var area = mAreas[rowIndex, c];
 
+                area.scale.x = 1f;
                 area.scale.y = scaleY;
             }
 
@@ -234,6 +235,7 @@ public class AreaGridControl : MonoBehaviour {
                 var area = mAreas[r, colIndex];
 
                 area.scale.x = scaleX;
+                area.scale.y = 1f;
             }
 
             RefreshAreas();

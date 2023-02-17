@@ -4,18 +4,14 @@ using UnityEngine;
 
 public struct WholeNumber {
     public static int TenExponent(int exp) {
-        if(exp == 0)
-            return 1;
-        else if(exp > 0) {
-            int ret = 10;
-            for(int i = 0; i < exp; i++)
-                ret *= 10;
+        if(exp < 0)
+            return 0;
 
-            return ret;
-        }
+        int ret = 1;
+        for(int i = 0; i < exp; i++)
+            ret *= 10;
 
-        //can't really do negative
-        return 0;
+        return ret;
     }
 
     /// <summary>

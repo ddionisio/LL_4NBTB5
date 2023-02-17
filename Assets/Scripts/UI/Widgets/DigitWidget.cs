@@ -49,11 +49,9 @@ public class DigitWidget : MonoBehaviour, IPointerClickHandler {
         }
     }
 
-    public RectTransform rectTransform {
-        get {
-            return mRectTrans;
-        }
-    }
+    public RectTransform rectTransform { get { return mRectTrans; } }
+
+    public RectTransform numberRoot { get { return _numberRoot; } }
 
     public event System.Action<int> clickCallback;
 

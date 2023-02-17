@@ -70,7 +70,7 @@ public class AreaOperation {
         if(areaRowCount == 0 || col >= areaColCount)
             return false;
 
-        var areaOp = mAreaOperations[0, col];
+        var areaOp = mAreaOperations[areaRowCount - 1, col];
 
         //grab modified number and new number
         int newNum, digitNum;
@@ -102,7 +102,7 @@ public class AreaOperation {
         if(areaColCount == 0 || row >= areaRowCount)
             return false;
 
-        var areaOp = mAreaOperations[row, 0];
+        var areaOp = mAreaOperations[row, areaColCount - 1];
 
         //grab modified number and new number
         int newNum, digitNum;

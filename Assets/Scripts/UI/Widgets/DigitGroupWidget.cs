@@ -118,6 +118,15 @@ public class DigitGroupWidget : MonoBehaviour {
         return digitWidget ? digitWidget.number : 0;
     }
 
+    public RectTransform GetDigitTransform(int digitIndex) {
+        if(digitIndex >= _digitCapacity)
+            return null;
+
+        var digitWidget = mDigitWidgets[digitIndex];
+
+        return digitWidget ? digitWidget.rectTransform : null;
+    }
+
     public void SetDigitNumber(int digitIndex, int digitNumber) {
         if(digitIndex >= _digitCapacity)
             return;

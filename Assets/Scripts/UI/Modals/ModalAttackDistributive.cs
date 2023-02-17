@@ -41,6 +41,8 @@ public class ModalAttackDistributive : M8.ModalController, M8.IModalPush, M8.IMo
         }
     }
 
+    public bool isDigitSplitting { get { return mDigitSplitRout != null; } }
+
     private AreaOperation mAreaOp;
 
     private int mAreaGridInd = -1;
@@ -58,6 +60,8 @@ public class ModalAttackDistributive : M8.ModalController, M8.IModalPush, M8.IMo
     private ModalAttackParams mAttackParms;
 
     private bool mIsInit;
+
+    private Coroutine mDigitSplitRout;
 
     public void Back() {
         signalInvokeAttackStateChange?.Invoke(AttackState.Cancel);
@@ -81,7 +85,6 @@ public class ModalAttackDistributive : M8.ModalController, M8.IModalPush, M8.IMo
             for(int i = 0; i < areaCellCapacity; i++) {
                 var newAreaCell = Instantiate(areaCellTemplate);
                 newAreaCell.Init();
-                newAreaCell.clickCallback += OnAreaOpCellClick;
 
                 newAreaCell.rectTransform.SetParent(cacheRoot, false);
 
@@ -163,8 +166,6 @@ public class ModalAttackDistributive : M8.ModalController, M8.IModalPush, M8.IMo
             }
 
             if(curAreaGrid) {
-                curAreaGrid.Init();
-
                 //setup initial grid telemetry
                 for(int row = 0; row < mAreaOp.areaRowCount; row++) {
                     for(int col = 0; col < mAreaOp.areaColCount; col++) {
@@ -271,6 +272,8 @@ public class ModalAttackDistributive : M8.ModalController, M8.IModalPush, M8.IMo
     }
 
     void M8.IModalPop.Pop() {
+        StopDigitSplit();
+
         if(digitGroupTop) {
             digitGroupTop.transform.SetParent(transform, false);
             digitGroupTop.gameObject.SetActive(false);
@@ -294,15 +297,163 @@ public class ModalAttackDistributive : M8.ModalController, M8.IModalPush, M8.IMo
     }
 
     void OnDigitGroupHorizontalClick(int digitIndex) {
+        if(isDigitSplitting)
+            return;
 
+        StartDigitSplitColumn(digitIndex);
     }
 
     void OnDigitGroupVerticalClick(int digitIndex) {
+        if(isDigitSplitting)
+            return;
 
+        StartDigitSplitRow(digitIndex);
     }
 
-    void OnAreaOpCellClick(AreaOperationCellWidget areaCellWidget) {
+    IEnumerator DoDigitSplitColumn(int digitIndex) {
+        //apply to area op
+        if(!mAreaOp.SplitAreaCol(mAreaOp.areaColCount - 1, digitIndex)) { //fail-safe
+            mDigitSplitRout = null;
+            yield break;
+        }
 
+        digitGroupTop.SetDigitInteractive(digitIndex, false);
+
+        //unhide area cells
+        for(int row = 0; row < mAreaOp.areaRowCount; row++) {
+            var areaCellWidget = mAreaCellActives[row, digitIndex];
+            if(areaCellWidget)
+                areaCellWidget.gameObject.SetActive(true);
+        }
+
+        //animate grid
+        var curAreaGrid = areaGrids[mAreaGridInd];
+
+        curAreaGrid.ShowColumn(digitIndex);
+
+        while(curAreaGrid.isAnimating) {
+            yield return null;
+
+            //refresh areas
+            RefreshAreaCellWidgetTelemetries(0, digitIndex);
+        }
+
+        var mainCell = mAreaOp.mainCell;
+
+        //apply new number of source
+        digitGroupTop.number = mainCell.op.operand1;
+
+        //apply new op to main area cell widget
+        mainAreaCellWidget.ApplyCell(mAreaOp.mainCell, true);
+
+        //do digit split animation (number float from source to dest)
+
+        //setup digit to dest, apply extracted number
+        SetDigitFixedColumn(digitIndex, mAreaOp.GetAreaOperation(mAreaOp.areaRowCount - 1, digitIndex).op.operand1);
+
+        //update and show new area cell operations
+        for(int row = 0; row < mAreaOp.areaRowCount; row++) {
+            var areaCellWidget = mAreaCellActives[row, digitIndex];
+            if(areaCellWidget) {
+                var areaCellInfo = mAreaOp.GetAreaOperation(row, digitIndex);
+
+                areaCellWidget.ApplyCell(areaCellInfo, true);
+                areaCellWidget.operationVisible = true;
+            }
+        }
+
+        //add operator
+        GenerateOperatorColumn(digitIndex);
+
+        mDigitSplitRout = null;
+    }
+
+    IEnumerator DoDigitSplitRow(int digitIndex) {
+        //apply to area op
+        if(!mAreaOp.SplitAreaRow(mAreaOp.areaRowCount - 1, digitIndex)) { //fail-safe
+            mDigitSplitRout = null;
+            yield break;
+        }
+
+        digitGroupLeft.SetDigitInteractive(digitIndex, false);
+
+        //unhide area cells
+        for(int col = 0; col < mAreaOp.areaColCount; col++) {
+            var areaCellWidget = mAreaCellActives[digitIndex, col];
+            if(areaCellWidget)
+                areaCellWidget.gameObject.SetActive(true);
+        }
+
+        //animate grid
+        var curAreaGrid = areaGrids[mAreaGridInd];
+
+        curAreaGrid.ShowRow(digitIndex);
+
+        while(curAreaGrid.isAnimating) {
+            yield return null;
+
+            //refresh areas
+            RefreshAreaCellWidgetTelemetries(digitIndex, 0);
+        }
+
+        var mainCell = mAreaOp.mainCell;
+
+        //apply new number of source
+        digitGroupLeft.number = mainCell.op.operand2;
+
+        //do digit split animation (number float from source to dest)
+
+        //setup digit to dest, apply extracted number
+        SetDigitFixedRow(digitIndex, mAreaOp.GetAreaOperation(digitIndex, mAreaOp.areaColCount - 1).op.operand2);
+
+        //update and show new area cell operations
+        for(int col = 0; col < mAreaOp.areaColCount; col++) {
+            var areaCellWidget = mAreaCellActives[digitIndex, col];
+            if(areaCellWidget) {
+                var areaCellInfo = mAreaOp.GetAreaOperation(digitIndex, col);
+
+                areaCellWidget.ApplyCell(areaCellInfo, true);
+                areaCellWidget.operationVisible = true;
+            }
+        }
+
+        //add operator
+        GenerateOperatorRow(digitIndex);
+
+        mDigitSplitRout = null;
+    }
+
+    private void RefreshAreaCellWidgetTelemetries(int startRow, int startCol) {
+        var curAreaGrid = areaGrids[mAreaGridInd];
+
+        for(int row = startRow; row < mAreaOp.areaRowCount; row++) {
+            for(int col = startCol; col < mAreaOp.areaColCount; col++) {
+                var areaCellWidget = mAreaCellActives[row, col];
+                if(areaCellWidget)
+                    curAreaGrid.ApplyArea(row, col, areaCellWidget.rectTransform);
+            }
+        }
+    }
+
+    private void StartDigitSplitColumn(int digitIndex) {
+        if(mDigitSplitRout != null)
+            StopCoroutine(mDigitSplitRout);
+
+        mDigitSplitRout = StartCoroutine(DoDigitSplitColumn(digitIndex));
+    }
+
+    private void StartDigitSplitRow(int digitIndex) {
+        if(mDigitSplitRout != null)
+            StopCoroutine(mDigitSplitRout);
+
+        mDigitSplitRout = StartCoroutine(DoDigitSplitRow(digitIndex));
+    }
+
+    private void StopDigitSplit() {
+        if(mDigitSplitRout != null) {
+            StopCoroutine(mDigitSplitRout);
+            mDigitSplitRout = null;
+        }
     }
 
     private void RefreshDigitGroupInteractive(DigitGroupWidget digitGroup) { //set interactivity based on number > 0, no interaction for last digit
@@ -338,8 +489,12 @@ public class ModalAttackDistributive : M8.ModalController, M8.IModalPush, M8.IMo
 
         digitWidget.number = number;
 
+        if(digitWidget.numberRoot) {
+            digitWidget.numberRoot.anchorMin = digitWidget.numberRoot.anchorMax = digitWidget.numberRoot.pivot = new Vector2 { x = 0.5f, y = 0.5f };
+        }
+
         //setup position
-        var areaCellWidget = mAreaCellActives[0, colIndex];
+        var areaCellWidget = mAreaCellActives[mAreaOp.areaRowCount - 1, colIndex];
         if(areaCellWidget) {
             var anchorTrans = areaCellWidget.GetAnchor(areaCellAnchorTop);
 
@@ -358,8 +513,12 @@ public class ModalAttackDistributive : M8.ModalController, M8.IModalPush, M8.IMo
 
         digitWidget.number = number;
 
+        if(digitWidget.numberRoot) {
+            digitWidget.numberRoot.anchorMin = digitWidget.numberRoot.anchorMax = digitWidget.numberRoot.pivot = new Vector2 { x = 1.0f, y = 0.5f };
+        }
+
         //setup position
-        var areaCellWidget = mAreaCellActives[rowIndex, 0];
+        var areaCellWidget = mAreaCellActives[rowIndex, mAreaOp.areaColCount - 1];
         if(areaCellWidget) {
             var anchorTrans = areaCellWidget.GetAnchor(areaCellAnchorLeft);
 
@@ -389,6 +548,46 @@ public class ModalAttackDistributive : M8.ModalController, M8.IModalPush, M8.IMo
         return retDigitWidget;
     }
 
+    private OpWidget GenerateOperatorColumn(int colIndex) {
+        if(mOpCache.Count == 0 || colIndex < 0 || colIndex >= mAreaOp.areaColCount)
+            return null;
+
+        var newOpWidget = mOpCache.RemoveLast();
+
+        mOpActives.Add(newOpWidget);
+
+        var areaCellWidget = mAreaCellActives[mAreaOp.areaRowCount - 1, colIndex];
+
+        var anchorTrans = areaCellWidget.GetAnchor(areaCellAnchorOpTop);
+
+        var rectTrans = newOpWidget.rectTransform;
+
+        rectTrans.SetParent(anchorTrans, false);
+        rectTrans.anchoredPosition = Vector2.zero;
+
+        return newOpWidget;
+    }
+
+    private OpWidget GenerateOperatorRow(int rowIndex) {
+        if(mOpCache.Count == 0 || rowIndex < 0 || rowIndex >= mAreaOp.areaRowCount)
+            return null;
+
+        var newOpWidget = mOpCache.RemoveLast();
+
+        mOpActives.Add(newOpWidget);
+
+        var areaCellWidget = mAreaCellActives[rowIndex, mAreaOp.areaColCount - 1];
+
+        var anchorTrans = areaCellWidget.GetAnchor(areaCellAnchorOpLeft);
+
+        var rectTrans = newOpWidget.rectTransform;
+
+        rectTrans.SetParent(anchorTrans, false);
+        rectTrans.anchoredPosition = Vector2.zero;
+
+        return newOpWidget;
+    }
+
     private void ClearAreaCells() {
         for(int r = 0; r < mAreaCellActives.GetLength(0); r++) {
             for(int c = 0; c < mAreaCellActives.GetLength(1); c++) {
@@ -407,22 +606,24 @@ public class ModalAttackDistributive : M8.ModalController, M8.IModalPush, M8.IMo
     private void ClearDigits() {
         for(int i = 0; i < mDigitFixedHorizontalActives.Length; i++) {
             var digitWidget = mDigitFixedHorizontalActives[i];
+            if(digitWidget) {
+                digitWidget.rectTransform.SetParent(cacheRoot, false);
 
-            digitWidget.rectTransform.SetParent(cacheRoot, false);
+                mDigitFixedCache.Add(digitWidget);
 
-            mDigitFixedCache.Add(digitWidget);
-
-            mDigitFixedHorizontalActives[i] = null;
+                mDigitFixedHorizontalActives[i] = null;
+            }
         }
 
         for(int i = 0; i < mDigitFixedVerticalActives.Length; i++) {
             var digitWidget = mDigitFixedVerticalActives[i];
+            if(digitWidget) {
+                digitWidget.rectTransform.SetParent(cacheRoot, false);
 
-            digitWidget.rectTransform.SetParent(cacheRoot, false);
+                mDigitFixedCache.Add(digitWidget);
 
-            mDigitFixedCache.Add(digitWidget);
-
-            mDigitFixedVerticalActives[i] = null;
+                mDigitFixedVerticalActives[i] = null;
+            }
         }
     }
 
