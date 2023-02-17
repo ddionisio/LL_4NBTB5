@@ -55,6 +55,8 @@ public class ModalAttackDistributive : M8.ModalController, M8.IModalPush, M8.IMo
     private M8.CacheList<OpWidget> mOpActives;
     private M8.CacheList<OpWidget> mOpCache;
 
+    private ModalAttackParams mAttackParms;
+
     private bool mIsInit;
 
     public void Back() {
@@ -138,9 +140,9 @@ public class ModalAttackDistributive : M8.ModalController, M8.IModalPush, M8.IMo
         }
 
         //setup shared data across attack phases
-        var attackParms = parms as ModalAttackParams;
-        if(attackParms != null) {
-            mAreaOp = attackParms.GetAreaOperation();
+        mAttackParms = parms as ModalAttackParams;
+        if(mAttackParms != null) {
+            mAreaOp = mAttackParms.GetAreaOperation();
         }
         else {
             mAreaOp = null;
@@ -175,6 +177,8 @@ public class ModalAttackDistributive : M8.ModalController, M8.IModalPush, M8.IMo
                 }
 
                 curAreaGrid.RefreshAreas();
+
+                curAreaGrid.gameObject.SetActive(true);
 
                 //insert area widgets
                 var gridRoot = curAreaGrid.rectTransform;
@@ -342,6 +346,7 @@ public class ModalAttackDistributive : M8.ModalController, M8.IModalPush, M8.IMo
             var rTrans = digitWidget.rectTransform;
 
             rTrans.SetParent(anchorTrans, false);
+            rTrans.pivot = rTrans.anchorMin = rTrans.anchorMax = new Vector2 { x = 0.5f, y = 0f };
             rTrans.anchoredPosition = Vector2.zero;
         }
     }
@@ -361,6 +366,7 @@ public class ModalAttackDistributive : M8.ModalController, M8.IModalPush, M8.IMo
             var rTrans = digitWidget.rectTransform;
 
             rTrans.SetParent(anchorTrans, false);
+            rTrans.pivot = rTrans.anchorMin = rTrans.anchorMax = new Vector2 { x = 1f, y = 0.5f };
             rTrans.anchoredPosition = Vector2.zero;
         }
     }
