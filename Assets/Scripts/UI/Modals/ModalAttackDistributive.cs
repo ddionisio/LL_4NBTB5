@@ -29,6 +29,9 @@ public class ModalAttackDistributive : M8.ModalController, M8.IModalPush, M8.IMo
     public string areaCellAnchorOpTop = "opTop";
     public string areaCellAnchorOpLeft = "opLeft";
 
+    [Header("Signal Invoke")]
+    public SignalAttackState signalInvokeAttackStateChange;
+
     public AreaOperationCellWidget mainAreaCellWidget {
         get {
             if(mAreaOp == null)
@@ -39,7 +42,6 @@ public class ModalAttackDistributive : M8.ModalController, M8.IModalPush, M8.IMo
     }
 
     private AreaOperation mAreaOp;
-    private int mMistakeCount;
 
     private int mAreaGridInd = -1;
 
@@ -56,7 +58,9 @@ public class ModalAttackDistributive : M8.ModalController, M8.IModalPush, M8.IMo
     private bool mIsInit;
 
     public void Back() {
+        signalInvokeAttackStateChange?.Invoke(AttackState.Cancel);
 
+        Close();
     }
 
     public void Proceed() {
@@ -134,8 +138,13 @@ public class ModalAttackDistributive : M8.ModalController, M8.IModalPush, M8.IMo
         }
 
         //setup shared data across attack phases
-        mAreaOp = ModalAttackParm.GetAreaOperation(parms);
-        mMistakeCount = ModalAttackParm.GetMistakeCount(parms);
+        var attackParms = parms as ModalAttackParams;
+        if(attackParms != null) {
+            mAreaOp = attackParms.GetAreaOperation();
+        }
+        else {
+            mAreaOp = null;
+        }
 
         if(mAreaOp != null) {
             //choose the area grid to work with
@@ -203,7 +212,7 @@ public class ModalAttackDistributive : M8.ModalController, M8.IModalPush, M8.IMo
                 var mainCellWidget = mainAreaCellWidget;
 
                 if(mainCell.isValid && mainCellWidget) {
-                    //factor left
+                    //top
                     if(digitGroupTop) {
                         var anchorTrans = mainCellWidget.GetAnchor(areaCellAnchorTop);
                         if(anchorTrans) {
@@ -219,7 +228,7 @@ public class ModalAttackDistributive : M8.ModalController, M8.IModalPush, M8.IMo
                         }
                     }
 
-                    //factor right
+                    //left
                     if(digitGroupLeft) {
                         var anchorTrans = mainCellWidget.GetAnchor(areaCellAnchorLeft);
                         if(anchorTrans) {

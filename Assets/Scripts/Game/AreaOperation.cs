@@ -34,7 +34,7 @@ public class AreaOperation {
 
     private Cell[,] mAreaOperations; //[row, col]
 
-    public void Init(int factorLeft, int factorRight) {
+    public void Setup(int factorLeft, int factorRight) {
         operation = new Operation { operand1 = factorLeft, operand2 = factorRight, op = OperatorType.Multiply };
 
         var factorLeftDigitCount = WholeNumber.DigitCount(factorLeft);

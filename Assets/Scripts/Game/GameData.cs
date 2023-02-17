@@ -14,12 +14,15 @@ public class GameData : M8.SingletonScriptableObject<GameData> {
         public float scale;
     }
 
+    [Header("Modals")]
+    public string modalAttackDistributive = "attackDistributive";
+
     [Header("Rank Settings")]
     public RankData[] ranks; //highest to lowest
     public int rankIndexRetry; //threshold for retry    
 
     [Header("Play Settings")]
-    public int attackTryCount = 3;
+    public int mistakeCount = 3;
     public int areaRowCapacity = 2;
     public int areaColCapacity = 4;
     public float hintDelay = 15f;

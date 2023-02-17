@@ -78,6 +78,8 @@ public class PlayController : GameModeController<PlayController> {
     public SignalBlob signalListenBlobDragBegin;
     public SignalBlob signalListenBlobDragEnd;
 
+    public SignalAttackState signalListenAttackStateChanged;
+
     [Header("Signal Invoke")]
     public M8.Signal signalInvokePlayEnd;
 
@@ -112,6 +114,15 @@ public class PlayController : GameModeController<PlayController> {
     private Coroutine mSpawnRout;
     private Coroutine mAttackRout;
 
+    private AttackState mCurAttackState;
+
+    private AreaOperation mAreaOp = new AreaOperation();
+
+    private MistakeInfo mMistakeCurrent;
+    private MistakeInfo mMistakeTotal;
+
+    private ModalAttackParams mModalAttackParms = new ModalAttackParams();
+
     protected override void OnInstanceDeinit() {
         if(connectControl) {
             connectControl.groupAddedCallback -= OnGroupAdded;
@@ -121,6 +132,8 @@ public class PlayController : GameModeController<PlayController> {
         signalListenPlayStart.callback -= OnSignalPlayBegin;
         signalListenBlobDragBegin.callback -= OnSignalBlobDragBegin;
         signalListenBlobDragEnd.callback -= OnSignalBlobDragEnd;
+
+        signalListenAttackStateChanged.callback -= OnSignalAttackStateChanged;
 
         if(mSpawnRout != null) {
             StopCoroutine(mSpawnRout);
@@ -167,12 +180,19 @@ public class PlayController : GameModeController<PlayController> {
 
         comboCount = 1;
 
+        mCurAttackState = AttackState.None;
+
+        mMistakeCurrent = new MistakeInfo(GameData.instance.mistakeCount);
+        mMistakeTotal = new MistakeInfo(GameData.instance.mistakeCount);
+
         connectControl.groupAddedCallback += OnGroupAdded;
         connectControl.evaluateCallback += OnGroupEval;
 
         signalListenPlayStart.callback += OnSignalPlayBegin;
         signalListenBlobDragBegin.callback += OnSignalBlobDragBegin;
         signalListenBlobDragEnd.callback += OnSignalBlobDragEnd;
+
+        signalListenAttackStateChanged.callback += OnSignalAttackStateChanged;
     }
 
     protected override IEnumerator Start() {
@@ -225,6 +245,10 @@ public class PlayController : GameModeController<PlayController> {
                 blobActive.inputLocked = false;
             }
         }
+    }
+
+    void OnSignalAttackStateChanged(AttackState toState) {
+        mCurAttackState = toState;
     }
 
     IEnumerator DoRounds() {
@@ -324,16 +348,7 @@ public class PlayController : GameModeController<PlayController> {
     }
 
     IEnumerator DoAttack(BlobConnectController.Group grp) {
-        yield return null;
-
-        mAttackRout = null;
-    }
-
-    IEnumerator DoAttackAutoGenerateAttackDebug(BlobConnectController.Group grp) {
-        //yield return new WaitForSeconds(1f);
-        //connectControl.GroupError(grp);
-        //yield return null;
-
+        //setup area operation
         int factorLeft, factorRight;
 
         if(grp.blobOpLeft.number > grp.blobOpRight.number) {
@@ -345,6 +360,49 @@ public class PlayController : GameModeController<PlayController> {
             factorRight = grp.blobOpLeft.number;
         }
 
+        mAreaOp.Setup(factorLeft, factorRight);
+
+        mMistakeCurrent.Reset();
+
+        mModalAttackParms.SetAreaOperation(mAreaOp);
+        mModalAttackParms.SetMistakeInfo(mMistakeCurrent);
+
+        M8.ModalManager.main.Open(GameData.instance.modalAttackDistributive, mModalAttackParms);
+
+        //TODO: background animation
+
+        //wait for state change
+        mCurAttackState = AttackState.Attacking;
+        while(mCurAttackState == AttackState.Attacking)
+            yield return null;
+
+        //wait for modals to close
+        while(M8.ModalManager.main.isBusy)
+            yield return null;
+
+        //determine course of action based on attack state
+        switch(mCurAttackState) {
+            case AttackState.Cancel:
+                break;
+
+            case AttackState.Fail:
+                break;
+
+            case AttackState.Success:
+                break;
+        }
+
+        mAttackRout = null;
+    }
+
+    IEnumerator DoAttackAutoGenerateAttackDebug(BlobConnectController.Group grp) {
+        //yield return new WaitForSeconds(1f);
+        //connectControl.GroupError(grp);
+        //yield return null;
+
+        
+
+        //mModalAttackParms
         //var areaOp = new AreaOperation();
         //areaOp.Init(factorLeft, factorRight);
 

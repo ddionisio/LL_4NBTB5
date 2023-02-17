@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 004af2abbc62598489491e31a35b8644, type: 3}
   m_Name: gameData
   m_EditorClassIdentifier: 
+  modalAttackDistributive: attackDistributive
   ranks:
   - grade: S+
     scale: 0.95
@@ -26,9 +27,11 @@ MonoBehaviour:
   - grade: D
     scale: 0
   rankIndexRetry: 4
+  mistakeCount: 3
+  areaRowCapacity: 2
+  areaColCapacity: 4
   hintDelay: 25
   hintErrorCount: 5
-  blobSpawnCount: 4
   correctPoints: 100
   correctDecayPoints: 50
   perfectPoints: 1000
@@ -36,4 +39,4 @@ MonoBehaviour:
   timeParPerRoundRanking: 12
   timeBonus: 25
   maxRetryCount: 2
-  debugAutoGenerateAttackBlob: 1
+  debugAutoGenerateAttackBlob: 0
