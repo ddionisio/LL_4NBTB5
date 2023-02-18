@@ -62,13 +62,15 @@ public class ModalAttackDistributive : M8.ModalController, M8.IModalPush, M8.IMo
     private Coroutine mDigitSplitRout;
 
     public void Back() {
-        signalInvokeAttackStateChange?.Invoke(AttackState.Cancel);
-
         Close();
+
+        signalInvokeAttackStateChange?.Invoke(AttackState.Cancel);
     }
 
     public void Proceed() {
+        Close();
 
+        M8.ModalManager.main.Open(GameData.instance.modalAttackAreaEvaluate, mAttackParms);
     }
     
     void M8.IModalPush.Push(M8.GenericParams parms) {
@@ -248,20 +250,24 @@ public class ModalAttackDistributive : M8.ModalController, M8.IModalPush, M8.IMo
                     }
                 }
 
-                //insert digits
+                //insert digits and operators
 
                 //top
                 for(int col = 0; col < mAreaOp.areaColCount - 1; col++) {
                     var cell = mAreaOp.GetAreaOperation(0, col);
-                    if(cell.isValid)
+                    if(cell.isValid) {
                         SetDigitFixedColumn(col, cell.op.operand1);
+                        GenerateOperatorColumn(col);
+                    }
                 }
 
                 //left
                 for(int row = 0; row < mAreaOp.areaRowCount - 1; row++) {
                     var cell = mAreaOp.GetAreaOperation(row, 0);
-                    if(cell.isValid)
+                    if(cell.isValid) {
                         SetDigitFixedRow(row, cell.op.operand2);
+                        GenerateOperatorColumn(row);
+                    }
                 }
             }
             else

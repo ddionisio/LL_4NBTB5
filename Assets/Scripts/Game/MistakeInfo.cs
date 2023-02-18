@@ -11,6 +11,8 @@ public class MistakeInfo {
 
     public int maxMistakeCount { get; private set; }
 
+    public bool isFull { get { return totalMistakeCount >= maxMistakeCount; } }
+
     private int mAreaEvaluateMistakeCount;
     private int mSumsMistakeCount;
 
@@ -18,6 +20,16 @@ public class MistakeInfo {
         maxMistakeCount = aMaxMistakeCount;
 
         Reset();
+    }
+
+    public void AppendAreaEvaluateCount() {
+        if(!isFull)
+            mAreaEvaluateMistakeCount++;
+    }
+
+    public void AppendSumsCount() {
+        if(!isFull)
+            mSumsMistakeCount++;
     }
 
     public void Append(MistakeInfo other) {

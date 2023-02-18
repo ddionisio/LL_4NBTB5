@@ -15,11 +15,16 @@ public class ModalAttackAreaEvaluate : M8.ModalController, M8.IModalPush, M8.IMo
     [Header("Mistake Display")]
     public MistakeCounterWidget mistakeCounterDisplay;
 
+    [Header("Numpad Info")]
+    public string numpadOpTextFormat = "{0} {1} {2} =";
+
     [Header("Signal Invoke")]
     public SignalAttackState signalInvokeAttackStateChange;
 
     [Header("Signal Listen")]
     public M8.SignalFloat signalListenNumpadProceed;
+
+    public bool isErrorPlaying { get { return mAnswerProcessRout != null; } }
 
     private AreaOperation mAreaOp;
     private MistakeInfo mMistakeInfo;
@@ -35,10 +40,14 @@ public class ModalAttackAreaEvaluate : M8.ModalController, M8.IModalPush, M8.IMo
 
     private bool mIsInit;
 
+    private AreaOperationCellWidget mAreaOpCellWidgetClicked;
+
+    private Coroutine mAnswerProcessRout;
+
     public void Back() {
         Close();
 
-        //return to attack distributive
+        M8.ModalManager.main.Open(GameData.instance.modalAttackDistributive, mAttackParms);
     }
 
     public void Proceed() {
@@ -161,6 +170,10 @@ public class ModalAttackAreaEvaluate : M8.ModalController, M8.IModalPush, M8.IMo
     }
 
     void M8.IModalPop.Pop() {
+        StopAnswerProcess();
+
+        mAreaOpCellWidgetClicked = null;
+
         if(signalListenNumpadProceed)
             signalListenNumpadProceed.callback -= OnNumpadProceed;
 
@@ -175,11 +188,96 @@ public class ModalAttackAreaEvaluate : M8.ModalController, M8.IModalPush, M8.IMo
     }
 
     void OnAreaCellClick(AreaOperationCellWidget cellWidget) {
+        mAreaOpCellWidgetClicked = cellWidget;
 
+        var op = cellWidget.cellData.op;
+
+        mNumpadParms[ModalCalculator.parmInitValue] = 0;
+        mNumpadParms[GameData.modalParamOperationText] = string.Format(numpadOpTextFormat, op.operand1, Operation.GetOperatorTypeChar(op.op), op.operand2);
+
+        M8.ModalManager.main.Open(GameData.instance.modalNumpad, mNumpadParms);
     }
 
     void OnNumpadProceed(float val) {
+        M8.ModalManager.main.CloseUpTo(GameData.instance.modalNumpad, true);
 
+        if(!mAreaOpCellWidgetClicked)
+            return;
+
+        var num = Mathf.RoundToInt(val);
+
+        //check if matches
+        if(num == mAreaOpCellWidgetClicked.cellData.op.equal) {
+            //apply solved to shared data
+            mAreaOp.SetAreaOperationSolved(mAreaOpCellWidgetClicked.row, mAreaOpCellWidgetClicked.col, true);
+
+            StartCorrect(mAreaOpCellWidgetClicked);
+        }
+        else { //error
+            //update mistake count in shared data
+            mMistakeInfo.AppendAreaEvaluateCount();
+
+            StartError();
+        }
+
+        mAreaOpCellWidgetClicked = null;
+    }
+
+    IEnumerator DoError() {
+        //wait for modal to finish
+        while(M8.ModalManager.main.isBusy)
+            yield return null;
+
+        //update mistake display
+        mistakeCounterDisplay.UpdateMistakeCount(mMistakeInfo);
+
+        //do error animation (also send signal for animation in background)
+
+        mAnswerProcessRout = null;
+
+        //check if error is full, if so, close and then send signal
+        if(mMistakeInfo.isFull) {
+            Close();
+
+            signalInvokeAttackStateChange?.Invoke(AttackState.Fail);
+        }
+    }
+
+    IEnumerator DoCorrect(AreaOperationCellWidget areaOpCellWidget) {
+        //wait for modal to finish
+        while(M8.ModalManager.main.isBusy)
+            yield return null;
+
+        //set display as solved
+        areaOpCellWidget.ApplyCell(mAreaOp.GetAreaOperation(areaOpCellWidget.row, areaOpCellWidget.col), false);
+
+        areaOpCellWidget.interactable = false;
+        areaOpCellWidget.solvedVisible = true;
+
+        //do correct animation (also send signal for animation in background)
+
+        mAnswerProcessRout = null;
+    }
+
+    private void StartError() {
+        if(mAnswerProcessRout != null)
+            StopCoroutine(mAnswerProcessRout);
+
+        mAnswerProcessRout = StartCoroutine(DoError());
+    }
+
+    private void StartCorrect(AreaOperationCellWidget areaOpCellWidget) {
+        if(mAnswerProcessRout != null)
+            StopCoroutine(mAnswerProcessRout);
+
+        mAnswerProcessRout = StartCoroutine(DoCorrect(areaOpCellWidget));
+    }
+
+    private void StopAnswerProcess() {
+        if(mAnswerProcessRout != null) {
+            StopCoroutine(mAnswerProcessRout);
+            mAnswerProcessRout = null;
+        }
     }
 
     private AreaOperationCellWidget GenerateAreaCell(int row, int col) {
