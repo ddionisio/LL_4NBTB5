@@ -8,6 +8,8 @@ using LoLExt;
 public class GameData : M8.SingletonScriptableObject<GameData> {
     public const string levelScoreHeader = "levelScore_";
 
+    public const string modalParamOperationText = "opTxt";
+
     [System.Serializable]
     public struct RankData {
         public string grade; //SS, S, A, B, C, D
@@ -16,6 +18,8 @@ public class GameData : M8.SingletonScriptableObject<GameData> {
 
     [Header("Modals")]
     public string modalAttackDistributive = "attackDistributive";
+    public string modalAttackAreaEvaluate = "attackAreaEvaluate";
+    public string modalNumpad = "numpad";
 
     [Header("Rank Settings")]
     public RankData[] ranks; //highest to lowest

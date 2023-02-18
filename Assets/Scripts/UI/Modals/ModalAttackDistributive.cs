@@ -1,7 +1,5 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class ModalAttackDistributive : M8.ModalController, M8.IModalPush, M8.IModalPop {
     [Header("Templates")]

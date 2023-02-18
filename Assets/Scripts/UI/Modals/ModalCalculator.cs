@@ -71,6 +71,8 @@ public class ModalCalculator : M8.ModalController, M8.IModalPush, M8.IModalPop, 
 
     [Header("Signal Listens")]
     public M8.SignalFloat signalValueChanged;
+    public M8.SignalInteger signalInputNumber;
+    public M8.Signal signalErase;
 
     [Header("Signal Invokes")]
     public M8.SignalFloat signalValueUpdate;
@@ -235,6 +237,10 @@ public class ModalCalculator : M8.ModalController, M8.IModalPush, M8.IModalPop, 
     void M8.IModalPop.Pop() {
         if(signalValueChanged)
             signalValueChanged.callback -= OnValueChanged;
+        if(signalInputNumber)
+            signalInputNumber.callback -= InputNumber;
+        if(signalErase)
+            signalErase.callback -= Erase;
     }
 
     void M8.IModalPush.Push(M8.GenericParams parms) {
@@ -266,6 +272,10 @@ public class ModalCalculator : M8.ModalController, M8.IModalPush, M8.IModalPop, 
 
         if(signalValueChanged)
             signalValueChanged.callback += OnValueChanged;
+        if(signalInputNumber)
+            signalInputNumber.callback += InputNumber;
+        if(signalErase)
+            signalErase.callback += Erase;
     }
 
     void M8.IModalActive.SetActive(bool aActive) {
