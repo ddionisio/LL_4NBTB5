@@ -33,41 +33,51 @@ public class MistakeCounterWidget : MonoBehaviour {
     ItemData[] _Items;
 
     private int mMistakeCurrentCount;
-    private int mMistakeCount;
 
-    public void Init(int mistakeCurrentCount, int mistakeCount) {        
-        mMistakeCount = Mathf.Clamp(mistakeCount, 0, _Items.Length);
-        mMistakeCurrentCount = Mathf.Clamp(mistakeCurrentCount, 0, mMistakeCount);
+    public void Init(MistakeInfo mistakeInfo) {
+        var mistakeMax = Mathf.Clamp(mistakeInfo.maxMistakeCount, 0, _Items.Length);
+
+        mMistakeCurrentCount = Mathf.Clamp(mistakeInfo.totalMistakeCount, 0, mistakeMax);
 
         //setup initial display
-        int fillCount = mMistakeCount - mMistakeCurrentCount;
+
+        //fill
+        int fillCount = mistakeMax - mMistakeCurrentCount;
         for(int i = 0; i < fillCount; i++) {
             _Items[i].active = true;
             _Items[i].filled = true;
         }
 
+        //empty
+        for(int i = fillCount; i < mistakeMax; i++) {
+            _Items[i].active = true;
+            _Items[i].filled = false;
+        }
+
         //hide any excess
-        for(int i = mMistakeCount; i < _Items.Length; i++)
+        for(int i = mistakeMax; i < _Items.Length; i++)
             _Items[i].active = false;
     }
 
-    public void SetMistakeCount(int mistakeCurrentCount) {
-        int mistakeCountDelta = mistakeCurrentCount - mMistakeCurrentCount;
+    public void UpdateMistakeCount(MistakeInfo mistakeInfo) {
+        int newMistakeCount = mistakeInfo.totalMistakeCount;
+
+        int mistakeCountDelta = newMistakeCount - mMistakeCurrentCount;
         if(mistakeCountDelta < 0) { //set some items to empty based on delta
             var count = Mathf.Abs(mistakeCountDelta);
             for(int i = 0; i < count; i++) {
                 //TODO: do animation of going empty
-                _Items[mistakeCurrentCount - i - 1].filled = false;
+                _Items[newMistakeCount - i - 1].filled = false;
             }
-
-            mMistakeCurrentCount = mistakeCurrentCount;
         }
         else if(mistakeCountDelta > 0) { //regenerate, if ever it's a feature
-            for(int i = 0; i < mistakeCountDelta && i + mistakeCurrentCount < mMistakeCount; i++) {
-                _Items[mistakeCurrentCount + i].filled = true;
-            }
+            var mistakeMax = Mathf.Clamp(mistakeInfo.maxMistakeCount, 0, _Items.Length);
 
-            mMistakeCurrentCount = mistakeCurrentCount;
+            for(int i = 0; i < mistakeCountDelta && i + newMistakeCount < mistakeMax; i++) {
+                _Items[i + newMistakeCount].filled = true;
+            }
         }
+
+        mMistakeCurrentCount = newMistakeCount;
     }
 }

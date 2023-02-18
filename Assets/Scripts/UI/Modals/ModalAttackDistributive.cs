@@ -196,7 +196,7 @@ public class ModalAttackDistributive : M8.ModalController, M8.IModalPush, M8.IMo
                         areaCellWidget.rectTransform.SetParent(gridRoot, false);
 
                         if(cell.isValid) {
-                            areaCellWidget.ApplyCell(cell, false);
+                            areaCellWidget.ApplyCell(cell, true);
 
                             curAreaGrid.ApplyArea(row, col, areaCellWidget.rectTransform);
 

@@ -19,6 +19,7 @@ public class GameData : M8.SingletonScriptableObject<GameData> {
     [Header("Modals")]
     public string modalAttackDistributive = "attackDistributive";
     public string modalAttackAreaEvaluate = "attackAreaEvaluate";
+    public string modalAttackSums = "attackSums";
     public string modalNumpad = "numpad";
 
     [Header("Rank Settings")]
