@@ -322,8 +322,11 @@ public class ModalAttackDistributive : M8.ModalController, M8.IModalPush, M8.IMo
         //unhide area cells
         for(int row = 0; row < mAreaOp.areaRowCount; row++) {
             var areaCellWidget = mAreaCellActives[row, digitIndex];
-            if(areaCellWidget)
-                areaCellWidget.gameObject.SetActive(true);
+            if(areaCellWidget) {
+                var areaCellInfo = mAreaOp.GetAreaOperation(row, digitIndex);
+                if(areaCellInfo.isValid)
+                    areaCellWidget.gameObject.SetActive(true);
+            }
         }
 
         //animate grid
@@ -352,15 +355,7 @@ public class ModalAttackDistributive : M8.ModalController, M8.IModalPush, M8.IMo
         SetDigitFixedColumn(digitIndex, mAreaOp.GetAreaOperation(mAreaOp.areaRowCount - 1, digitIndex).op.operand1);
 
         //update and show new area cell operations
-        for(int row = 0; row < mAreaOp.areaRowCount; row++) {
-            var areaCellWidget = mAreaCellActives[row, digitIndex];
-            if(areaCellWidget) {
-                var areaCellInfo = mAreaOp.GetAreaOperation(row, digitIndex);
-
-                areaCellWidget.ApplyCell(areaCellInfo, true);
-                areaCellWidget.operationVisible = true;
-            }
-        }
+        RefreshAreaCellWidgetOperations(0, digitIndex);
 
         //add operator
         GenerateOperatorColumn(digitIndex);
@@ -380,8 +375,11 @@ public class ModalAttackDistributive : M8.ModalController, M8.IModalPush, M8.IMo
         //unhide area cells
         for(int col = 0; col < mAreaOp.areaColCount; col++) {
             var areaCellWidget = mAreaCellActives[digitIndex, col];
-            if(areaCellWidget)
-                areaCellWidget.gameObject.SetActive(true);
+            if(areaCellWidget) {
+                var areaCellInfo = mAreaOp.GetAreaOperation(digitIndex, col);
+                if(areaCellInfo.isValid)
+                    areaCellWidget.gameObject.SetActive(true);
+            }
         }
 
         //animate grid
@@ -401,21 +399,16 @@ public class ModalAttackDistributive : M8.ModalController, M8.IModalPush, M8.IMo
         //apply new number of source
         digitGroupLeft.number = mainCell.op.operand2;
 
+        //apply new op to main area cell widget
+        mainAreaCellWidget.ApplyCell(mAreaOp.mainCell, true);
+
         //do digit split animation (number float from source to dest)
 
         //setup digit to dest, apply extracted number
         SetDigitFixedRow(digitIndex, mAreaOp.GetAreaOperation(digitIndex, mAreaOp.areaColCount - 1).op.operand2);
 
         //update and show new area cell operations
-        for(int col = 0; col < mAreaOp.areaColCount; col++) {
-            var areaCellWidget = mAreaCellActives[digitIndex, col];
-            if(areaCellWidget) {
-                var areaCellInfo = mAreaOp.GetAreaOperation(digitIndex, col);
-
-                areaCellWidget.ApplyCell(areaCellInfo, true);
-                areaCellWidget.operationVisible = true;
-            }
-        }
+        RefreshAreaCellWidgetOperations(digitIndex, 0);
 
         //add operator
         GenerateOperatorRow(digitIndex);
@@ -431,6 +424,21 @@ public class ModalAttackDistributive : M8.ModalController, M8.IModalPush, M8.IMo
                 var areaCellWidget = mAreaCellActives[row, col];
                 if(areaCellWidget)
                     curAreaGrid.ApplyArea(row, col, areaCellWidget.rectTransform);
+            }
+        }
+    }
+
+    private void RefreshAreaCellWidgetOperations(int startRow, int startCol) {
+        for(int row = startRow; row < mAreaOp.areaRowCount; row++) {
+            for(int col = startCol; col < mAreaOp.areaColCount; col++) {
+                var areaCellWidget = mAreaCellActives[row, col];
+                if(areaCellWidget) {
+                    var areaCellInfo = mAreaOp.GetAreaOperation(row, col);
+                    if(areaCellInfo.isValid) {
+                        areaCellWidget.ApplyCell(areaCellInfo, true);
+                        areaCellWidget.operationVisible = true;
+                    }
+                }
             }
         }
     }

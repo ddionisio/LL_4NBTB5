@@ -179,17 +179,17 @@ public class AreaGridControl : MonoBehaviour {
 
             switch(animInfo.mode) {
                 case AnimMode.RowShow:
-                    yield return DoAnimRow(ind, mAreas[ind, 0].scale.y, 1f, mAnimScaleUpFunc);
+                    yield return DoAnimRow(ind, 0f, 1f, mAnimScaleUpFunc);
                     break;
                 case AnimMode.RowHide:
-                    yield return DoAnimRow(ind, mAreas[ind, 0].scale.y, 0f, mAnimScaleDownFunc);
+                    yield return DoAnimRow(ind, 1f, 0f, mAnimScaleDownFunc);
                     break;
 
                 case AnimMode.ColumnShow:
-                    yield return DoAnimCol(ind, mAreas[0, ind].scale.x, 1f, mAnimScaleUpFunc);
+                    yield return DoAnimCol(ind, 0f, 1f, mAnimScaleUpFunc);
                     break;
                 case AnimMode.ColumnHide:
-                    yield return DoAnimCol(ind, mAreas[0, ind].scale.x, 0f, mAnimScaleDownFunc);
+                    yield return DoAnimCol(ind, 1f, 0f, mAnimScaleDownFunc);
                     break;
                 default:
                     yield return null;
@@ -212,7 +212,7 @@ public class AreaGridControl : MonoBehaviour {
             for(int c = 0; c < numCol; c++) {
                 var area = mAreas[rowIndex, c];
 
-                area.scale.x = 1f;
+                //area.scale.x = 1f;
                 area.scale.y = scaleY;
             }
 
@@ -235,7 +235,7 @@ public class AreaGridControl : MonoBehaviour {
                 var area = mAreas[r, colIndex];
 
                 area.scale.x = scaleX;
-                area.scale.y = 1f;
+                //area.scale.y = 1f;
             }
 
             RefreshAreas();

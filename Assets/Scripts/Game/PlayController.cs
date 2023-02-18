@@ -360,8 +360,8 @@ public class PlayController : GameModeController<PlayController> {
             factorRight = grp.blobOpLeft.number;
         }
 
-        //mAreaOp.Setup(factorLeft, factorRight);
-        mAreaOp.Setup(34, 12);
+        mAreaOp.Setup(factorLeft, factorRight);
+        //mAreaOp.Setup(1234, 2);
 
         mMistakeCurrent.Reset();
 
@@ -384,9 +384,13 @@ public class PlayController : GameModeController<PlayController> {
         //determine course of action based on attack state
         switch(mCurAttackState) {
             case AttackState.Cancel:
+                connectControl.ClearGroup(grp);
                 break;
 
             case AttackState.Fail:
+                //decrease combo
+                //accumulate errors
+                connectControl.GroupError(grp);
                 break;
 
             case AttackState.Success:
