@@ -110,7 +110,7 @@ public class DigitGroupWidget : MonoBehaviour {
     }
 
     public int GetDigitNumber(int digitIndex) {
-        if(digitIndex >= _digitCapacity)
+        if(digitIndex >= mNumberDigitCount)
             return 0;
 
         var digitWidget = mDigitWidgets[digitIndex];
@@ -147,6 +147,31 @@ public class DigitGroupWidget : MonoBehaviour {
             digitWidget.interactable = interactive;
     }
 
+    public void SetDigitInteractiveAll(bool interactive) {
+        for(int i = 0; i < mDigitWidgets.Length; i++) {
+            var widget = mDigitWidgets[i];
+            if(widget)
+                widget.interactable = interactive;
+        }
+    }
+
+    public void SetDigitVisible(int digitIndex, bool isVisible) {
+        if(digitIndex >= _digitCapacity)
+            return;
+
+        var digitWidget = mDigitWidgets[digitIndex];
+        if(digitWidget)
+            digitWidget.gameObject.SetActive(isVisible);
+    }
+
+    public void SetDigitVisibleAll(bool isVisible) {
+        for(int i = 0; i < mDigitWidgets.Length; i++) {
+            var widget = mDigitWidgets[i];
+            if(widget)
+                widget.gameObject.SetActive(isVisible);
+        }
+    }
+
     void OnDigitClick(int index) {
         clickCallback?.Invoke(index);
     }
@@ -158,7 +183,7 @@ public class DigitGroupWidget : MonoBehaviour {
 
         for(int i = 0; i < mDigitWidgets.Length; i++) {
             var digitWidget = mDigitWidgets[i];
-            if(digitWidget) {
+            if(digitWidget && digitWidget.number >= 0) {
                 var digitNumber = digitWidget.number;
 
                 mNumber += digitNumber * digitShift;

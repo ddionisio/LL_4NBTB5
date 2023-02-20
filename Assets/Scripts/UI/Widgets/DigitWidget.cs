@@ -72,6 +72,8 @@ public class DigitWidget : MonoBehaviour, IPointerClickHandler {
             if(_interactiveRoot)
                 mInteractiveGO = _interactiveRoot.gameObject;
 
+            SetNumberEmpty();
+
             mIsInit = true;
         }
 
@@ -79,7 +81,7 @@ public class DigitWidget : MonoBehaviour, IPointerClickHandler {
     }
 
     public void SetNumberEmpty() {
-        mNumber = 0;
+        mNumber = -1;
         if(_numberLabel) _numberLabel.text = "";
     }
 

@@ -32,24 +32,23 @@ public class MistakeCounterWidget : MonoBehaviour {
     [SerializeField]
     ItemData[] _Items;
 
-    private int mMistakeCurrentCount;
+    private int mFillCount;
 
     public void Init(MistakeInfo mistakeInfo) {
         var mistakeMax = Mathf.Clamp(mistakeInfo.maxMistakeCount, 0, _Items.Length);
-
-        mMistakeCurrentCount = Mathf.Clamp(mistakeInfo.totalMistakeCount, 0, mistakeMax);
+        var mistakeCurrent = Mathf.Clamp(mistakeInfo.totalMistakeCount, 0, mistakeMax);
 
         //setup initial display
 
         //fill
-        int fillCount = mistakeMax - mMistakeCurrentCount;
-        for(int i = 0; i < fillCount; i++) {
+        mFillCount = mistakeMax - mistakeCurrent;
+        for(int i = 0; i < mFillCount; i++) {
             _Items[i].active = true;
             _Items[i].filled = true;
         }
 
         //empty
-        for(int i = fillCount; i < mistakeMax; i++) {
+        for(int i = mFillCount; i < mistakeMax; i++) {
             _Items[i].active = true;
             _Items[i].filled = false;
         }
@@ -60,24 +59,24 @@ public class MistakeCounterWidget : MonoBehaviour {
     }
 
     public void UpdateMistakeCount(MistakeInfo mistakeInfo) {
-        int newMistakeCount = mistakeInfo.totalMistakeCount;
+        var mistakeMax = Mathf.Clamp(mistakeInfo.maxMistakeCount, 0, _Items.Length);
+        var mistakeCurrent = Mathf.Clamp(mistakeInfo.totalMistakeCount, 0, mistakeMax);
 
-        int mistakeCountDelta = newMistakeCount - mMistakeCurrentCount;
-        if(mistakeCountDelta < 0) { //set some items to empty based on delta
-            var count = Mathf.Abs(mistakeCountDelta);
-            for(int i = 0; i < count; i++) {
-                //TODO: do animation of going empty
-                _Items[newMistakeCount - i - 1].filled = false;
+        var newFillCount = mistakeMax - mistakeCurrent;
+
+        if(newFillCount < mFillCount) { //empty out items            
+            for(int i = mFillCount - 1; i >= newFillCount; i--) {
+                //TODO: animation from fill to empty
+                _Items[i].filled = false;
             }
         }
-        else if(mistakeCountDelta > 0) { //regenerate, if ever it's a feature
-            var mistakeMax = Mathf.Clamp(mistakeInfo.maxMistakeCount, 0, _Items.Length);
-
-            for(int i = 0; i < mistakeCountDelta && i + newMistakeCount < mistakeMax; i++) {
-                _Items[i + newMistakeCount].filled = true;
+        else { //fill out new items
+            for(int i = mFillCount - 1; i < newFillCount; i++) {
+                //TODO: animation from empty to fill
+                _Items[i].filled = true;
             }
         }
 
-        mMistakeCurrentCount = newMistakeCount;
+        mFillCount = newFillCount;
     }
 }

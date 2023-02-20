@@ -24,7 +24,7 @@ public class ModalAttackAreaEvaluate : M8.ModalController, M8.IModalPush, M8.IMo
     [Header("Signal Listen")]
     public M8.SignalFloat signalListenNumpadProceed;
 
-    public bool isErrorPlaying { get { return mAnswerProcessRout != null; } }
+    public bool isAnswerProcessing { get { return mAnswerProcessRout != null; } }
 
     private AreaOperation mAreaOp;
     private MistakeInfo mMistakeInfo;
@@ -51,7 +51,30 @@ public class ModalAttackAreaEvaluate : M8.ModalController, M8.IModalPush, M8.IMo
     }
 
     public void Proceed() {
+        //check if we have all the areas solved
+        int areaValidCount = 0;
+        int areaSolvedCount = 0;
 
+        for(int row = 0; row < mAreaOp.areaRowCount; row++) {
+            for(int col = 0; col < mAreaOp.areaColCount; col++) {
+                var cell = mAreaOp.GetAreaOperation(row, col);
+                if(cell.isValid) {
+                    areaValidCount++;
+
+                    if(cell.isSolved)
+                        areaSolvedCount++;
+                }
+            }
+        }
+
+        if(areaSolvedCount == areaValidCount) {
+            Close();
+
+            M8.ModalManager.main.Open(GameData.instance.modalAttackSums, mAttackParms);
+        }
+        else {
+            //show message
+        }
     }
 
     void M8.IModalPush.Push(M8.GenericParams parms) {
@@ -155,9 +178,9 @@ public class ModalAttackAreaEvaluate : M8.ModalController, M8.IModalPush, M8.IMo
                     }
                 }
             }
+            else
+                Debug.LogError("Unable to find matching area grid: [row = " + mAreaOp.areaRowCount + ", col = " + mAreaOp.areaColCount + "]");
         }
-        else
-            Debug.LogError("Unable to find matching area grid: [row = " + mAreaOp.areaRowCount + ", col = " + mAreaOp.areaColCount + "]");
 
         //setup mistake counter
         if(mMistakeInfo != null) {
