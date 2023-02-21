@@ -27,22 +27,14 @@ public class GameData : M8.SingletonScriptableObject<GameData> {
     public int rankIndexRetry; //threshold for retry    
 
     [Header("Play Settings")]
-    public int mistakeCount = 3;
     public int areaRowCapacity = 2;
     public int areaColCapacity = 4;
-    public float hintDelay = 15f;
-    public int hintErrorCount = 5;
+    public int mistakeCount = 3;    
     public int correctPoints = 100;
-    public int correctDecayPoints = 25; //if hint was shown
-    public int perfectPoints = 1000;
-    public float timeParPerRound = 6f; //in seconds
-    public float timeParPerRoundRanking; //in seconds, used for ranking, make sure it's less than timeParPerRound
-    public int timeBonus = 50; //per second based on (timePar - time)
+    public int bonusPoints = 1000;
+    public int perfectPoints = 500;
 
     public int maxRetryCount = 2;
-
-    [Header("Debug")]
-    public bool debugAutoGenerateAttackBlob;
 
     public int retryCounter { get; set; }
 
@@ -60,12 +52,9 @@ public class GameData : M8.SingletonScriptableObject<GameData> {
         for(int i = 0; i < roundCount; i++)
             maxScore += (i + 1) * correctPoints;
 
+        maxScore += bonusPoints;
+
         maxScore += perfectPoints;
-
-        float timePar = timeParPerRound * roundCount;
-        float rankTime = timeParPerRoundRanking * roundCount;
-
-        maxScore += Mathf.RoundToInt((timePar - rankTime) * timeBonus);
 
         float scoreScale = (float)score / maxScore;
 

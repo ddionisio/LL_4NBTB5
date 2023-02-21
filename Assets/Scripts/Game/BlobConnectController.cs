@@ -47,13 +47,13 @@ public class BlobConnectController : MonoBehaviour {
 
         public void GetBlobOrder(out Blob blobOpLeft, out Blob blobOpRight, out Blob blobEqual) {
             blobEqual = blobEq;
-            blobOpRight = connectEq.GetLinkedBlob(blobEqual);
-            blobOpLeft = connectOp.GetLinkedBlob(blobOpRight);
+            blobOpRight = connectEq ? connectEq.GetLinkedBlob(blobEqual) : null;
+            blobOpLeft = connectOp ? connectOp.GetLinkedBlob(blobOpRight) : null;
         }
 
         public void GetNumbers(out int numOpLeft, out int numOpRight, out int numEqual) {
-            var blobOpRight = connectEq.GetLinkedBlob(blobEq);
-            var blobOpLeft = connectOp.GetLinkedBlob(blobOpRight);
+            var blobOpRight = connectEq ? connectEq.GetLinkedBlob(blobEq) : null;
+            var blobOpLeft = connectOp ? connectOp.GetLinkedBlob(blobOpRight) : null;
 
             numOpLeft = blobOpLeft ? blobOpLeft.number : 0;
             numOpRight = blobOpRight ? blobOpRight.number : 0;
@@ -61,8 +61,8 @@ public class BlobConnectController : MonoBehaviour {
         }
 
         public void GetNumbers(out float numOpLeft, out float numOpRight, out float numEqual) {
-            var blobOpRight = connectEq.GetLinkedBlob(blobEq);
-            var blobOpLeft = connectOp.GetLinkedBlob(blobOpRight);
+            var blobOpRight = connectEq ? connectEq.GetLinkedBlob(blobEq) : null;
+            var blobOpLeft = connectOp? connectOp.GetLinkedBlob(blobOpRight) : null;
 
             numOpLeft = blobOpLeft ? blobOpLeft.number : 0;
             numOpRight = blobOpRight ? blobOpRight.number : 0;
@@ -95,6 +95,19 @@ public class BlobConnectController : MonoBehaviour {
                 return true;
 
             if(blobEq && blobEq.gameObject == blobGO)
+                return true;
+
+            return false;
+        }
+
+        public bool IsBlobInGroupByName(string blobName) {
+            if(blobOpLeft && blobOpLeft.name == blobName)
+                return true;
+
+            if(blobOpRight && blobOpRight.name == blobName)
+                return true;
+
+            if(blobEq && blobEq.name == blobName)
                 return true;
 
             return false;
@@ -287,6 +300,15 @@ public class BlobConnectController : MonoBehaviour {
             group.connectEq.state = BlobConnect.State.Error;
 
         ClearGroup(group);
+    }
+
+    public bool IsBlobInGroup(Blob blob) {
+        for(int i = 0; i < mGroupActives.Count; i++) {
+            if(mGroupActives[i].IsBlobInGroup(blob))
+                return true;
+        }
+
+        return false;
     }
 
     void OnDestroy() {

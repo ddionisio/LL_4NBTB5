@@ -170,6 +170,8 @@ public class ModalAttackSums : M8.ModalController, M8.IModalPush, M8.IModalPop {
         inputAnswerGroup.SetDigitInteractiveAll(false);
         inputAnswerGroup.SetDigitVisibleAll(false);
 
+        inputAnswerGroup.number = 0;
+
         inputAnswerGroup.SetDigitEmpty(0);
         inputAnswerGroup.SetDigitVisible(0, true);
         inputAnswerGroup.SetDigitInteractive(0, true);
@@ -323,6 +325,7 @@ public class ModalAttackSums : M8.ModalController, M8.IModalPush, M8.IModalPop {
             }
 
             //show next input digit interaction
+            inputAnswerGroup.SetDigitEmpty(nextDigitIndex);
             inputAnswerGroup.SetDigitInteractive(nextDigitIndex, true);
             inputAnswerGroup.SetDigitVisible(nextDigitIndex, true);
         }
