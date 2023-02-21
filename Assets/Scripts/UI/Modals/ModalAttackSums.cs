@@ -163,8 +163,7 @@ public class ModalAttackSums : M8.ModalController, M8.IModalPush, M8.IModalPop {
         }
 
         //reset carry-over
-        carryOverGroup.number = 0;
-        carryOverGroup.SetDigitVisibleAll(false);
+        carryOverGroup.SetDigitsEmpty(carryOverGroup.digitCapacity);
 
         //setup input answer
         inputAnswerGroup.SetDigitInteractiveAll(false);
@@ -303,7 +302,6 @@ public class ModalAttackSums : M8.ModalController, M8.IModalPush, M8.IModalPop {
 
                 //apply new carryover for next digit
                 carryOverGroup.SetDigitNumber(nextDigitIndex, carryOverDigit);
-                carryOverGroup.SetDigitVisible(nextDigitIndex, true);
             }
 
             //move highlight

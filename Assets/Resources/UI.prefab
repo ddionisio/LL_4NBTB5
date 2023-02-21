@@ -1118,7 +1118,7 @@ MonoBehaviour:
   _digitTemplate: {fileID: 4127124577174519587, guid: aa50b13c677ef4749b7417d4dd5cd2d1, type: 3}
   _digitCapacity: 5
   _digitContainer: {fileID: 624710781}
-  _hideLeadingZeroes: 1
+  _hideLeadingZeroes: 0
 --- !u!114 &624710782
 MonoBehaviour:
   m_ObjectHideFlags: 0

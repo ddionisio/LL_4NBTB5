@@ -49,13 +49,19 @@ SpriteAtlas:
     cachedData: {fileID: 0}
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
+  - {fileID: 21300000, guid: bdf7029096c83884ca66693a9e251b1a, type: 3}
+  - {fileID: 21300000, guid: df4ff8f1f25e3184e8577b182b62a4e5, type: 3}
   - {fileID: 21300000, guid: c97157f336e5bb84d9e29fe4be35418a, type: 3}
   - {fileID: 21300000, guid: 8ae44408907a0f848b49e5640074886d, type: 3}
   - {fileID: 21300000, guid: 4aa116c9273467440b33e6b07bdf6a62, type: 3}
+  - {fileID: 21300000, guid: bbfed09c8b2e8d545be92dea6e454f5d, type: 3}
   m_PackedSpriteNamesToIndex:
+  - blobBaseBonusLargeTest
+  - blobBaseBonusMediumTest
   - blobBaseLargeTest
   - blobBaseMediumTest
   - blobBaseTest
+  - blobBaseBonusTest
   m_RenderDataMap: {}
   m_Tag: test
   m_IsVariant: 0

@@ -23,7 +23,7 @@ public class DigitGroupWidget : MonoBehaviour {
         set {
             if(mNumber != value) {
                 mNumber = value;
-                mNumberDigitCount = WholeNumber.DigitCount(mNumber);
+                mNumberDigitCount = Mathf.Clamp(WholeNumber.DigitCount(mNumber), 0, _digitCapacity);
 
                 int numberMod = mNumber;
 
@@ -35,6 +35,12 @@ public class DigitGroupWidget : MonoBehaviour {
 
                         numberMod /= 10;
                     }
+                }
+
+                for(int i = mNumberDigitCount; i < _digitCapacity; i++) {
+                    var digitWidget = mDigitWidgets[i];
+                    if(digitWidget)
+                        digitWidget.number = 0;
                 }
 
                 if(_hideLeadingZeroes)
@@ -80,7 +86,7 @@ public class DigitGroupWidget : MonoBehaviour {
     }
 
     public void SetDigitsEmpty(int aDigitCount) {
-        mNumberDigitCount = aDigitCount;
+        mNumberDigitCount = Mathf.Clamp(aDigitCount, 0, _digitCapacity);
 
         for(int i = 0; i < aDigitCount; i++) {
             var digitWidget = mDigitWidgets[i];

@@ -510,6 +510,15 @@ MonoBehaviour:
   - blobData: {fileID: 11400000, guid: 20e319697439a9d418000be70bc023d2, type: 2}
     poolCapacity: 1
     spawnPointsRoot: {fileID: 745499586}
+  - blobData: {fileID: 11400000, guid: c69a7dc8f2ed8d74a823fec20669bda8, type: 2}
+    poolCapacity: 1
+    spawnPointsRoot: {fileID: 1593237500}
+  - blobData: {fileID: 11400000, guid: 18bb64ee700701d4594f73009f6e1e00, type: 2}
+    poolCapacity: 1
+    spawnPointsRoot: {fileID: 1590804242}
+  - blobData: {fileID: 11400000, guid: 1eb2e0e726b99ff4889d2dc330f50f35, type: 2}
+    poolCapacity: 1
+    spawnPointsRoot: {fileID: 745499586}
   spawnActiveCount: 6
   spawnPointsShuffle: 1
   spawnPointCheckMask:
@@ -8332,8 +8341,8 @@ MonoBehaviour:
   - blobData: {fileID: 11400000, guid: acd5723c30cdae64bbe2e8f18971de88, type: 2}
     numbers: 02000000030000000400000005000000
   numberBonusGroup:
-    blobData: {fileID: 0}
-    numbers: 
+    blobData: {fileID: 11400000, guid: 1eb2e0e726b99ff4889d2dc330f50f35, type: 2}
+    numbers: 9a020000c701000085000000
   blobAttackTemplate: {fileID: 11400000, guid: 20e319697439a9d418000be70bc023d2, type: 2}
   numberCriteriaUnlocked: 0
   blobSpawnCount: 4
@@ -8350,6 +8359,7 @@ MonoBehaviour:
   signalListenBlobDragEnd: {fileID: 11400000, guid: e277b755729c85042a3893c829311846, type: 2}
   signalListenAttackStateChanged: {fileID: 11400000, guid: ebf9b91bb8b25644084fe225f3a38b36, type: 2}
   signalInvokePlayEnd: {fileID: 11400000, guid: 127cfa7748ca7294ab1ff53ec219a30c, type: 2}
+  debugAutoGenerateAttackBlob: 0
 --- !u!4 &2088719856
 Transform:
   m_ObjectHideFlags: 0

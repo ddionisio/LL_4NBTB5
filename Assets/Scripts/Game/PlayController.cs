@@ -167,6 +167,9 @@ public class PlayController : GameModeController<PlayController> {
             numberCount += grp.numbers.Length;
         }
 
+        if(isBonusEnabled)
+            numberBonusGroup.Init(blobSpawner);
+
         mBlobAttackTemplateInd = blobSpawner.GetTemplateIndex(blobAttackTemplate);
         if(mBlobAttackTemplateInd != -1)
             blobSpawner.InitBlobTemplate(mBlobAttackTemplateInd);
@@ -386,7 +389,7 @@ public class PlayController : GameModeController<PlayController> {
         }
 
         mAreaOp.Setup(factorLeft, factorRight);
-        //mAreaOp.Setup(1234, 2);
+        //mAreaOp.Setup(256, 4);
 
         mMistakeCurrent.Reset();
 
@@ -464,12 +467,18 @@ public class PlayController : GameModeController<PlayController> {
 
                 //check if bonus blob is part of the group, then clear out the other blobs on board
                 if(bonusBlobIsInGroup) {
+                    //wait for bonus blob to release
+                    while(bonusBlob.state != Blob.State.None)
+                        yield return null;
+
                     //do fancy animation on board
 
                     for(int i = 0; i < blobSpawner.blobActives.Count; i++) {
                         var blob = blobSpawner.blobActives[i];
                         if(blob)
                             blob.state = Blob.State.Despawning;
+
+                        blobClearedCount++;
                     }
 
                     blobSpawner.SpawnStop(); //fail-safe
@@ -478,6 +487,9 @@ public class PlayController : GameModeController<PlayController> {
                     bonusBlob.state = Blob.State.Despawning;
 
                 blobClearedCount += 2;
+
+                //go to next round
+                mIsAnswerCorrectWait = false;
                 break;
         }
 
@@ -588,9 +600,6 @@ public class PlayController : GameModeController<PlayController> {
             }
 
             comboCount++;
-
-            //go to next round
-            mIsAnswerCorrectWait = false;
         }
         else {
             //do error thing for blobs
