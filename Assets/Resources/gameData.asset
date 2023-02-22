@@ -13,6 +13,11 @@ MonoBehaviour:
   m_Name: gameData
   m_EditorClassIdentifier: 
   modalAttackDistributive: attackDistributive
+  modalAttackAreaEvaluate: attackAreaEvaluate
+  modalAttackSums: attackSums
+  modalNumpad: numpad
+  modalVictory: victory
+  levelScenes: []
   ranks:
   - grade: S+
     scale: 0.95
@@ -27,16 +32,10 @@ MonoBehaviour:
   - grade: D
     scale: 0
   rankIndexRetry: 4
-  mistakeCount: 3
   areaRowCapacity: 2
   areaColCapacity: 4
-  hintDelay: 25
-  hintErrorCount: 5
+  mistakeCount: 3
   correctPoints: 100
-  correctDecayPoints: 50
+  bonusPoints: 1000
   perfectPoints: 1000
-  timeParPerRound: 18
-  timeParPerRoundRanking: 12
-  timeBonus: 25
   maxRetryCount: 2
-  debugAutoGenerateAttackBlob: 0

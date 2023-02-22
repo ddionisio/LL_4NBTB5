@@ -43,11 +43,6 @@ public class PlayController : GameModeController<PlayController> {
     public const string blobAttackName = "attack";
     public const string blobBonusName = "bonus";
 
-    [Header("Settings")]
-    public int levelIndex;
-    public string modalVictory = "victory";    
-    public M8.SceneAssetPath nextScene; //after victory
-
     [Header("Numbers")]    
     public NumberGroup[] numberGroups;
     public NumberGroup numberBonusGroup; //set numbers to none to disable bonus
@@ -324,7 +319,7 @@ public class PlayController : GameModeController<PlayController> {
         parms[ModalVictory.parmMistakeCount] = mistakeCount;
         parms[ModalVictory.parmNextScene] = nextScene;*/
 
-        M8.ModalManager.main.Open(modalVictory, parms);
+        M8.ModalManager.main.Open(GameData.instance.modalVictory, parms);
     }
 
     IEnumerator DoBlobSpawn() {
@@ -451,10 +446,12 @@ public class PlayController : GameModeController<PlayController> {
 
                 while(blobSpawner.isSpawning)
                     yield return null;
-
-                yield return new WaitForSeconds(1f);
-
+                
                 var attackBlob = blobSpawner.GetBlobActiveByName(blobAttackName);
+
+                //wait for attack blob to spawn completely
+                while(attackBlob.state == Blob.State.Spawning)
+                    yield return null;
 
                 //connect
                 connectControl.SetGroupEqual(grp, !grp.isOpLeftGreaterThanRight, attackBlob);
@@ -513,9 +510,11 @@ public class PlayController : GameModeController<PlayController> {
         while(blobSpawner.isSpawning)
             yield return null;
 
-        yield return new WaitForSeconds(1f);
-
         var attackBlob = blobSpawner.GetBlobActiveByName(blobAttackName);
+
+        //wait for attack blob to spawn completely
+        while(attackBlob.state == Blob.State.Spawning)
+            yield return null;
 
         //connect
         connectControl.SetGroupEqual(grp, !grp.isOpLeftGreaterThanRight, attackBlob);

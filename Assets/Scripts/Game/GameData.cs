@@ -6,13 +6,24 @@ using LoLExt;
 
 [CreateAssetMenu(fileName = "gameData", menuName = "Game/GameData")]
 public class GameData : M8.SingletonScriptableObject<GameData> {
-    public const string levelScoreHeader = "levelScore_";
+    public const string userKeyLevelScore = "s";
+    public const string userKeyComboCount = "c";
+    public const string userKeyBonusCount = "b";
+    public const string userKeyErrorMultCount = "em";
+    public const string userKeyErrorSumsCount = "es";
 
     public const string modalParamOperationText = "opTxt";
 
     [System.Serializable]
+    public struct LevelInfo {
+        public M8.SceneAssetPath scene;
+        public bool isGameplay;
+    }
+
+    [System.Serializable]
     public struct RankData {
         public string grade; //SS, S, A, B, C, D
+        public Sprite icon;
         public float scale;
     }
 
@@ -21,6 +32,11 @@ public class GameData : M8.SingletonScriptableObject<GameData> {
     public string modalAttackAreaEvaluate = "attackAreaEvaluate";
     public string modalAttackSums = "attackSums";
     public string modalNumpad = "numpad";
+    public string modalVictory = "victory";
+
+    [Header("Game Flow")]
+    public LevelInfo[] levels;
+    public M8.SceneAssetPath endScene;
 
     [Header("Rank Settings")]
     public RankData[] ranks; //highest to lowest
@@ -38,12 +54,16 @@ public class GameData : M8.SingletonScriptableObject<GameData> {
 
     public int retryCounter { get; set; }
 
-    public void ScoreApply(int level, int score) {
-        LoLManager.instance.userData.SetInt(levelScoreHeader + level.ToString(), score);
+    public bool isProceed { get; private set; }
+
+    public void ScoreApply(int level, int aScore, int aCombo, int aBonus, MistakeInfo mistakeInfo) {
+        var saveInfo = new SaveInfo(aScore, aCombo, aBonus, mistakeInfo);
+
+        saveInfo.SaveTo(LoLManager.instance.userData, level);
     }
 
-    public int ScoreGet(int level) {
-        return LoLManager.instance.userData.GetInt(levelScoreHeader + level.ToString());
+    public SaveInfo ScoreGet(int level) {
+        return SaveInfo.LoadFrom(LoLManager.instance.userData, level);
     }
 
     public int GetRankIndex(int roundCount, int score) {
@@ -67,7 +87,59 @@ public class GameData : M8.SingletonScriptableObject<GameData> {
         return ranks.Length - 1;
     }
 
-    protected override void OnInstanceInit() {
+    public int GetLevelIndexFromCurrentScene() {
+        var curScene = M8.SceneManager.instance.curScene;
 
+        for(int i = 0; i < levels.Length; i++) {
+            if(levels[i].scene == curScene)
+                return i;
+        }
+
+        return -1;
+    }
+
+    public void ResetProgress() {
+        LoLManager.instance.userData.Delete();
+
+        LoLManager.instance.ApplyProgress(0, 0);
+    }
+
+    public void Proceed() {
+        int curProgress;
+
+        //var nextProgress = LoLManager.instance.curProgress + 1;
+        if(isProceed)
+            curProgress = LoLManager.instance.curProgress;
+        else {
+            curProgress = GetLevelIndexFromCurrentScene();
+
+            isProceed = true;
+        }
+
+        if(curProgress >= 0) {
+            int nextProgress = curProgress + 1;
+
+            LoLManager.instance.ApplyProgress(nextProgress);
+
+            if(nextProgress < levels.Length)
+                levels[nextProgress].scene.Load();
+            else
+                endScene.Load();
+        }
+    }
+
+    public void ProceedFromCurrentProgress() {
+        isProceed = true;
+
+        var curProgress = LoLManager.instance.curProgress;
+        if(curProgress >= levels.Length)
+            endScene.Load();
+        else
+            levels[curProgress].scene.Load();
+    }
+
+    protected override void OnInstanceInit() {
+        if(LoLManager.isInstantiated)
+            LoLManager.instance.progressMax = levels.Length;
     }
 }
