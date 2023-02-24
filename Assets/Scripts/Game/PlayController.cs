@@ -562,12 +562,12 @@ public class PlayController : GameModeController<PlayController> {
             }
         }
 
+        bool isBonus = grp.IsBlobInGroupByName(blobBonusName);
+
         Blob blobLeft = grp.blobOpLeft, blobRight = grp.blobOpRight, blobEq = grp.blobEq;
         BlobConnect connectOp = grp.connectOp, connectEq = grp.connectEq;
 
         if(isCorrect) {
-            bool isBonus = grp.IsBlobInGroupByName(blobBonusName);
-
             //do sparkly thing for blobs
             if(blobLeft) {
                 blobLeft.state = Blob.State.Correct;
@@ -613,10 +613,11 @@ public class PlayController : GameModeController<PlayController> {
             //decrement combo count
             if(comboCount > 1)
                 comboCount--;
-
-            //append error count
-            mMistakeTotal.Append(mMistakeCurrent);
         }
+
+        //append error count, bonus not counted (special operations potentially not accounted-for)
+        if(!isBonus)
+            mMistakeTotal.Append(mMistakeCurrent);
 
         connectControl.ClearGroup(grp);
 

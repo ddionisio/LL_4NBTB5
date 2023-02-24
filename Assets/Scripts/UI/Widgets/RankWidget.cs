@@ -28,7 +28,7 @@ public class RankWidget : MonoBehaviour {
             rankText.text = rank.grade;
 
         if(rankIcon) {
-            if(rank.icon) {
+            if(rank.icon && rank.icon) {
                 rankIcon.sprite = rank.icon;
                 rankIcon.SetNativeSize();
                 rankIcon.gameObject.SetActive(true);

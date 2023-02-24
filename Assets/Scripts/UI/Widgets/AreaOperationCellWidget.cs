@@ -13,6 +13,14 @@ public class AreaOperationCellWidget : MonoBehaviour, IPointerClickHandler {
     [SerializeField]
     TMP_Text _opLabel;
     [SerializeField]
+    GameObject _factorLeftRootGO;
+    [SerializeField]
+    TMP_Text _factorLeftLabel;
+    [SerializeField]
+    GameObject _factorRightRootGO;
+    [SerializeField]
+    TMP_Text _factorRightLabel;
+    [SerializeField]
     M8.UI.Graphics.ColorGroup _panelColorGroup;
     [SerializeField]
     GameObject _solvedRootGO;
@@ -43,6 +51,22 @@ public class AreaOperationCellWidget : MonoBehaviour, IPointerClickHandler {
         set {
             if(_solvedRootGO)
                 _solvedRootGO.SetActive(value);
+        }
+    }
+
+    public bool factorLeftVisible {
+        get { return _factorLeftRootGO ? _factorLeftRootGO.activeSelf : false; }
+        set {
+            if(_factorLeftRootGO)
+                _factorLeftRootGO.SetActive(value);
+        }
+    }
+
+    public bool factorRightVisible {
+        get { return _factorRightRootGO ? _factorRightRootGO.activeSelf : false; }
+        set {
+            if(_factorRightRootGO)
+                _factorRightRootGO.SetActive(value);
         }
     }
 
@@ -123,10 +147,20 @@ public class AreaOperationCellWidget : MonoBehaviour, IPointerClickHandler {
         if(!ignoreSolved && cellData.isSolved) {
             if(_opLabel)
                 _opLabel.text = cellData.op.equal.ToString();
+
+            if(_factorLeftLabel)
+                _factorLeftLabel.text = "";
+            if(_factorRightLabel)
+                _factorRightLabel.text = "";
         }
         else {
             if(_opLabel)
                 _opLabel.text = string.Format(_opFormat, cellData.op.operand1, Operation.GetOperatorTypeChar(cellData.op.op), cellData.op.operand2);
+
+            if(_factorLeftLabel)
+                _factorLeftLabel.text = cellData.op.operand1.ToString();
+            if(_factorRightLabel)
+                _factorRightLabel.text = cellData.op.operand2.ToString();
         }
     }
 }
