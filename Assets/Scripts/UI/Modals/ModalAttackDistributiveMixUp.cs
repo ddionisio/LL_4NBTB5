@@ -18,6 +18,9 @@ public class ModalAttackDistributiveMixUp : M8.ModalController, M8.IModalPush, M
     [Header("Area Info")]
     public AreaGridControl[] areaGrids;
 
+    [Header("Mistake Display")]
+    public MistakeCounterWidget mistakeCounterDisplay;
+
     [Header("Area Cell Anchors")]
     public string areaCellAnchorTop = "top";
     public string areaCellAnchorLeft = "left";
@@ -28,6 +31,7 @@ public class ModalAttackDistributiveMixUp : M8.ModalController, M8.IModalPush, M
     public SignalAttackState signalInvokeAttackStateChange;
 
     private AreaOperation mAreaOp;
+    private MistakeInfo mMistakeInfo;
 
     private int mAreaGridInd = -1;
 
@@ -52,9 +56,39 @@ public class ModalAttackDistributiveMixUp : M8.ModalController, M8.IModalPush, M
     }
 
     public void Proceed() {
-        Close();
+        //check if area product sums match areas
+        var areaMatchCount = 0;
 
-        M8.ModalManager.main.Open(GameData.instance.modalAttackAreaEvaluate, mAttackParms);
+        for(int r = 0; r < mAreaOp.areaRowCount; r++) {
+            for(int c = 0; c < mAreaOp.areaColCount; c++) {
+                var areaOpWidget = mAreaCellActives[r, c];
+
+                if(areaOpWidget.cellData.op.equal == mAreaOp.GetAreaOperation(r, c).op.equal)
+                    areaMatchCount++;
+            }
+        }
+
+        if(areaMatchCount == mAreaOp.areaRowCount * mAreaOp.areaColCount) {
+            //TODO: do victory animation
+            Close();
+            M8.ModalManager.main.Open(GameData.instance.modalAttackAreaEvaluate, mAttackParms);
+        }
+        else {
+            //error animation for mismatched areas
+
+            if(mMistakeInfo != null) {
+                mMistakeInfo.AppendAreaEvaluateCount();
+
+                //update mistake display
+                mistakeCounterDisplay.UpdateMistakeCount(mMistakeInfo);
+
+                if(mMistakeInfo.isFull) {
+                    Close();
+
+                    signalInvokeAttackStateChange?.Invoke(AttackState.Fail);
+                }
+            }
+        }
     }
 
     void M8.IModalPush.Push(M8.GenericParams parms) {
@@ -118,15 +152,16 @@ public class ModalAttackDistributiveMixUp : M8.ModalController, M8.IModalPush, M
         mAttackParms = parms as ModalAttackParams;
         if(mAttackParms != null) {
             mAreaOp = mAttackParms.GetAreaOperation();
+            mMistakeInfo = mAttackParms.GetMistakeInfo();
         }
         else {
             mAreaOp = null;
+            mMistakeInfo = null;
         }
 
         if(mAreaOp != null) {
             //divide up areas
-
-            //mix up the factors
+            mAreaOp.SplitAll();
 
             //choose the area grid to work with
             AreaGridControl curAreaGrid = null;
@@ -211,9 +246,49 @@ public class ModalAttackDistributiveMixUp : M8.ModalController, M8.IModalPush, M
                             GenerateOperatorRow(row);
                     }
                 }
+
+                //mix up the factors between all area cells
+                var factorNumbers = new int[mAreaOp.areaRowCount * mAreaOp.areaColCount * 2];
+                var factorInd = 0;
+
+                for(int r = 0; r < mAreaOp.areaRowCount; r++) {
+                    for(int c = 0; c < mAreaOp.areaColCount; c++) {
+                        var cell = mAreaOp.GetAreaOperation(r, c);
+
+                        factorNumbers[factorInd] = cell.op.operand1;
+                        factorNumbers[factorInd + 1] = cell.op.operand2;
+
+                        factorInd += 2;
+                    }
+                }
+
+                M8.ArrayUtil.Shuffle(factorNumbers);
+
+                //apply mixups to area cell widgets
+                factorInd = 0;
+
+                for(int r = 0; r < mAreaOp.areaRowCount; r++) {
+                    for(int c = 0; c < mAreaOp.areaColCount; c++) {
+                        var areaOpWidget = mAreaCellActives[r, c];
+
+                        var cell = areaOpWidget.cellData;
+                        cell.op.operand1 = factorNumbers[factorInd];
+                        cell.op.operand2 = factorNumbers[factorInd + 1];
+
+                        areaOpWidget.ApplyCell(cell, false);
+
+                        factorInd += 2;
+                    }
+                }
             }
             else
                 Debug.LogError("Unable to find matching area grid: [row = " + mAreaOp.areaRowCount + ", col = " + mAreaOp.areaColCount + "]");
+        }
+
+        //setup mistake counter
+        if(mMistakeInfo != null) {
+            if(mistakeCounterDisplay)
+                mistakeCounterDisplay.Init(mMistakeInfo);
         }
     }
 

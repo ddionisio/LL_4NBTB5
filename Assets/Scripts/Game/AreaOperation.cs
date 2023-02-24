@@ -130,6 +130,18 @@ public class AreaOperation {
         return true;
     }
 
+    public void SplitAll() {
+        int rowSrc = areaRowCount - 1, colSrc = areaColCount - 1;
+
+        //split rows
+        for(int r = 0; r < rowSrc; r++)
+            SplitAreaRow(rowSrc, r);
+
+        //split cols
+        for(int c = 0; c < colSrc; c++)
+            SplitAreaCol(colSrc, c);
+    }
+
     public bool MergeCol(int colSrc, int colDest) {
         if(colSrc == colDest)
             return false;

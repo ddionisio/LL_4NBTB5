@@ -13,13 +13,13 @@ public class AreaOperationCellFactorDragWidget : MonoBehaviour, IDragHandler, IB
 
     [Header("Factor Data")]
     public FactorSideType factorSide;
-    public Transform factorAnchorLeft;
-    public Transform factorAnchorRight;
+    public Transform factorAnchor;
 
     [Header("Drag/Drop")]
     public RectTransform dragRoot;
     public Vector2 dragOfs;
     public TMP_Text dragLabel;
+    public GameObject dropHighlightGO;
     public float dropMoveSpeed = 100;
     public DG.Tweening.Ease dropMoveEase = DG.Tweening.Ease.OutSine;
 
@@ -55,26 +55,28 @@ public class AreaOperationCellFactorDragWidget : MonoBehaviour, IDragHandler, IB
         }
     }
 
-    public Transform factorAnchor {
-        get {
-            switch(factorSide) {
-                case FactorSideType.Left:
-                    return factorAnchorLeft;
-                case FactorSideType.Right:
-                    return factorAnchorRight;
-            }
+    public bool isMoving { get { return mMoveRout != null; } }
 
-            return null;
+    public bool dropHighlightActive { 
+        get {
+            if(dropHighlightGO)
+                return dropHighlightGO.activeSelf;
+            return false;
+        }
+
+        set {
+            if(dropHighlightGO)
+                dropHighlightGO.SetActive(value);
         }
     }
-
-    public bool isMoving { get { return mMoveRout != null; } }
 
     private AreaOperationCellWidget mAreaOpWidget;
 
     private DG.Tweening.EaseFunction mDropMoveEaseFunc;
 
     private Coroutine mMoveRout;
+
+    private AreaOperationCellFactorDragWidget mHoverCellDragWidget;
 
     public void SetFactorNumberVisible(bool visible) {
         switch(factorSide) {
@@ -91,6 +93,8 @@ public class AreaOperationCellFactorDragWidget : MonoBehaviour, IDragHandler, IB
 
     void Awake() {
         dragRoot.gameObject.SetActive(false);
+
+        dropHighlightActive = false;
 
         mAreaOpWidget = GetComponentInParent<AreaOperationCellWidget>(true);
 
@@ -126,21 +130,25 @@ public class AreaOperationCellFactorDragWidget : MonoBehaviour, IDragHandler, IB
         if(!isDragging)
             return;
 
+        DragUpdate(eventData);
+
         //check drop
-        AreaOperationCellFactorDragWidget otherDragWidget = null;
+        if(mHoverCellDragWidget) {
+            //apply factor swap
+            if(mHoverCellDragWidget != this) {
+                var otherCellNumber = mHoverCellDragWidget.number;
 
-        if(eventData.pointerDrag && eventData.pointerDrag != gameObject)
-            otherDragWidget = eventData.pointerDrag.GetComponent<AreaOperationCellFactorDragWidget>();
+                mHoverCellDragWidget.number = number;
 
-        if(otherDragWidget) {
-            //switch factors
-            var otherCellNumber = otherDragWidget.number;
+                number = otherCellNumber;
 
-            otherDragWidget.number = number;
+                dragLabel.text = otherCellNumber.ToString();
 
-            number = otherCellNumber;
+                dragRoot.position = mHoverCellDragWidget.factorAnchor.position;
+            }
 
-            dragRoot.position = otherDragWidget.factorAnchor.position;
+            mHoverCellDragWidget.dropHighlightActive = false;
+            mHoverCellDragWidget = null;
         }
 
         StartMoveBackToOrigin();
@@ -158,6 +166,8 @@ public class AreaOperationCellFactorDragWidget : MonoBehaviour, IDragHandler, IB
 
         while(curTime < delay) {
             yield return null;
+
+            curTime += Time.deltaTime;
 
             var t = mDropMoveEaseFunc(curTime, delay, 0f, 0f);
 
@@ -189,6 +199,10 @@ public class AreaOperationCellFactorDragWidget : MonoBehaviour, IDragHandler, IB
 
             dragLabel.text = number.ToString();
 
+            var dragParent = DragHolder.isInstantiated ? DragHolder.instance.dragRoot : null;
+            if(dragParent)
+                dragRoot.SetParent(dragParent, false);
+
             dragRoot.position = factorAnchor.position;
 
             dragRoot.gameObject.SetActive(true);
@@ -205,10 +219,38 @@ public class AreaOperationCellFactorDragWidget : MonoBehaviour, IDragHandler, IB
         cursorPos += dragOfs;
 
         dragRoot.position = cursorPos;
+
+        //update highlight
+        AreaOperationCellFactorDragWidget pointerDragWidget = null;
+
+        var pointerGO = eventData.pointerCurrentRaycast.gameObject;
+
+        if(pointerGO) {
+            if(pointerGO == gameObject)
+                pointerDragWidget = this;
+            else if(mHoverCellDragWidget && mHoverCellDragWidget.gameObject == pointerGO)
+                pointerDragWidget = mHoverCellDragWidget;
+            else
+                pointerDragWidget = pointerGO.GetComponent<AreaOperationCellFactorDragWidget>();
+        }
+
+        if(mHoverCellDragWidget != pointerDragWidget) {
+            if(mHoverCellDragWidget)
+                mHoverCellDragWidget.dropHighlightActive = false;
+
+            mHoverCellDragWidget = pointerDragWidget;
+            if(mHoverCellDragWidget)
+                mHoverCellDragWidget.dropHighlightActive = true;
+        }
     }
 
     private void DragEnd() {
         if(isDragging) {
+            if(mHoverCellDragWidget) {
+                mHoverCellDragWidget.dropHighlightActive = false;
+                mHoverCellDragWidget = null;
+            }
+
             if(dragRoot)
                 dragRoot.gameObject.SetActive(false);
 

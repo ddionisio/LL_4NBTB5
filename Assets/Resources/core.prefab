@@ -259,7 +259,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _gameID: com.renegadeware.LL_4NBTB5
-  _progressMax: 8
+  _progressMax: 9
   _userData: {fileID: 11400000, guid: d1570a9011293b94a9b3d84278169e34, type: 2}
   _settingsData: {fileID: 11400000, guid: 9d49958e44f75d147a748c1b9fa7ee0e, type: 2}
   _speakQueueStartDelay: 0.3

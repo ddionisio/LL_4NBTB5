@@ -111,6 +111,8 @@ public class GameData : M8.SingletonScriptableObject<GameData> {
         if(isProceed)
             curProgress = LoLManager.instance.curProgress;
         else {
+            LoLManager.instance.progressMax = levels.Length;
+
             curProgress = GetLevelIndexFromCurrentScene();
 
             isProceed = true;
@@ -131,15 +133,12 @@ public class GameData : M8.SingletonScriptableObject<GameData> {
     public void ProceedFromCurrentProgress() {
         isProceed = true;
 
+        LoLManager.instance.progressMax = levels.Length;
+
         var curProgress = LoLManager.instance.curProgress;
         if(curProgress >= levels.Length)
             endScene.Load();
         else
             levels[curProgress].scene.Load();
-    }
-
-    protected override void OnInstanceInit() {
-        if(LoLManager.isInstantiated)
-            LoLManager.instance.progressMax = levels.Length;
     }
 }

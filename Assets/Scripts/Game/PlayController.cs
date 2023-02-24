@@ -43,12 +43,18 @@ public class PlayController : GameModeController<PlayController> {
     public const string blobAttackName = "attack";
     public const string blobBonusName = "bonus";
 
+    [Header("Blob Info")]
+    public BlobTemplateData blobAttackTemplate; //used for spawning an attack blob
+    public int blobSpawnCount = 4;
+
     [Header("Numbers")]    
     public NumberGroup[] numberGroups;
-    public NumberGroup numberBonusGroup; //set numbers to none to disable bonus
-    public BlobTemplateData blobAttackTemplate; //used for spawning an attack blob
     public bool numberCriteriaUnlocked; //if true, no blob connect restriction is made
-    public int blobSpawnCount = 4;
+
+    [Header("Bonus Number")]
+    public NumberGroup numberBonusGroup; //set numbers to none to disable bonus
+    public string numberBonusModal;
+    public int[] numberBonusModalIndexParams; //generic indices that can be parsed by bonus modal (be careful!)
 
     [Header("Controls")]
     public BlobConnectController connectControl;
@@ -371,6 +377,9 @@ public class PlayController : GameModeController<PlayController> {
     }
 
     IEnumerator DoAttack(BlobConnectController.Group grp) {
+        var bonusBlob = blobSpawner.GetBlobActiveByName(blobBonusName);
+        var bonusBlobIsConnected = bonusBlob ? grp.IsBlobInGroup(bonusBlob) : false;
+
         //setup area operation
         int factorLeft, factorRight;
 
@@ -388,10 +397,20 @@ public class PlayController : GameModeController<PlayController> {
 
         mMistakeCurrent.Reset();
 
+        string attackModal;
+
+        if(bonusBlobIsConnected) {
+            attackModal = numberBonusModal;
+
+            mModalAttackParms.SetGenericIndices(numberBonusModalIndexParams);
+        }
+        else
+            attackModal = GameData.instance.modalAttackDistributive;
+
         mModalAttackParms.SetAreaOperation(mAreaOp);
         mModalAttackParms.SetMistakeInfo(mMistakeCurrent);
 
-        M8.ModalManager.main.Open(GameData.instance.modalAttackDistributive, mModalAttackParms);
+        M8.ModalManager.main.Open(attackModal, mModalAttackParms);
 
         //TODO: background animation
 
@@ -404,15 +423,12 @@ public class PlayController : GameModeController<PlayController> {
         while(M8.ModalManager.main.isBusy)
             yield return null;
 
-        Blob bonusBlob;
-
         //determine course of action based on attack state
         switch(mCurAttackState) {
             case AttackState.Cancel:
                 connectControl.ClearGroup(grp);
 
                 //clear out bonus blob
-                bonusBlob = blobSpawner.GetBlobActiveByName(blobBonusName);
                 if(bonusBlob)
                     bonusBlob.state = Blob.State.Despawning;
                 break;
@@ -421,7 +437,6 @@ public class PlayController : GameModeController<PlayController> {
                 connectControl.GroupEvaluate(grp);
 
                 //clear out bonus blob
-                bonusBlob = blobSpawner.GetBlobActiveByName(blobBonusName);
                 if(bonusBlob) {
                     if(bonusBlob.state != Blob.State.Despawning) {
                         //wait for it to return normal (if it was part of the group during error animation)
@@ -434,9 +449,6 @@ public class PlayController : GameModeController<PlayController> {
                 break;
 
             case AttackState.Success:
-                bonusBlob = blobSpawner.GetBlobActiveByName(blobBonusName);
-                bool bonusBlobIsInGroup = bonusBlob ? grp.IsBlobInGroup(bonusBlob) : false;
-
                 //generate attack blob and connect it to the group to be evaluated
 
                 //do fancy animation on board
@@ -463,7 +475,7 @@ public class PlayController : GameModeController<PlayController> {
                 /////////////////////
 
                 //check if bonus blob is part of the group, then clear out the other blobs on board
-                if(bonusBlobIsInGroup) {
+                if(bonusBlobIsConnected) {
                     //wait for bonus blob to release
                     while(bonusBlob.state != Blob.State.None)
                         yield return null;
