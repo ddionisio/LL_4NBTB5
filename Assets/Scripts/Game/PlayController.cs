@@ -54,7 +54,7 @@ public class PlayController : GameModeController<PlayController> {
     [Header("Bonus Number")]
     public NumberGroup numberBonusGroup; //set numbers to none to disable bonus
     public string numberBonusModal;
-    public int[] numberBonusModalIndexParams; //generic indices that can be parsed by bonus modal (be careful!)
+    public M8.GenericParamSerialized[] numberBonusModalParams; //extra parameters to be passed to modal
 
     [Header("Controls")]
     public BlobConnectController connectControl;
@@ -402,7 +402,7 @@ public class PlayController : GameModeController<PlayController> {
         if(bonusBlobIsConnected) {
             attackModal = numberBonusModal;
 
-            mModalAttackParms.SetGenericIndices(numberBonusModalIndexParams);
+            M8.GenericParamSerialized.ApplyAll(mModalAttackParms, numberBonusModalParams);
         }
         else
             attackModal = GameData.instance.modalAttackDistributive;

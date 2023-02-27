@@ -129,7 +129,7 @@ public class ModalAttackSums : M8.ModalController, M8.IModalPush, M8.IModalPop {
             for(int row = 0; row < mAreaOp.areaRowCount; row++) {
                 for(int col = 0; col < mAreaOp.areaColCount; col++) {
                     var cell = mAreaOp.GetAreaOperation(row, col);
-                    if(cell.isSolved) {
+                    if(cell.isSolved && cell.op.equal > 0) {
                         var factorWidget = GenerateFactor();
 
                         factorWidget.number = cell.op.equal;

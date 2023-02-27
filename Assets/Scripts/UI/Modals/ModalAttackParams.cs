@@ -7,7 +7,6 @@ using System.Collections.Generic;
 public class ModalAttackParams : M8.GenericParams {
     public const string areaOp = "ao";
     public const string mistakeInfo = "mi";
-    public const string genericIndices = "gi"; //generic indices
 
     public AreaOperation GetAreaOperation() {
         if(ContainsKey(areaOp))
@@ -29,16 +28,5 @@ public class ModalAttackParams : M8.GenericParams {
 
     public void SetMistakeInfo(MistakeInfo aInfo) {
         this[mistakeInfo] = aInfo;
-    }
-
-    public int[] GetGenericIndices() {
-        if(ContainsKey(genericIndices))
-            return GetValue<int[]>(genericIndices);
-
-        return null;
-    }
-
-    public void SetGenericIndices(int[] indices) {
-        this[genericIndices] = indices;
     }
 }
