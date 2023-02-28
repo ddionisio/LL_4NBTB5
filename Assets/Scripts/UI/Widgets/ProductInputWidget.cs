@@ -27,8 +27,6 @@ public class ProductInputWidget : MonoBehaviour, IPointerClickHandler {
     [SerializeField]
     string _takeError;
 
-    public int correctNumber { get; set; }
-
     public int inputNumber { 
         get { return mInputNumber; }
         set {
@@ -42,17 +40,11 @@ public class ProductInputWidget : MonoBehaviour, IPointerClickHandler {
         }
     }
 
-    public bool isMatch { get { return correctNumber == inputNumber; } }
-
     public bool interactable {
-        get {
-            if(!mSelectable)
-                mSelectable = GetComponent<Selectable>();
-
-            return mSelectable ? mSelectable.interactable : false;
-        }
-
+        get { return mInteractable; }
         set {
+            mInteractable = value;
+
             if(!mSelectable)
                 mSelectable = GetComponent<Selectable>();
 
@@ -101,6 +93,8 @@ public class ProductInputWidget : MonoBehaviour, IPointerClickHandler {
 
     private RectTransform mRectTrans;
 
+    private bool mInteractable;
+
     public void SetEmpty() {
         mInputNumber = 0;
 
@@ -119,6 +113,9 @@ public class ProductInputWidget : MonoBehaviour, IPointerClickHandler {
     }
 
     void IPointerClickHandler.OnPointerClick(PointerEventData eventData) {
+        if(!interactable)
+            return;
+
         clickCallback?.Invoke(this);
     }
 }

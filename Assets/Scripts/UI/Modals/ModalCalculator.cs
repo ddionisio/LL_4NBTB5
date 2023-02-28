@@ -78,6 +78,8 @@ public class ModalCalculator : M8.ModalController, M8.IModalPush, M8.IModalPop, 
     public M8.SignalFloat signalValueUpdate;
     public M8.SignalFloat signalProceed;
 
+    public float curValueFloat { get { return (float)mCurValue; } }
+
     private double mCurValue;
     private bool mCurValueIsSpecial; //when we click on constants such as PI
     private int mMaxDigits;

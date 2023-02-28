@@ -399,6 +399,7 @@ public class PlayController : GameModeController<PlayController> {
 
         string attackModal;
 
+        //if(true) {
         if(bonusBlobIsConnected) {
             attackModal = numberBonusModal;
 

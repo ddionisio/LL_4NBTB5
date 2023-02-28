@@ -8341,8 +8341,20 @@ MonoBehaviour:
   numberBonusGroup:
     blobData: {fileID: 11400000, guid: 1eb2e0e726b99ff4889d2dc330f50f35, type: 2}
     numbers: 9a020000c701000085000000
-  numberBonusModal: attackDistributiveMixUp
-  numberBonusModalParams: []
+  numberBonusModal: attackSumsFill
+  numberBonusModalParams:
+  - key: emptyCount
+    type: 1
+    iVal: 2
+    vectorVal: {x: 0, y: 0, z: 0, w: 0}
+    sVal: 
+    oVal: {fileID: 0}
+  - key: isAttackEmpty
+    type: 0
+    iVal: 1
+    vectorVal: {x: 0, y: 0, z: 0, w: 0}
+    sVal: 
+    oVal: {fileID: 0}
   connectControl: {fileID: 1008581780}
   blobSpawner: {fileID: 27559628}
   roundsRoot: {fileID: 2008229369}

@@ -2808,8 +2808,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2046483672}
-        m_TargetAssemblyTypeName: ModalAttackSums, Assembly-CSharp
+      - m_Target: {fileID: 736319162}
+        m_TargetAssemblyTypeName: ModalAttackPartialProducts, Assembly-CSharp
         m_MethodName: Proceed
         m_Mode: 1
         m_Arguments:

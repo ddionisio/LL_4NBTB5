@@ -71,7 +71,7 @@ public class ModalAttackSums : M8.ModalController, M8.IModalPush, M8.IModalPop {
             signalInvokeAttackStateChange?.Invoke(AttackState.Success);
         }
         else {
-            //show message
+            //show message (shouldn't get here)
         }
     }
 

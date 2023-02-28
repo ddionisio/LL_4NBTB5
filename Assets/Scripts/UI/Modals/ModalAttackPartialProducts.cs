@@ -5,8 +5,8 @@ using UnityEngine;
 using TMPro;
 
 public class ModalAttackPartialProducts : M8.ModalController, M8.IModalPush, M8.IModalPop {
-    public const string parmEmptyCount = "apec"; //number of partial products that need to be filled by player
-    public const string parmAttackEmpty = "apea"; //if true, then player needs to fill in answer
+    public const string parmEmptyCount = "emptyCount"; //number of partial products that need to be filled by player
+    public const string parmAttackEmpty = "isAttackEmpty"; //if true, then player needs to fill in answer
 
     [Header("Product Display")]
     public TMP_Text factorLeftLabel;
@@ -40,12 +40,19 @@ public class ModalAttackPartialProducts : M8.ModalController, M8.IModalPush, M8.
     public M8.Signal signalListenNext;
     public M8.SignalFloat signalListenNumpadProceed;
 
+    public bool isProceeding { get { return mProceedRout != null; } }
+
     private List<ProductInputWidget> mPartialProductActives;
     private M8.CacheList<ProductInputWidget> mPartialProductCache;
 
     private List<ProductInputWidget> mPartialProductInputs;
     private M8.CacheList<ProductInputWidget> mCorrectProductWidgets;
     private M8.CacheList<ProductInputWidget> mIncorrectProductWidgets;
+
+    private int[] mPartialProductIndices;
+
+    private M8.CacheList<int> mCorrectAnswers;
+    private M8.CacheList<int> mCorrectAnswersChecked;
 
     private ProductInputWidget mSelectedProductWidget;
 
@@ -58,8 +65,13 @@ public class ModalAttackPartialProducts : M8.ModalController, M8.IModalPush, M8.
 
     private bool mIsInit;
 
-    public void Proceed() {
+    private Coroutine mProceedRout;
 
+    public void Proceed() {
+        if(isProceeding)
+            return;
+
+        StartProceed();
     }
 
     void M8.IModalPush.Push(M8.GenericParams parms) {
@@ -83,9 +95,15 @@ public class ModalAttackPartialProducts : M8.ModalController, M8.IModalPush, M8.
             mCorrectProductWidgets = new M8.CacheList<ProductInputWidget>(partialProductCapacity + 1);
             mIncorrectProductWidgets = new M8.CacheList<ProductInputWidget>(partialProductCapacity + 1);
 
+            mPartialProductIndices = new int[partialProductCapacity];
+
+            mCorrectAnswers = new M8.CacheList<int>(partialProductCapacity);
+            mCorrectAnswersChecked = new M8.CacheList<int>(partialProductCapacity);
+
             answerWidget.clickCallback += OnProductWidgetClick;
 
             mNumpadParms = new M8.GenericParams();
+            mNumpadParms[GameData.modalParamOperationText] = "";
             mNumpadParms[ModalCalculator.parmMaxDigit] = 8;
             mNumpadParms["showPrevNext"] = true;
 
@@ -123,6 +141,8 @@ public class ModalAttackPartialProducts : M8.ModalController, M8.IModalPush, M8.
             if(factorRightLabel)
                 factorRightLabel.text = mAreaOp.operation.operand2.ToString();
 
+            int partialProductCount = 0;
+
             //setup partial products
             for(int row = 0; row < mAreaOp.areaRowCount; row++) {
                 for(int col = 0; col < mAreaOp.areaColCount; col++) {
@@ -130,50 +150,42 @@ public class ModalAttackPartialProducts : M8.ModalController, M8.IModalPush, M8.
                     if(cell.op.equal > 0) {
                         var partialProductWidget = GeneratePartialProductWidget();
 
-                        partialProductWidget.correctNumber = cell.op.equal;
-                        partialProductWidget.correctActive = false;
+                        //setup as if it's a fixed number
+                        partialProductWidget.inputNumber = cell.op.equal;
                         partialProductWidget.selectedActive = false;
-                    }
-                }
-            }
-
-            if(emptyCount > 0) {
-                //shuffle items
-                for(int i = 0, max = mPartialProductActives.Count; i < max; i++) {
-                    int r = Random.Range(i, max);
-                    var obj = mPartialProductActives[i];
-                    var robj = mPartialProductActives[r];
-                    mPartialProductActives[i] = robj;
-                    mPartialProductActives[r] = obj;
-                }
-
-                //apply empty items on top, everything else is fixed
-                for(int i = 0; i < mPartialProductActives.Count; i++) {
-                    var partialProductWidget = mPartialProductActives[i];
-
-                    if(i < emptyCount) {
-                        partialProductWidget.SetEmpty();
-                        partialProductWidget.interactable = true;
-
-                        mPartialProductInputs.Add(partialProductWidget);
-                    }
-                    else {
-                        partialProductWidget.inputNumber = partialProductWidget.correctNumber;
+                        partialProductWidget.correctActive = false;                        
                         partialProductWidget.interactable = false;
-                    }
-                }
-            }
-            else {
-                for(int i = 0; i < mPartialProductActives.Count; i++) {
-                    var partialProductWidget = mPartialProductActives[i];
 
-                    partialProductWidget.inputNumber = partialProductWidget.correctNumber;
-                    partialProductWidget.interactable = false;
+                        mPartialProductIndices[partialProductCount] = partialProductCount;
+                        partialProductCount++;
+                    }
                 }
             }
 
             //sort from highest to lowest
             mPartialProductActives.Sort(PartialProductWidgetSortCompare);
+
+            if(emptyCount > 0) {
+                //shuffle indices, then use that to determine empty widgets
+                M8.ArrayUtil.Shuffle(mPartialProductIndices, 0, partialProductCount);
+
+                var count = Mathf.Clamp(emptyCount, 0, partialProductCount);
+                for(int i = 0; i < count; i++) {
+                    var partialProductWidget = mPartialProductActives[mPartialProductIndices[i]];
+
+                    mCorrectAnswers.Add(partialProductWidget.inputNumber);
+
+                    partialProductWidget.SetEmpty();
+                    partialProductWidget.interactable = true;
+                }
+
+                //add empty widgets to input in the correct order
+                for(int i = 0; i < mPartialProductActives.Count; i++) {
+                    var partialProductWidget = mPartialProductActives[i];
+                    if(partialProductWidget.interactable)
+                        mPartialProductInputs.Add(partialProductWidget);
+                }
+            }
 
             //add partial products to layout
             float factorsHeight = 0; //assume size delta is the actual size of the widget
@@ -191,21 +203,19 @@ public class ModalAttackPartialProducts : M8.ModalController, M8.IModalPush, M8.
             partialProductRoot.sizeDelta = partialProductRootSizeDelta;
 
             //setup answer
-            answerWidget.correctNumber = mAreaOp.operation.equal;
-
             if(answerIsEmpty) {
-                answerWidget.SetEmpty();
+                answerWidget.SetEmpty();                
                 answerWidget.interactable = true;
 
                 mPartialProductInputs.Add(answerWidget);
             }
             else {
-                answerWidget.inputNumber = answerWidget.correctNumber;
+                answerWidget.inputNumber = mAreaOp.operation.equal;
                 answerWidget.interactable = false;
             }
 
-            answerWidget.correctActive = false;
             answerWidget.selectedActive = false;
+            answerWidget.correctActive = false;
         }
 
         //setup mistake counter
@@ -223,11 +233,17 @@ public class ModalAttackPartialProducts : M8.ModalController, M8.IModalPush, M8.
     }
 
     void M8.IModalPop.Pop() {
+        StopProceed();
+
         ClearPartialProductWidgets();
 
         mPartialProductInputs.Clear();
+
         mCorrectProductWidgets.Clear();
         mIncorrectProductWidgets.Clear();
+
+        mCorrectAnswers.Clear();
+        mCorrectAnswersChecked.Clear();
 
         mSelectedProductWidget = null;
 
@@ -242,8 +258,14 @@ public class ModalAttackPartialProducts : M8.ModalController, M8.IModalPush, M8.
     void OnNumpadPrev() {
         //get current index
         int inputInd = -1;
-        if(mSelectedProductWidget)
+        if(mSelectedProductWidget) {
+            //update value of current selected widget
+            var numpadModal = M8.ModalManager.main.GetBehaviour<ModalCalculator>(GameData.instance.modalNumpad);
+            if(numpadModal)
+                mSelectedProductWidget.inputNumber = Mathf.RoundToInt(numpadModal.curValueFloat);
+
             inputInd = mPartialProductInputs.IndexOf(mSelectedProductWidget);
+        }
 
         ClearSelected();
 
@@ -264,8 +286,14 @@ public class ModalAttackPartialProducts : M8.ModalController, M8.IModalPush, M8.
     void OnNumpadNext() {
         //get current index
         int inputInd = -1;
-        if(mSelectedProductWidget)
+        if(mSelectedProductWidget) {
+            //update value of current selected widget
+            var numpadModal = M8.ModalManager.main.GetBehaviour<ModalCalculator>(GameData.instance.modalNumpad);
+            if(numpadModal)
+                mSelectedProductWidget.inputNumber = Mathf.RoundToInt(numpadModal.curValueFloat);
+
             inputInd = mPartialProductInputs.IndexOf(mSelectedProductWidget);
+        }
 
         ClearSelected();
 
@@ -306,6 +334,130 @@ public class ModalAttackPartialProducts : M8.ModalController, M8.IModalPush, M8.
         M8.ModalManager.main.Open(GameData.instance.modalNumpad, mNumpadParms);
     }
 
+    IEnumerator DoProceed() {
+        //grab new incorrects and corrects
+        mCorrectProductWidgets.Clear();
+        mIncorrectProductWidgets.Clear();
+
+        for(int i = 0; i < mPartialProductInputs.Count; i++) {
+            var productWidget = mPartialProductInputs[i];
+            if(productWidget.interactable) {
+                bool isCorrect = false;
+
+                if(productWidget == answerWidget)
+                    isCorrect = productWidget.inputNumber == mAreaOp.operation.equal;
+                else {
+                    for(int j = 0; j < mCorrectAnswers.Count; j++) {
+                        var answer = mCorrectAnswers[j];
+
+                        if(productWidget.inputNumber == answer) {
+                            mCorrectAnswers.RemoveAt(j);
+                            mCorrectAnswersChecked.Add(answer);
+
+                            isCorrect = true;
+                            break;
+                        }
+                    }
+                }
+
+                if(isCorrect)
+                    mCorrectProductWidgets.Add(productWidget);
+                else
+                    mIncorrectProductWidgets.Add(productWidget);
+            }
+        }
+
+        //reset correct answer buffer
+        for(int i = 0; i < mCorrectAnswersChecked.Count; i++)
+            mCorrectAnswers.Add(mCorrectAnswersChecked[i]);
+
+        mCorrectAnswersChecked.Clear();
+
+        //do animations
+
+        int animFinishCount = 0;
+
+        //animate correct widgets
+        for(int i = 0; i < mCorrectProductWidgets.Count; i++)
+            mCorrectProductWidgets[i].PlayCorrect();
+        
+        while(animFinishCount < mCorrectProductWidgets.Count) {
+            yield return null;
+
+            for(int i = 0; i < mCorrectProductWidgets.Count; i++) {
+                if(!mCorrectProductWidgets[i].isAnimating)
+                    animFinishCount++;
+            }
+        }
+
+        //set as correct active, non-interactable
+        for(int i = 0; i < mCorrectProductWidgets.Count; i++) {
+            var correctWidget = mCorrectProductWidgets[i];
+
+            correctWidget.correctActive = true;
+            correctWidget.interactable = false;
+
+            mPartialProductInputs.Remove(correctWidget);
+
+            mCorrectAnswers.Remove(correctWidget.inputNumber);
+        }
+
+        yield return new WaitForSeconds(evaluateEachDelay);
+
+        animFinishCount = 0;
+
+        //animate incorrect widgets
+        for(int i = 0; i < mIncorrectProductWidgets.Count; i++)
+            mIncorrectProductWidgets[i].PlayError();
+
+        while(animFinishCount < mIncorrectProductWidgets.Count) {
+            yield return null;
+
+            for(int i = 0; i < mIncorrectProductWidgets.Count; i++) {
+                if(!mIncorrectProductWidgets[i].isAnimating)
+                    animFinishCount++;
+            }
+        }
+
+        //all correct?
+        if(mIncorrectProductWidgets.Count == 0) {
+            //TODO: fanfare animation
+
+            Close();
+
+            signalInvokeAttackStateChange?.Invoke(AttackState.Success);
+        }
+        else {
+            //error animation
+
+            if(mMistakeInfo != null) {
+                mMistakeInfo.AppendAreaEvaluateCount();
+
+                //update mistake display
+                mistakeCounterDisplay.UpdateMistakeCount(mMistakeInfo);
+
+                if(mMistakeInfo.isFull) {
+                    Close();
+
+                    signalInvokeAttackStateChange?.Invoke(AttackState.Fail);
+                }
+            }
+        }
+
+        mProceedRout = null;
+    }
+
+    private void StartProceed() {
+        mProceedRout = StartCoroutine(DoProceed());
+    }
+
+    private void StopProceed() {
+        if(mProceedRout != null) {
+            StopCoroutine(mProceedRout);
+            mProceedRout = null;
+        }
+    }
+
     private void ClearSelected() {
         if(mSelectedProductWidget) {
             mSelectedProductWidget.selectedActive = false;
@@ -330,7 +482,7 @@ public class ModalAttackPartialProducts : M8.ModalController, M8.IModalPush, M8.
         else if(!right)
             return 1;
 
-        return right.correctNumber - left.correctNumber;
+        return right.inputNumber - left.inputNumber;
     }
 
     private void ClearPartialProductWidgets() {
