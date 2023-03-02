@@ -20,6 +20,10 @@ public class Blob : MonoBehaviour, M8.IPoolSpawn, M8.IPoolDespawn {
         Correct //animate and release
     }
 
+    public class ColorPulseInfo {
+
+    }
+
     [Header("Jelly")]
     public UnityJellySprite jellySprite;
     public float radius; //estimate radius
@@ -30,7 +34,6 @@ public class Blob : MonoBehaviour, M8.IPoolSpawn, M8.IPoolDespawn {
 
     [Header("Face States")]
     public Sprite eyeSpriteNormal;
-    public Sprite eyeSpriteLarge;
     public Sprite eyeSpriteClose;
 
     public float eyeBlinkOpenDelayMin = 0.5f;
@@ -43,7 +46,7 @@ public class Blob : MonoBehaviour, M8.IPoolSpawn, M8.IPoolDespawn {
     public Sprite mouthSpriteError;
     public Sprite mouthSpriteCorrect;
 
-    [Header("Highlight Materials")]
+    [Header("Highlight Info")]
     public Material hoverDragMaterial;
     public Material errorMaterial;
     public Material correctMaterial;

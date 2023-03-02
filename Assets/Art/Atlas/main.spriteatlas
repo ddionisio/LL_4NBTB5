@@ -47,6 +47,7 @@ SpriteAtlas:
     - {fileID: 102900000, guid: efc7db50417ce66478965fe13eaba82e, type: 3}
     - {fileID: 102900000, guid: 1752d9d272a3d0c41bb751343a2c0a2d, type: 3}
     - {fileID: 102900000, guid: ed20d182ff55d054f89b0173a56290cf, type: 3}
+    - {fileID: 102900000, guid: 711685e922895e944a6a92a4fb581f1e, type: 3}
     bindAsDefault: 1
     isAtlasV2: 0
     cachedData: {fileID: 0}
@@ -71,6 +72,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: d985b654a2dd4e54482f774cec3f7b9c, type: 3}
   - {fileID: 21300000, guid: 21c769e4040edd24e83c0830fb109b60, type: 3}
   - {fileID: 21300000, guid: ed3ee745814d1bf44a0a1ff9061127df, type: 3}
+  - {fileID: 21300000, guid: 25f029e6fd1dbe34f9442686a376cbff, type: 3}
   - {fileID: 21300000, guid: 63a527f61ac87224cb15c6b6c304cbc6, type: 3}
   - {fileID: 21300000, guid: 6f1060b7d10e31a4e88695370a2d1946, type: 3}
   - {fileID: 21300000, guid: bf01b0b7199ec26448b016fd2de647e5, type: 3}
@@ -122,6 +124,7 @@ SpriteAtlas:
   - circleGlow
   - explodePixel5
   - devicerBody
+  - blob
   - devicerEye
   - roundRect8
   - explodePixel1
