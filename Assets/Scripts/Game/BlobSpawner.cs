@@ -49,6 +49,7 @@ public class BlobSpawner : MonoBehaviour {
     public TemplateGroup[] templateGroups;
 
     [Header("Spawn")]
+    public M8.ColorPalette spawnPalette;
     public int spawnActiveCount = 6;
     public bool spawnPointsShuffle = true;
     public LayerMask spawnPointCheckMask; //ensure spot is fine to spawn    
@@ -63,6 +64,9 @@ public class BlobSpawner : MonoBehaviour {
     public bool isSpawning { get { return mSpawnRout != null; } }
 
     private M8.PoolController mPool;
+
+    private int[] mSpawnPaletteIndices;
+    private int mSpawnPaletteCurrentInd;
 
     private Queue<SpawnInfo> mSpawnQueue = new Queue<SpawnInfo>();
     private Coroutine mSpawnRout;
@@ -271,6 +275,26 @@ public class BlobSpawner : MonoBehaviour {
 
                 //invalid, check next
                 yield return null;
+            }
+
+            //setup color
+            if(spawnPalette && spawnPalette.count > 0) {
+                Color spawnColor;
+
+                if(mSpawnPaletteIndices == null) { //init
+                    mSpawnPaletteIndices = new int[spawnPalette.count];
+                    for(int i = 0; i < mSpawnPaletteIndices.Length; i++)
+                        mSpawnPaletteIndices[i] = i;
+                    M8.ArrayUtil.Shuffle(mSpawnPaletteIndices);
+                }
+
+                spawnColor = spawnPalette.GetColor(mSpawnPaletteIndices[mSpawnPaletteCurrentInd]);
+
+                mSpawnPaletteCurrentInd++;
+                if(mSpawnPaletteCurrentInd == mSpawnPaletteIndices.Length)
+                    mSpawnPaletteCurrentInd = 0;
+
+                mSpawnParms[JellySpriteSpawnController.parmColor] = spawnColor;
             }
 
             //spawn

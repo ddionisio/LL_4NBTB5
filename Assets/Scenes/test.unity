@@ -519,6 +519,7 @@ MonoBehaviour:
   - blobData: {fileID: 11400000, guid: 1eb2e0e726b99ff4889d2dc330f50f35, type: 2}
     poolCapacity: 1
     spawnPointsRoot: {fileID: 745499586}
+  spawnPalette: {fileID: 11400000, guid: b35f694f177ceb8408ba3c4dc3e305a0, type: 2}
   spawnActiveCount: 6
   spawnPointsShuffle: 1
   spawnPointCheckMask:

@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: blobCorrect
-  m_Shader: {fileID: 4800000, guid: 04658c77db1a54948b1a16f1cf42b463, type: 3}
+  m_Name: spriteBlobError
+  m_Shader: {fileID: 4800000, guid: 3708838fc204847409649bff2f459d5d, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -55,6 +55,14 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _OverlayScroll:
+        m_Texture: {fileID: 2800000, guid: b118362e7f3b65744a433f8db5276299, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _OverlayScroll2:
+        m_Texture: {fileID: 2800000, guid: b118362e7f3b65744a433f8db5276299, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _ParallaxMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -72,8 +80,11 @@ Material:
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
+    - _OverlayColorPulseScale: 8
+    - _OverlayScroll2Scale: 0.2
+    - _OverlayScrollScale: 0.4
+    - _OverlayScrollScale2: 0.34
     - _Parallax: 0.02
-    - _PulseScale: 8
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
@@ -81,9 +92,15 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _ColorOverlayMax: {r: 0.97647065, g: 0.5529412, b: 0.34509805, a: 1}
-    - _ColorOverlayMin: {r: 0.3647059, g: 0.14509805, b: 0.10980393, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _Flip: {r: 1, g: 1, b: 1, a: 1}
+    - _OverlayColor: {r: 1, g: 1, b: 1, a: 0}
+    - _OverlayColorPulseMax: {r: 0.9921569, g: 0.38823533, b: 0.3803922, a: 1}
+    - _OverlayColorPulseMin: {r: 0.7725491, g: 0.22352943, b: 0.2627451, a: 0.29803923}
+    - _OverlayScroll2Color: {r: 1, g: 1, b: 1, a: 0.14901961}
+    - _OverlayScroll2Params: {r: -0.1, g: -0.1, b: 0.2, a: 0.2}
+    - _OverlayScrollColor: {r: 0.8113208, g: 0.8113208, b: 0.8113208, a: 0.09803922}
+    - _OverlayScrollParams: {r: 0.1, g: 0.1, b: 0.15, a: 0.15}
+    - _OverlayScrollParams2: {r: 1, g: 1, b: 0.06, a: 0.12}
     - _RendererColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []

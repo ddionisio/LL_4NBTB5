@@ -47,6 +47,7 @@ public class Blob : MonoBehaviour, M8.IPoolSpawn, M8.IPoolDespawn {
     public Sprite mouthSpriteCorrect;
 
     [Header("Highlight Info")]
+    public Material normalMaterial;
     public Material hoverDragMaterial;
     public Material errorMaterial;
     public Material correctMaterial;
@@ -309,6 +310,19 @@ public class Blob : MonoBehaviour, M8.IPoolSpawn, M8.IPoolDespawn {
         if(parms != null) {
             if(parms.ContainsKey(parmNumber))
                 mNumber = parms.GetValue<int>(parmNumber);
+
+            //apply color to face
+            if(parms.ContainsKey(JellySpriteSpawnController.parmColor)) {
+                var clr = parms.GetValue<Color>(JellySpriteSpawnController.parmColor);
+
+                for(int i = 0; i < eyeSpriteRenders.Length; i++) {
+                    if(eyeSpriteRenders[i])
+                        eyeSpriteRenders[i].color = clr;
+                }
+
+                if(mouthSpriteRender)
+                    mouthSpriteRender.color = clr;
+            }
         }
 
         ApplyNumberDisplay();
@@ -340,7 +354,7 @@ public class Blob : MonoBehaviour, M8.IPoolSpawn, M8.IPoolDespawn {
         //highlight off
         if(state == State.Normal) {
             if(!isDragging)
-                ApplyJellySpriteMaterial(null);
+                ApplyJellySpriteMaterial(normalMaterial);
 
             if(highlightGO) highlightGO.SetActive(false);
         }
@@ -407,6 +421,8 @@ public class Blob : MonoBehaviour, M8.IPoolSpawn, M8.IPoolDespawn {
     }
 
     IEnumerator DoDespawn() {
+        ApplyJellySpriteMaterial(normalMaterial);
+
         if(animator && !string.IsNullOrEmpty(takeDespawn))
             yield return animator.PlayWait(takeDespawn);
         else
@@ -426,7 +442,7 @@ public class Blob : MonoBehaviour, M8.IPoolSpawn, M8.IPoolDespawn {
         else
             yield return null;
 
-        ApplyJellySpriteMaterial(null);
+        ApplyJellySpriteMaterial(normalMaterial);
 
         //something fancy
         if(animator && !string.IsNullOrEmpty(takeCorrect))
@@ -444,7 +460,7 @@ public class Blob : MonoBehaviour, M8.IPoolSpawn, M8.IPoolDespawn {
 
         yield return new WaitForSeconds(errorDuration);
 
-        ApplyJellySpriteMaterial(null);
+        ApplyJellySpriteMaterial(normalMaterial);
 
         mRout = null;
 
@@ -580,7 +596,7 @@ public class Blob : MonoBehaviour, M8.IPoolSpawn, M8.IPoolDespawn {
         RefreshMouthSprite();
 
         if(state == State.Normal)
-            ApplyJellySpriteMaterial(null);
+            ApplyJellySpriteMaterial(normalMaterial);
     }
 
     private void ClearRout() {
@@ -610,12 +626,11 @@ public class Blob : MonoBehaviour, M8.IPoolSpawn, M8.IPoolDespawn {
     private void ApplyState() {
         ClearRout();
 
-        ApplyJellySpriteMaterial(null);
-
         bool isDragInvalid = false;
                 
         switch(mState) {
             case State.Normal:
+                ApplyJellySpriteMaterial(normalMaterial);
                 SetEyeBlinking(true);
                 break;
 

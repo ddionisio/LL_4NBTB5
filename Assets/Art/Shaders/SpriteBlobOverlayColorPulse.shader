@@ -1,5 +1,5 @@
 //Only use for sprites
-Shader "Game/Sprite/Blob"
+Shader "Game/Sprite/Blob Overlay Color Pulse"
 {
 	Properties
     {
@@ -21,7 +21,9 @@ Shader "Game/Sprite/Blob"
 		_OverlayScroll2Params("Overlay Scroll 2 Params speed=(x,y) wave amp=(z,w)", Vector) = (1,1,0,0)
 		_OverlayScroll2Scale("Overlay Scroll 2 Scale", Float) = 1
 		
-		//_OverlayColor("Overlay Scroll Color", Color) = (1,1,1,0)
+		_OverlayColorPulseMin("Overlay Color Pulse Min", Color) = (1,1,1,0)
+		_OverlayColorPulseMax("Overlay Color Pulse Max", Color) = (1,1,1,1)
+		_OverlayColorPulseScale("Overlay Color Pulse Scale", Float) = 1
     }
 	
 	SubShader
@@ -55,6 +57,7 @@ Shader "Game/Sprite/Blob"
 			{
 				float4 vertex   : SV_POSITION;
 				fixed4 color : COLOR;
+				fixed4 colorOverlay : COLOR1;
 				float2 texcoord : TEXCOORD0;
 				float2 texcoord2 : TEXCOORD1;
 				float2 texcoord3 : TEXCOORD2;
@@ -71,7 +74,9 @@ Shader "Game/Sprite/Blob"
 			float4 _OverlayScroll2Params;
 			float _OverlayScroll2Scale;
 			
-			//fixed4 _OverlayColor;
+			fixed4 _OverlayColorPulseMin;
+			fixed4 _OverlayColorPulseMax;
+			float _OverlayColorPulseScale;
 			
 			v2fExt SpriteVert_Blob(appdata_t IN)
 			{
@@ -92,6 +97,11 @@ Shader "Game/Sprite/Blob"
 				//coord for overlay to accomodate texture scale/offset and scroll
 				OUT.texcoord2 = IN.vertex.xy * _OverlayScrollScale + _OverlayScrollParams.xy * _Time.y + half2(_OverlayScrollParams.z * _CosTime.w, _OverlayScrollParams.w * _SinTime.w);
 				OUT.texcoord3 = IN.vertex.xy * _OverlayScroll2Scale + _OverlayScroll2Params.xy * _Time.y + half2(_OverlayScroll2Params.z * _CosTime.w, _OverlayScroll2Params.w * _SinTime.w);
+				
+				float sinT = sin(_Time.y * _OverlayColorPulseScale);
+				float t = sinT * sinT;
+
+				OUT.colorOverlay = lerp(_OverlayColorPulseMin, _OverlayColorPulseMax, t);
 
 				return OUT;
 			}
@@ -110,7 +120,7 @@ Shader "Game/Sprite/Blob"
 				
 				fixed4 c = clrBase * IN.color;
 				
-				//c.rgb = lerp(c.rgb, _OverlayColor.rgb, _OverlayColor.a * clrTxt.b);
+				c.rgb = lerp(c.rgb, IN.colorOverlay.rgb, IN.colorOverlay.a * clrTxt.b);
 				
 				c.rgb *= c.a;
 				return c;
