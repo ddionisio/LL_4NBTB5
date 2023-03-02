@@ -49,11 +49,13 @@ class UnityJellySpriteEditor : JellySpriteEditor
         if (m_InitialSprite != m_Sprite.objectReferenceValue)
         {
             Sprite sprite = m_Sprite.objectReferenceValue as Sprite;
-            Bounds bounds = sprite.bounds;
-            float pivotX = -bounds.center.x / bounds.extents.x;
-            float pivotY = -bounds.center.y / bounds.extents.y;
-            targetObject.m_CentralBodyOffset = targetObject.m_SoftBodyOffset = new Vector3(pivotX * bounds.extents.x * targetObject.m_SpriteScale.x, pivotY * bounds.extents.y * targetObject.m_SpriteScale.y, 0.0f);
-            targetObject.RefreshMesh();
+			if(sprite) {
+				Bounds bounds = sprite.bounds;
+				float pivotX = -bounds.center.x / bounds.extents.x;
+				float pivotY = -bounds.center.y / bounds.extents.y;
+				targetObject.m_CentralBodyOffset = targetObject.m_SoftBodyOffset = new Vector3(pivotX * bounds.extents.x * targetObject.m_SpriteScale.x, pivotY * bounds.extents.y * targetObject.m_SpriteScale.y, 0.0f);
+				targetObject.RefreshMesh();
+			}
         }
 		//MODIFIED: allow custom material
 		else if(m_InitialMaterial != m_Material.objectReferenceValue) {

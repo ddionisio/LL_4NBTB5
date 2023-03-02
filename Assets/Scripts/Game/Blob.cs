@@ -212,6 +212,9 @@ public class Blob : MonoBehaviour, M8.IPoolSpawn, M8.IPoolDespawn {
     private bool mIsHighlight;
     private bool mIsHighlightLocked;
 
+    private Sprite mLastSprite;
+    private Color mLastColor;
+
     /// <summary>
     /// Get an approximate edge towards given point, relies on reference points to provide edge.
     /// </summary>
@@ -301,29 +304,68 @@ public class Blob : MonoBehaviour, M8.IPoolSpawn, M8.IPoolDespawn {
     }
 
     void M8.IPoolSpawn.OnSpawned(M8.GenericParams parms) {
-        jellySprite.Init();
+        if(!jellySprite.isInit) {
+            jellySprite.Init();
+
+            mLastSprite = jellySprite.m_Sprite;
+            mLastColor = jellySprite.m_Color;
+        }
 
         mNumber = 0;
         mInputLocked = false;
         mInputLockedInternal = false;
 
+        Sprite spr = mLastSprite;
+        Color clr = mLastColor;
+
+        Vector2 pos = Vector2.zero;
+        float rot = 0f;
+
         if(parms != null) {
+            if(parms.ContainsKey(JellySpriteSpawnController.parmPosition)) pos = parms.GetValue<Vector2>(JellySpriteSpawnController.parmPosition);
+            if(parms.ContainsKey(JellySpriteSpawnController.parmRotation)) rot = parms.GetValue<float>(JellySpriteSpawnController.parmRotation);
+            if(parms.ContainsKey(JellySpriteSpawnController.parmSprite)) spr = parms.GetValue<Sprite>(JellySpriteSpawnController.parmSprite);
+            if(parms.ContainsKey(JellySpriteSpawnController.parmColor)) clr = parms.GetValue<Color>(JellySpriteSpawnController.parmColor);
+
             if(parms.ContainsKey(parmNumber))
                 mNumber = parms.GetValue<int>(parmNumber);
-
-            //apply color to face
-            if(parms.ContainsKey(JellySpriteSpawnController.parmColor)) {
-                var clr = parms.GetValue<Color>(JellySpriteSpawnController.parmColor);
-
-                for(int i = 0; i < eyeSpriteRenders.Length; i++) {
-                    if(eyeSpriteRenders[i])
-                        eyeSpriteRenders[i].color = clr;
-                }
-
-                if(mouthSpriteRender)
-                    mouthSpriteRender.color = clr;
-            }
         }
+
+        bool isInit = jellySprite.CentralPoint != null;
+        if(isInit) {
+            //need to reinitialize mesh/material?
+            bool isMaterialChanged = jellySprite.m_Material != normalMaterial;
+            bool isSpriteChanged = jellySprite.m_Sprite != spr;
+            bool isColorChanged = jellySprite.m_Color != clr;
+
+            jellySprite.m_Material = normalMaterial;
+            jellySprite.m_Sprite = mLastSprite = spr;
+            jellySprite.m_Color = mLastColor = clr;
+
+            if(isColorChanged || isSpriteChanged)
+                jellySprite.RefreshMesh(); //just to ensure sprite uv's are properly applied
+            else if(isMaterialChanged)
+                jellySprite.ReInitMaterial();
+
+            //reset and apply telemetry
+            jellySprite.Reset(pos, new Vector3(0f, 0f, rot));
+        }
+        else {
+            //directly apply telemetry
+            var trans = jellySprite.transform;
+            trans.position = pos;
+            trans.eulerAngles = new Vector3(0f, 0f, rot);
+        }
+
+        //apply color to face
+        for(int i = 0; i < eyeSpriteRenders.Length; i++) {
+            if(eyeSpriteRenders[i])
+                eyeSpriteRenders[i].color = clr;
+        }
+
+        if(mouthSpriteRender)
+            mouthSpriteRender.color = clr;
+        //
 
         ApplyNumberDisplay();
 

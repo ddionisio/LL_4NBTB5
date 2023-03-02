@@ -174,7 +174,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1678758320532637823}
   - component: {fileID: 1678758320532637820}
-  - component: {fileID: 1678758320532637821}
   - component: {fileID: 1678758320532637818}
   - component: {fileID: 1678758320532637819}
   - component: {fileID: 1678758320532637816}
@@ -220,7 +219,6 @@ MonoBehaviour:
   eyeSpriteRenders: []
   mouthSpriteRender: {fileID: 0}
   eyeSpriteNormal: {fileID: 0}
-  eyeSpriteLarge: {fileID: 0}
   eyeSpriteClose: {fileID: 0}
   eyeBlinkOpenDelayMin: 0.5
   eyeBlinkOpenDelayMax: 4
@@ -230,9 +228,10 @@ MonoBehaviour:
   mouthSpriteConnected: {fileID: 0}
   mouthSpriteError: {fileID: 0}
   mouthSpriteCorrect: {fileID: 0}
-  hoverDragMaterial: {fileID: 2100000, guid: 7b2ff85f573407c448ca74b0d1e9071d, type: 2}
-  errorMaterial: {fileID: 2100000, guid: 3d1ba7224efc8b54fba32ffb41edda16, type: 2}
-  correctMaterial: {fileID: 2100000, guid: c3ef4abda93e7df4db61e95255f73ba7, type: 2}
+  normalMaterial: {fileID: 0}
+  hoverDragMaterial: {fileID: 0}
+  errorMaterial: {fileID: 0}
+  correctMaterial: {fileID: 0}
   errorDuration: 1
   correctStartDelay: 0.5
   spawnCenterImpulse:
@@ -254,20 +253,6 @@ MonoBehaviour:
   signalInvokeDragBegin: {fileID: 11400000, guid: 0dd1c40d5bbeef54a8aaf4b6c89d5235, type: 2}
   signalInvokeDragEnd: {fileID: 11400000, guid: e277b755729c85042a3893c829311846, type: 2}
   signalInvokeDespawn: {fileID: 11400000, guid: 7b62e099b2cb63e40b85c16f921a5bde, type: 2}
---- !u!114 &1678758320532637821
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1678758320532637796}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8359cd07f45363448807d80097793ee8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  jellySprite: {fileID: 1678758320532637798}
-  revertLayerOnDespawn: 0
 --- !u!114 &1678758320532637818
 MonoBehaviour:
   m_ObjectHideFlags: 0
