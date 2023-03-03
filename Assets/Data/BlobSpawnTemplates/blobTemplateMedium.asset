@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: blobTemplateMedium
   m_EditorClassIdentifier: 
   templates:
-  - {fileID: 7925768766558283538, guid: 4226255aa6c120444bec889ac12a7159, type: 3}
+  - {fileID: 8983797535604395101, guid: 7ccf555e9adc4334d9e253a718df029c, type: 3}
   spawnPointCheckRadius: 1.5
