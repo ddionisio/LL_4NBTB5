@@ -549,7 +549,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2912075480903738962
 Transform:
   m_ObjectHideFlags: 0
@@ -580,7 +580,7 @@ ParticleSystem:
   ringBufferLoopRange: {x: 0, y: 1}
   looping: 1
   prewarm: 1
-  playOnAwake: 0
+  playOnAwake: 1
   useUnscaledTime: 0
   autoRandomSeed: 1
   useRigidbodyForVelocity: 1
@@ -10969,12 +10969,12 @@ MonoBehaviour:
     numLoop: 1
     loopMode: 0
     loopBackToFrame: 0
-    trackCounter: 15
+    trackCounter: 16
     groupCounter: 0
     rootGroup:
       group_name: 
       group_id: 0
-      elements: 030000000600000007000000080000000900000004000000050000000f0000000a0000000b0000000d0000000c0000000e000000
+      elements: 030000000600000007000000080000000900000004000000050000000f0000000a0000000b0000000d0000000c00000010000000
       foldout: 1
     groupValues: []
   - name: despawn
@@ -10983,12 +10983,12 @@ MonoBehaviour:
     numLoop: 1
     loopMode: 0
     loopBackToFrame: 0
-    trackCounter: 4
+    trackCounter: 5
     groupCounter: 0
     rootGroup:
       group_name: Group0
       group_id: 0
-      elements: 020000000300000004000000
+      elements: 020000000400000005000000
       foldout: 1
     groupValues: []
   - name: correct
@@ -10997,12 +10997,12 @@ MonoBehaviour:
     numLoop: 1
     loopMode: 0
     loopBackToFrame: 0
-    trackCounter: 15
+    trackCounter: 16
     groupCounter: 0
     rootGroup:
       group_name: Group0
       group_id: 0
-      elements: 020000000300000004000000050000000e000000060000000700000008000000090000000a0000000b0000000c0000000d0000000f000000
+      elements: 020000000300000004000000050000000e000000060000000700000008000000090000000a0000000b0000000c0000000d00000010000000
       foldout: 1
     groupValues: []
   _defaultTakeName: 
@@ -11027,27 +11027,6 @@ MonoBehaviour:
       _targetPath: 
       obj: {fileID: 8177634448421964385}
       componentName: 
-    - _version: 1
-      id: 14
-      name: Track13
-      foldout: 1
-      _targetPath: 
-      obj: {fileID: 3910301619691358806}
-      componentName: 
-    - _version: 1
-      id: 3
-      name: Track2
-      foldout: 1
-      _targetPath: 
-      obj: {fileID: 3910301619691358806}
-      componentName: 
-    - _version: 1
-      id: 15
-      name: Track14
-      foldout: 1
-      _targetPath: 
-      obj: {fileID: 3910301619691358806}
-      componentName: 
     _eventKeys:
     - interp: 0
       frame: 18
@@ -11059,36 +11038,6 @@ MonoBehaviour:
       parameters: []
       methodName: Play
       componentType: ParticleSystem
-    - interp: 0
-      frame: 20
-      easeType: 1
-      amplitude: 0
-      period: 0
-      customEase: []
-      useSendMessage: 0
-      parameters: []
-      methodName: Play
-      componentType: ParticleSystem
-    - interp: 0
-      frame: 2
-      easeType: 1
-      amplitude: 0
-      period: 0
-      customEase: []
-      useSendMessage: 0
-      parameters: []
-      methodName: Stop
-      componentType: ParticleSystem
-    - interp: 0
-      frame: 2
-      easeType: 1
-      amplitude: 0
-      period: 0
-      customEase: []
-      useSendMessage: 0
-      parameters: []
-      methodName: Stop
-      componentType: ParticleSystem
     _goSetActiveTracks:
     - _version: 1
       id: 13
@@ -11097,6 +11046,20 @@ MonoBehaviour:
       _targetPath: 
       obj: {fileID: 7604392139439042949}
       startActive: 0
+    - _version: 1
+      id: 16
+      name: Track13
+      foldout: 1
+      _targetPath: 
+      obj: {fileID: 3910301619691358806}
+      startActive: 0
+    - _version: 1
+      id: 5
+      name: Track3
+      foldout: 1
+      _targetPath: 
+      obj: {fileID: 3910301619691358806}
+      startActive: 1
     - _version: 1
       id: 8
       name: Track7
@@ -11111,6 +11074,13 @@ MonoBehaviour:
       _targetPath: 
       obj: {fileID: 972815896069754984}
       startActive: 0
+    - _version: 1
+      id: 16
+      name: Track14
+      foldout: 1
+      _targetPath: 
+      obj: {fileID: 3910301619691358806}
+      startActive: 1
     _goSetActiveKeys:
     - interp: 0
       frame: 1
@@ -11122,6 +11092,22 @@ MonoBehaviour:
       endFrame: 21
     - interp: 0
       frame: 21
+      easeType: 1
+      amplitude: 0
+      period: 0
+      customEase: []
+      setActive: 0
+      endFrame: -1
+    - interp: 0
+      frame: 20
+      easeType: 1
+      amplitude: 0
+      period: 0
+      customEase: []
+      setActive: 1
+      endFrame: -1
+    - interp: 0
+      frame: 2
       easeType: 1
       amplitude: 0
       period: 0
@@ -11154,6 +11140,14 @@ MonoBehaviour:
       endFrame: 16
     - interp: 0
       frame: 16
+      easeType: 1
+      amplitude: 0
+      period: 0
+      customEase: []
+      setActive: 0
+      endFrame: -1
+    - interp: 0
+      frame: 2
       easeType: 1
       amplitude: 0
       period: 0
@@ -12220,21 +12214,21 @@ MonoBehaviour:
     - type: 4
       index: 0
       keyIndices: 0000000001000000
-    - type: 3
-      index: 1
-      keyIndices: 01000000
     - type: 7
       index: 8
       keyIndices: 15000000
+    - type: 4
+      index: 1
+      keyIndices: 02000000
     - type: 11
       index: 1
       keyIndices: 0400000005000000
-    - type: 3
-      index: 2
-      keyIndices: 02000000
     - type: 7
       index: 9
       keyIndices: 16000000
+    - type: 4
+      index: 2
+      keyIndices: 03000000
     - type: 7
       index: 10
       keyIndices: 1700000018000000
@@ -12254,17 +12248,17 @@ MonoBehaviour:
       index: 2
       keyIndices: 0600000007000000
     - type: 4
-      index: 1
-      keyIndices: 0200000003000000
-    - type: 4
-      index: 2
+      index: 3
       keyIndices: 0400000005000000
+    - type: 4
+      index: 4
+      keyIndices: 0600000007000000
     - type: 7
       index: 15
       keyIndices: 2200000023000000
-    - type: 3
-      index: 3
-      keyIndices: 03000000
+    - type: 4
+      index: 5
+      keyIndices: 08000000
     - type: 10
       index: 0
       keyIndices: 0000000001000000
