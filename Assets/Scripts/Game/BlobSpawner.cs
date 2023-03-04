@@ -27,9 +27,15 @@ public class BlobSpawner : MonoBehaviour {
         }
 
         public void InitSpawnPoints(bool isShuffle) {
-            mSpawnPoints = new Vector2[spawnPointsRoot.childCount];
-            for(int i = 0; i < spawnPointsRoot.childCount; i++)
-                mSpawnPoints[i] = spawnPointsRoot.GetChild(i).position;
+            var spawnList = new List<Vector2>(spawnPointsRoot.childCount);
+
+            for(int i = 0; i < spawnPointsRoot.childCount; i++) {
+                var t = spawnPointsRoot.GetChild(i);
+                if(t.gameObject.activeSelf)
+                    spawnList.Add(t.position);
+            }
+
+            mSpawnPoints = spawnList.ToArray();
 
             if(isShuffle)
                 M8.ArrayUtil.Shuffle(mSpawnPoints);
@@ -55,6 +61,10 @@ public class BlobSpawner : MonoBehaviour {
     public LayerMask spawnPointCheckMask; //ensure spot is fine to spawn    
     public float spawnDelay = 0.3f;
 
+    [Header("Spawn Clearout")]
+    public float spawnClearoutForce = 5f;
+    public float spawnClearoutDelay = 3f;
+
     public int spawnQueueCount { get { return mSpawnQueue.Count; } }
 
     public Queue<SpawnInfo> spawnQueue { get { return mSpawnQueue; } }
@@ -76,6 +86,8 @@ public class BlobSpawner : MonoBehaviour {
     private M8.CacheList<Blob> mBlobActives;
 
     private System.Text.StringBuilder mBlobNameCache = new System.Text.StringBuilder();
+
+    private Collider2D[] mColliderCache = new Collider2D[128];
 
     public void InitBlobTemplate(BlobTemplateData blobTemplateData) {        
         int templateInd = GetTemplateIndex(blobTemplateData);
@@ -260,21 +272,40 @@ public class BlobSpawner : MonoBehaviour {
 
             var templateGrp = templateGroups[spawnInfo.templateIndex];
 
-            //find valid spawn point
-            Vector2 spawnPt = Vector2.zero;
+            //get spawn point, and clear out other blobs within spawn area
+            Vector2 spawnPt = templateGrp.spawnPoint;
+            var checkRadius = templateGrp.blobData.spawnPointCheckRadius;
 
-            while(true) {
-                var pt = templateGrp.spawnPoint;
+            var curTime = 0f;
+            while(curTime < spawnClearoutDelay) {
+                var overlapCount = Physics2D.OverlapCircleNonAlloc(spawnPt, checkRadius, mColliderCache, spawnPointCheckMask);
+                for(int i = 0; i < overlapCount; i++) {
+                    var coll = mColliderCache[i];
 
-                //check if valid
-                var coll = Physics2D.OverlapCircle(pt, templateGrp.blobData.spawnPointCheckRadius, spawnPointCheckMask);
-                if(!coll) {
-                    spawnPt = pt;
-                    break;
+                    Rigidbody2D overlapBody = null;
+
+                    //grab central body of blob
+                    var jellyRefPt = coll.GetComponent<JellySpriteReferencePoint>();
+                    if(jellyRefPt) {
+                        var jellySpr = jellyRefPt.ParentJellySprite;
+                        if(jellySpr)
+                            overlapBody = jellySpr.CentralPoint.Body2D;
+                    }
+                    else //some other object (connector)
+                        overlapBody = coll.GetComponent<Rigidbody2D>();
+
+                    if(overlapBody) {
+                        var dir = (overlapBody.position - spawnPt).normalized;
+                        overlapBody.AddForce(dir * spawnClearoutForce);
+                    }
                 }
 
-                //invalid, check next
+                if(overlapCount == 0)
+                    break;
+
                 yield return null;
+
+                curTime += Time.deltaTime;
             }
 
             //setup color

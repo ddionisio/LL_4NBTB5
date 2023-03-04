@@ -58,11 +58,17 @@ public class PlayController : GameModeController<PlayController> {
 
     [Header("Controls")]
     public BlobConnectController connectControl;
-    public BlobSpawner blobSpawner;
+    public BlobSpawner blobSpawner;    
 
     [Header("Rounds")]
     public Transform roundsRoot; //grab SpriteColorFromPalette for each child
     public float roundCompleteBrightness = 0.3f;
+
+    [Header("Correct Info")]
+    public float correctEvaluateDelay = 1f;
+
+    [Header("Bonus Info")]
+    public float bonusClearPerBlobDelay = 0.3f;
 
     [Header("Animation")]
     public M8.Animator.Animate animator;
@@ -70,6 +76,10 @@ public class PlayController : GameModeController<PlayController> {
     public string takeBegin;
     [M8.Animator.TakeSelector(animatorField = "animator")]
     public string takeEnd;
+    [M8.Animator.TakeSelector(animatorField = "animator")]
+    public string takeCorrect;
+    [M8.Animator.TakeSelector(animatorField = "animator")]
+    public string takeBonus;
 
     [Header("Music")]
     [M8.MusicPlaylist]
@@ -450,9 +460,15 @@ public class PlayController : GameModeController<PlayController> {
                 break;
 
             case AttackState.Success:
+                var camCtrl = CameraController.main;
+                if(camCtrl)
+                    camCtrl.raycastTarget = false; //disable blob input
+
                 //generate attack blob and connect it to the group to be evaluated
 
                 //do fancy animation on board
+                if(animator && !string.IsNullOrEmpty(takeCorrect))
+                    yield return animator.PlayWait(takeCorrect);
 
                 /////////////////////
                 blobSpawner.Spawn(blobAttackName, mBlobAttackTemplateInd, grp.blobOpLeft.number * grp.blobOpRight.number);
@@ -469,7 +485,7 @@ public class PlayController : GameModeController<PlayController> {
                 //connect
                 connectControl.SetGroupEqual(grp, !grp.isOpLeftGreaterThanRight, attackBlob);
 
-                yield return new WaitForSeconds(1f);
+                yield return new WaitForSeconds(correctEvaluateDelay);
 
                 //evaluate
                 connectControl.GroupEvaluate(grp);
@@ -482,16 +498,24 @@ public class PlayController : GameModeController<PlayController> {
                         yield return null;
 
                     //do fancy animation on board
+                    if(animator && !string.IsNullOrEmpty(takeBonus))
+                        yield return animator.PlayWait(takeBonus);
+
+                    var blobClearWait = new WaitForSeconds(bonusClearPerBlobDelay);
 
                     for(int i = 0; i < blobSpawner.blobActives.Count; i++) {
                         var blob = blobSpawner.blobActives[i];
                         if(blob)
-                            blob.state = Blob.State.Despawning;
+                            blob.state = Blob.State.Correct;
 
                         blobClearedCount++;
+
+                        yield return blobClearWait;
                     }
 
-                    blobSpawner.SpawnStop(); //fail-safe
+                    //fail-safe, there should no longer be any blob to spawn at this point.
+                    blobClearedCount += blobSpawner.spawnQueueCount;
+                    blobSpawner.SpawnStop();
                 }
                 else if(bonusBlob) //clear it out
                     bonusBlob.state = Blob.State.Despawning;
@@ -500,6 +524,9 @@ public class PlayController : GameModeController<PlayController> {
 
                 //go to next round
                 mIsAnswerCorrectWait = false;
+
+                if(camCtrl)
+                    camCtrl.raycastTarget = true;
                 break;
         }
 

@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 59dbb0ae4553a4e42a043704d39fbb6b, type: 3}
-  m_Name: blobTemplateBonusMedium
+  m_Name: blobTemplateBonus
   m_EditorClassIdentifier: 
   templates:
-  - {fileID: 1678758320532637796, guid: 92ac262d251c2504ab382b4b0c594f9e, type: 3}
+  - {fileID: 8983797535604395101, guid: 16776e9140fd5df4aa4b91313d0ec0dc, type: 3}
   spawnPointCheckRadius: 1.5

@@ -981,7 +981,9 @@ public abstract class JellySprite : MonoBehaviour
 		referencePointObject.tag = gameObject.tag;
 
 		JellySpriteReferencePoint refPointBehaviour = referencePointObject.AddComponent<JellySpriteReferencePoint>();
-		refPointBehaviour.ParentJellySprite = this.gameObject;
+		refPointBehaviour.ParentJellySpriteGO = gameObject;
+		//MODIFIED: added direct reference to this component
+		refPointBehaviour.ParentJellySprite = this;
 		refPointBehaviour.Index = m_ReferencePoints.Count;
 
 		ReferencePoint referencePoint = null;

@@ -6,7 +6,9 @@ using System.Collections;
 
 public class JellySpriteReferencePoint : MonoBehaviour 
 {
-	public GameObject ParentJellySprite { get; set; }
+	//MODIFIED: add direct access to JellySprite component, don't know why it's not here in the first place.
+	public GameObject ParentJellySpriteGO { get; set; }
+	public JellySprite ParentJellySprite { get; set; }
 
 #if JELLYSPRITE_SENDCOLLISIONMESSAGE
 	public bool SendCollisionMessages { get { return m_SendCollisionMessages; } set { m_SendCollisionMessages = value; } }

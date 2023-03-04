@@ -369,7 +369,7 @@ public class BlobConnectController : MonoBehaviour {
 
                 //check if dragging inside
                 var dragJellySprRef = curBlobDragging.dragPointerJellySpriteRefPt;
-                if(dragJellySprRef && dragJellySprRef.ParentJellySprite == curBlobDragging.gameObject) {
+                if(dragJellySprRef && dragJellySprRef.ParentJellySpriteGO == curBlobDragging.gameObject) {
                     //start set the same as end.
                     connectPtStart = connectPtEnd;
 
@@ -382,7 +382,7 @@ public class BlobConnectController : MonoBehaviour {
                     //check if we are over another blob
                     if(curBlobDragging.dragPointerJellySpriteRefPt) {
                         //check if it is in a group and we are setting it up as an equal connect
-                        var blobGO = curBlobDragging.dragPointerJellySpriteRefPt.ParentJellySprite;
+                        var blobGO = curBlobDragging.dragPointerJellySpriteRefPt.ParentJellySpriteGO;
                         var toGrp = GetGroup(blobGO);
                         if(toGrp != null && toGrp != curGroupDragging) {
                             if(toGrp.IsBlobOp(blobGO))
@@ -444,10 +444,10 @@ public class BlobConnectController : MonoBehaviour {
 
         //determine if we can connect to a new blob
         var blobRefPt = blob.dragPointerJellySpriteRefPt;
-        if(blobRefPt != null && blobRefPt.ParentJellySprite != blob.gameObject) {
+        if(blobRefPt != null && blobRefPt.ParentJellySpriteGO != blob.gameObject) {
             Group evalGroup = null;
 
-            var endBlob = blobRefPt.ParentJellySprite.GetComponent<Blob>();
+            var endBlob = blobRefPt.ParentJellySpriteGO.GetComponent<Blob>();
 
             //determine op
             var toOp = mCurOp;

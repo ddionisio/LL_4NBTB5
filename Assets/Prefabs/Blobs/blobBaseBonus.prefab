@@ -72,7 +72,7 @@ SpriteRenderer:
   m_SortingLayerID: -192674245
   m_SortingLayer: 1
   m_SortingOrder: 1
-  m_Sprite: {fileID: 21300000, guid: a95d7047582255d489809362a46e6420, type: 3}
+  m_Sprite: {fileID: 21300000, guid: ab4cd345c3d603044bbeba72a3891c43, type: 3}
   m_Color: {r: 1, g: 0.9843138, b: 0.8078432, a: 1}
   m_FlipX: 1
   m_FlipY: 0
@@ -5716,7 +5716,7 @@ SpriteRenderer:
   m_SortingLayerID: -192674245
   m_SortingLayer: 1
   m_SortingOrder: 1
-  m_Sprite: {fileID: 21300000, guid: a95d7047582255d489809362a46e6420, type: 3}
+  m_Sprite: {fileID: 21300000, guid: ab4cd345c3d603044bbeba72a3891c43, type: 3}
   m_Color: {r: 1, g: 0.9843138, b: 0.8078432, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -10707,10 +10707,10 @@ MonoBehaviour:
   mouthSpriteConnected: {fileID: 21300000, guid: 05e41c9d89f716a4c9524844d722c534, type: 3}
   mouthSpriteError: {fileID: 21300000, guid: 864e6cbec0c185241a367d2fb1d6056c, type: 3}
   mouthSpriteCorrect: {fileID: 21300000, guid: d72e4f9424ad8e341bfd2184aec08fd9, type: 3}
-  normalMaterial: {fileID: 2100000, guid: 486d2082e3b7d794997d86149b0d0cb9, type: 2}
-  hoverDragMaterial: {fileID: 2100000, guid: ecf9db6dace86144ea146135607073dc, type: 2}
-  errorMaterial: {fileID: 2100000, guid: cc640de33a05eb544ba61c119a9376bf, type: 2}
-  correctMaterial: {fileID: 2100000, guid: c7a4a5ca2ad0cfe479218a6f7b56bdc3, type: 2}
+  normalMaterial: {fileID: 2100000, guid: 0122f3125cabba14faf9d2fcb348e854, type: 2}
+  hoverDragMaterial: {fileID: 2100000, guid: 32e7ddd83e3e5aa439b34c5f991108a9, type: 2}
+  errorMaterial: {fileID: 2100000, guid: cd3f1a7fecab7f84db399f819116f1c0, type: 2}
+  correctMaterial: {fileID: 2100000, guid: ccd43a6c8c9de2b40b91e4a8108b526b, type: 2}
   errorDuration: 1
   correctStartDelay: 0.5
   spawnCenterImpulse:
@@ -11392,7 +11392,7 @@ MonoBehaviour:
       _paths: []
       val: 0
       valString: 
-      valObj: {fileID: 21300000, guid: a95d7047582255d489809362a46e6420, type: 3}
+      valObj: {fileID: 21300000, guid: ab4cd345c3d603044bbeba72a3891c43, type: 3}
       vect4: {x: 0, y: 0, z: 0, w: 0}
     - interp: 2
       frame: 1
@@ -11418,7 +11418,7 @@ MonoBehaviour:
       _paths: []
       val: 0
       valString: 
-      valObj: {fileID: 21300000, guid: a95d7047582255d489809362a46e6420, type: 3}
+      valObj: {fileID: 21300000, guid: ab4cd345c3d603044bbeba72a3891c43, type: 3}
       vect4: {x: 0, y: 0, z: 0, w: 0}
     - interp: 1
       frame: 6
