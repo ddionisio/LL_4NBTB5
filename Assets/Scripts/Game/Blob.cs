@@ -61,6 +61,7 @@ public class Blob : MonoBehaviour, M8.IPoolSpawn, M8.IPoolDespawn {
     [Header("Spawn Settings")]
     public M8.RangeFloat spawnCenterImpulse;
     public M8.RangeFloat spawnEdgeImpulse;
+    public bool spawnIgnoreColorParam;
 
     [Header("Hint Settings")]
     public GameObject hintActiveGO;
@@ -325,7 +326,7 @@ public class Blob : MonoBehaviour, M8.IPoolSpawn, M8.IPoolDespawn {
             if(parms.ContainsKey(JellySpriteSpawnController.parmPosition)) pos = parms.GetValue<Vector2>(JellySpriteSpawnController.parmPosition);
             if(parms.ContainsKey(JellySpriteSpawnController.parmRotation)) rot = parms.GetValue<float>(JellySpriteSpawnController.parmRotation);
             if(parms.ContainsKey(JellySpriteSpawnController.parmSprite)) spr = parms.GetValue<Sprite>(JellySpriteSpawnController.parmSprite);
-            if(parms.ContainsKey(JellySpriteSpawnController.parmColor)) clr = parms.GetValue<Color>(JellySpriteSpawnController.parmColor);
+            if(!spawnIgnoreColorParam && parms.ContainsKey(JellySpriteSpawnController.parmColor)) clr = parms.GetValue<Color>(JellySpriteSpawnController.parmColor);
 
             if(parms.ContainsKey(parmNumber))
                 mNumber = parms.GetValue<int>(parmNumber);

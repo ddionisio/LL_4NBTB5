@@ -42,12 +42,16 @@ public class UnityJellySprite : JellySprite
 	/// eg. slicing lots of sprites that share the same sprite sheet. If you want to clear out this list 
 	/// (eg. on transitioning to a new scene) then simply call this function
 	/// </summary>
-	public static void ClearMaterials()
+	public static void ClearMaterials(bool immediate)
 	{
 		//MODIFIED: allow custom material
 		for(int i = 0; i < s_MaterialList.Count; i++) {
-			if(s_MaterialList[i].materialInst)
-				Destroy(s_MaterialList[i].materialInst);
+			if(s_MaterialList[i].materialInst) {
+				if(immediate)
+					DestroyImmediate(s_MaterialList[i].materialInst);
+				else
+					Destroy(s_MaterialList[i].materialInst);
+			}
 		}
 
 		s_MaterialList.Clear();

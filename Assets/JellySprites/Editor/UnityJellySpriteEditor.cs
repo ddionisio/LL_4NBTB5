@@ -29,6 +29,12 @@ class UnityJellySpriteEditor : JellySpriteEditor
 		EditorGUILayout.PropertyField(m_Material, new GUIContent("Material"));
 
 		base.DisplayInspectorGUI();
+
+		if(GUILayout.Button("Refresh Render")) {
+			var jellySpr = target as JellySprite;
+			UnityJellySprite.ClearMaterials(true);
+			jellySpr.RefreshMesh();
+		}
 	}
 
 	protected override void StoreInitialValues()
