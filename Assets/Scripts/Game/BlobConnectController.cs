@@ -346,7 +346,7 @@ public class BlobConnectController : MonoBehaviour {
             else if(curGroupDragging.connectEq)
                 otherBlob = curGroupDragging.connectEq.GetLinkedBlob(curBlobDragging);
             if(otherBlob)
-                otherBlob.ApplyJellySpriteMaterial(isHighlight ? otherBlob.hoverDragMaterial : null);
+                otherBlob.ApplyJellySpriteMaterial(isHighlight ? otherBlob.hoverDragMaterial : otherBlob.normalMaterial);
         }
     }
 

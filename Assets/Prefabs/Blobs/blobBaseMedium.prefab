@@ -5905,6 +5905,7 @@ MonoBehaviour:
   spawnEdgeImpulse:
     min: -0.5
     max: 0.5
+  spawnIgnoreColorParam: 0
   hintActiveGO: {fileID: 0}
   highlightGO: {fileID: 0}
   highlightLockGO: {fileID: 5594479905824867098}
@@ -7369,7 +7370,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: -0.4}
-  m_SizeDelta: {x: 1.75, y: 1}
+  m_SizeDelta: {x: 2.3, y: 1.2}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!23 &8983797535900076937
 MeshRenderer:
@@ -7432,7 +7433,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 9
+  m_text: 999
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: ee29bd12d10e4164c9f7c78866b352d9, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: c25694a09a8207f418af727b3cc12a7b, type: 2}
@@ -7459,12 +7460,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 8.9
+  m_fontSize: 10
   m_fontSizeBase: 8
   m_fontWeight: 400
   m_enableAutoSizing: 1
   m_fontSizeMin: 2
-  m_fontSizeMax: 9
+  m_fontSizeMax: 10
   m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512

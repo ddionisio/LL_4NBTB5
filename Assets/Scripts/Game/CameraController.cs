@@ -10,7 +10,7 @@ public class CameraController : MonoBehaviour {
             if(!mMain) {
                 var camCtrlGO = GameObject.FindGameObjectWithTag("MainCamera");
                 if(camCtrlGO) {
-                    mMain = camCtrlGO.GetComponent<CameraController>();
+                    mMain = camCtrlGO.GetComponentInParent<CameraController>();
                     if(mMain)
                         mMain.Init(); //in case awake hasn't been called
                 }
