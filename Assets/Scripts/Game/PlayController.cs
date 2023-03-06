@@ -65,10 +65,11 @@ public class PlayController : GameModeController<PlayController> {
     public float roundCompleteBrightness = 0.3f;
 
     [Header("Correct Info")]
+    public float correctSpawnDelay = 0.5f;
     public float correctEvaluateDelay = 1f;
 
     [Header("Bonus Info")]
-    public float bonusClearPerBlobDelay = 0.3f;
+    public float bonusClearStartDelay = 0.4f;
 
     [Header("Animation")]
     public M8.Animator.Animate animator;
@@ -123,7 +124,7 @@ public class PlayController : GameModeController<PlayController> {
 
     private float mPlayLastTime;
 
-    private M8.SpriteColorFromPalette[] mSpriteColorFromPalettes;
+    private RoundWidget[] mRoundWidgets;
 
     private Coroutine mSpawnRout;
     private Coroutine mAttackRout;
@@ -188,14 +189,14 @@ public class PlayController : GameModeController<PlayController> {
         mRoundCount = Mathf.FloorToInt(numberCount / 2.0f);
 
         //init rounds display
-        int roundsDisplayCount = Mathf.Min(mRoundCount, roundsRoot.childCount);
-        mSpriteColorFromPalettes = new M8.SpriteColorFromPalette[roundsDisplayCount];
-        for(int i = 0; i < roundsDisplayCount; i++) {
-            mSpriteColorFromPalettes[i] = roundsRoot.GetChild(i).GetComponent<M8.SpriteColorFromPalette>();
-        }
+        mRoundWidgets = roundsRoot.GetComponentsInChildren<RoundWidget>();
+        int roundsDisplayCount = Mathf.Min(mRoundCount, mRoundWidgets.Length);
 
-        for(int i = roundsDisplayCount; i < roundsRoot.childCount; i++) //deactivate the rest
-            roundsRoot.GetChild(i).gameObject.SetActive(false);
+        for(int i = 0; i < roundsDisplayCount; i++)
+            mRoundWidgets[i].Setup(true);
+
+        for(int i = roundsDisplayCount; i < mRoundWidgets.Length; i++) //deactivate the rest
+            mRoundWidgets[i].gameObject.SetActive(false);
 
         comboCount = 1;
 
@@ -297,8 +298,8 @@ public class PlayController : GameModeController<PlayController> {
                 //update rounds display
                 for(int i = 0; i < deltaCount; i++) {
                     var ind = curRoundIndex + i;
-                    if(ind < mSpriteColorFromPalettes.Length) //fail-safe
-                        mSpriteColorFromPalettes[ind].brightness = roundCompleteBrightness;
+                    if(ind < mRoundWidgets.Length) //fail-safe
+                        mRoundWidgets[ind].Clear();
                 }
 
                 curRoundIndex = newRoundIndex;
@@ -468,7 +469,9 @@ public class PlayController : GameModeController<PlayController> {
 
                 //do fancy animation on board
                 if(animator && !string.IsNullOrEmpty(takeCorrect))
-                    yield return animator.PlayWait(takeCorrect);
+                    animator.Play(takeCorrect);
+
+                yield return new WaitForSeconds(correctSpawnDelay);
 
                 /////////////////////
                 blobSpawner.Spawn(blobAttackName, mBlobAttackTemplateInd, grp.blobOpLeft.number * grp.blobOpRight.number);
@@ -489,28 +492,30 @@ public class PlayController : GameModeController<PlayController> {
 
                 //evaluate
                 connectControl.GroupEvaluate(grp);
+
+                //wait for attack blob to release
+                while(attackBlob.state != Blob.State.None)
+                    yield return null;
                 /////////////////////
 
                 //check if bonus blob is part of the group, then clear out the other blobs on board
                 if(bonusBlobIsConnected) {
-                    //wait for bonus blob to release
-                    while(bonusBlob.state != Blob.State.None)
-                        yield return null;
-
                     //do fancy animation on board
                     if(animator && !string.IsNullOrEmpty(takeBonus))
-                        yield return animator.PlayWait(takeBonus);
+                        animator.Play(takeBonus);
 
-                    var blobClearWait = new WaitForSeconds(bonusClearPerBlobDelay);
+                    yield return new WaitForSeconds(bonusClearStartDelay);
 
-                    for(int i = 0; i < blobSpawner.blobActives.Count; i++) {
+                    for(int i = blobSpawner.blobActives.Count - 1; i >= 0; i--) {
                         var blob = blobSpawner.blobActives[i];
-                        if(blob)
+                        if(blob) {
                             blob.state = Blob.State.Correct;
 
-                        blobClearedCount++;
+                            while(blob.state != Blob.State.None)
+                                yield return null;
+                        }
 
-                        yield return blobClearWait;
+                        blobClearedCount++;
                     }
 
                     //fail-safe, there should no longer be any blob to spawn at this point.

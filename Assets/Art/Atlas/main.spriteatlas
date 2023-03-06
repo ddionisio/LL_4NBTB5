@@ -53,6 +53,7 @@ SpriteAtlas:
     cachedData: {fileID: 0}
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
+  - {fileID: 21300000, guid: fb5a0560cfe4a104b8e92a4f1b2e642b, type: 3}
   - {fileID: 21300000, guid: be98f690b6a68d8478a95623f406a172, type: 3}
   - {fileID: 21300000, guid: e9c073d0fa6bcbb4894ddf875e703fc1, type: 3}
   - {fileID: 21300000, guid: f4683e31b11d8c249ac19e37611319cd, type: 3}
@@ -68,6 +69,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: c05e5e136fe7a084084e48c38b81b054, type: 3}
   - {fileID: 21300000, guid: df4b3443a66668842a035a006fef682c, type: 3}
   - {fileID: 21300000, guid: 6365d063b104ede43a6f2866a82d29fe, type: 3}
+  - {fileID: 21300000, guid: 76b1c26384822134591672fb34d72995, type: 3}
   - {fileID: 21300000, guid: 1e895d6389f998c4781133379f3a9d30, type: 3}
   - {fileID: 21300000, guid: e5dc777390553e4499a405c82af83aef, type: 3}
   - {fileID: 21300000, guid: 761a39f37c970494692893c09089ec0a, type: 3}
@@ -88,6 +90,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: a2ee6238091f6714eb87397ca3bed4e9, type: 3}
   - {fileID: 21300000, guid: 4d70d1480a50d9345b8b2ea861dfd292, type: 3}
   - {fileID: 21300000, guid: b5f1f248fc842084cb79fa132167e30b, type: 3}
+  - {fileID: 21300000, guid: b84d9c8828b07b747afe9aa866fb5759, type: 3}
   - {fileID: 21300000, guid: a29f8bb891f61ab498ab1ae0e75b7682, type: 3}
   - {fileID: 21300010, guid: 02cb7109eec577d45a27167e2308de23, type: 3}
   - {fileID: 21300006, guid: 02cb7109eec577d45a27167e2308de23, type: 3}
@@ -124,6 +127,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 49f63cbf9fa458c4cbc656fbdbb5124a, type: 3}
   - {fileID: 21300000, guid: 36954afffa9890545b20cf77f322eb14, type: 3}
   m_PackedSpriteNamesToIndex:
+  - board_frame_glow
   - star
   - donutFX
   - downArrow
@@ -139,6 +143,7 @@ SpriteAtlas:
   - roundRectGlow
   - circleFuzzyGlow
   - ringGlowLarge
+  - board_victory_fx
   - blob_mouthError
   - explodePixel4
   - blob3
@@ -159,6 +164,7 @@ SpriteAtlas:
   - blob5
   - circleFrameSmallHighlight
   - tutorialHandPointDown
+  - roundFrame
   - blob_mouthNormal
   - blank4x4_top
   - blank4x4_bottomLeft
