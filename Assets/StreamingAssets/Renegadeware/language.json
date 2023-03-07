@@ -7,6 +7,9 @@
   "en": {
     "welcome": "Welcome!",
     "title": "Attack on Blob: Mega Multiply",
-    "credits_desc": "Written by: David Dionisio\nMusic from: Kevin Macleod"
+    "company": "RENEGADEWARE",
+    "credits_desc": "Music from: Kevin Macleod",
+    "ready": "READY",
+    "go": "GO"
   }
 }
