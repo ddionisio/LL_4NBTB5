@@ -9,6 +9,13 @@
     "title": "Attack on Blob: Mega Multiply",
     "company": "RENEGADEWARE",
     "credits_desc": "Music from: Kevin Macleod",
+    "options": "OPTIONS",
+    "music": "MUSIC",
+    "sound": "SOUND",
+    "speech": "SPEECH",
+    "close": "CLOSE",
+    "on": "ON",
+    "off": "OFF",
     "ready": "READY",
     "go": "GO"
   }

@@ -56,10 +56,12 @@ SpriteAtlas:
   - {fileID: 21300000, guid: fb5a0560cfe4a104b8e92a4f1b2e642b, type: 3}
   - {fileID: 21300000, guid: be98f690b6a68d8478a95623f406a172, type: 3}
   - {fileID: 21300000, guid: e9c073d0fa6bcbb4894ddf875e703fc1, type: 3}
+  - {fileID: 21300000, guid: cb808bf025d43324fa355c4c6fb7dd52, type: 3}
   - {fileID: 21300000, guid: f4683e31b11d8c249ac19e37611319cd, type: 3}
   - {fileID: 21300000, guid: 3821ed81270146041a91f097758a2b70, type: 3}
   - {fileID: 21300002, guid: 2c182d91a96c3c949bcbade9ea5d4ba4, type: 3}
   - {fileID: 21300000, guid: 2c182d91a96c3c949bcbade9ea5d4ba4, type: 3}
+  - {fileID: 21300000, guid: 73bd99a19aa06ff4d90062fc5eb235a8, type: 3}
   - {fileID: 21300000, guid: a304b4c1c6dd3db4aa57d2c4a67c1c9a, type: 3}
   - {fileID: 21300000, guid: cfce0ce1b6c72e54f9981e474f39ca7c, type: 3}
   - {fileID: 21300002, guid: bf8c0222be72dfd48a68e5cf2a7ed5c1, type: 3}
@@ -75,6 +77,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 761a39f37c970494692893c09089ec0a, type: 3}
   - {fileID: 21300000, guid: 44a2e43498084d140b46c5499e074241, type: 3}
   - {fileID: 21300000, guid: d985b654a2dd4e54482f774cec3f7b9c, type: 3}
+  - {fileID: 21300000, guid: 65c14d745fa726840ac8e7512d9c0ad8, type: 3}
   - {fileID: 21300000, guid: d72e4f9424ad8e341bfd2184aec08fd9, type: 3}
   - {fileID: 21300000, guid: 21c769e4040edd24e83c0830fb109b60, type: 3}
   - {fileID: 21300000, guid: ab4cd345c3d603044bbeba72a3891c43, type: 3}
@@ -83,8 +86,10 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 25f029e6fd1dbe34f9442686a376cbff, type: 3}
   - {fileID: 21300000, guid: 63a527f61ac87224cb15c6b6c304cbc6, type: 3}
   - {fileID: 21300000, guid: a95d7047582255d489809362a46e6420, type: 3}
+  - {fileID: 21300000, guid: b7f125478eed68e4984682f710d147ea, type: 3}
   - {fileID: 21300000, guid: 6f1060b7d10e31a4e88695370a2d1946, type: 3}
   - {fileID: 21300000, guid: bf01b0b7199ec26448b016fd2de647e5, type: 3}
+  - {fileID: 21300000, guid: 162a92c751d95054a80760b38e39e2a1, type: 3}
   - {fileID: 21300000, guid: 326ab6c73d9e81346bb6774298a0d825, type: 3}
   - {fileID: 21300000, guid: 5427e4f7e1cb9704892fb4854f1cf6a9, type: 3}
   - {fileID: 21300000, guid: a2ee6238091f6714eb87397ca3bed4e9, type: 3}
@@ -109,7 +114,9 @@ SpriteAtlas:
   - {fileID: 21300000, guid: c1f5fc9afb034f74aac8e0be2bdbc03e, type: 3}
   - {fileID: 21300000, guid: 5952baaa48d611842a22716276cee699, type: 3}
   - {fileID: 21300000, guid: 1d9b93fa88a9f614097eb89660b28cae, type: 3}
+  - {fileID: 21300000, guid: 80b9043b67e078f40b67df4a1ae518c7, type: 3}
   - {fileID: 21300000, guid: 38c61d7be7254a54c9f7c5a03b3b23f7, type: 3}
+  - {fileID: 21300000, guid: 7dba8ebb539204d43b445feca1a9ed9a, type: 3}
   - {fileID: 21300000, guid: 781b8debc0b4b7741bb22f7e896e042d, type: 3}
   - {fileID: 21300000, guid: 6e46d65c795b56344b389f1886fb3982, type: 3}
   - {fileID: 21300000, guid: 71070d9cb8e6b574a8e999cb3dde2157, type: 3}
@@ -118,7 +125,9 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 045d323db38cd114ebbe8393a77f4ce0, type: 3}
   - {fileID: 21300000, guid: 05e41c9d89f716a4c9524844d722c534, type: 3}
   - {fileID: 21300000, guid: 362a5aadc796dc545bd62987498ec00f, type: 3}
+  - {fileID: 21300000, guid: f7072fbd00c4db747b9e90dec5c58c11, type: 3}
   - {fileID: 21300000, guid: e72fc80efe2d0c6439689bdeb0d0102c, type: 3}
+  - {fileID: 21300000, guid: b550a06eddcb52b43a306553d7ab6d98, type: 3}
   - {fileID: 21300000, guid: a815c17ed8079bc47b8faeb672e40271, type: 3}
   - {fileID: 21300000, guid: c5a54a7e88b59e547a8905c1ad93d892, type: 3}
   - {fileID: 21300000, guid: 864e6cbec0c185241a367d2fb1d6056c, type: 3}
@@ -130,10 +139,12 @@ SpriteAtlas:
   - board_frame_glow
   - star
   - donutFX
+  - roundRect8_4
   - downArrow
   - blob4
   - tutorialArrow2_bottom
   - tutorialArrow2
+  - roundRect20_6
   - circleFrameSmallOffset
   - edge_shade_left_8x1
   - shadeWhite_bottomLeft
@@ -149,6 +160,7 @@ SpriteAtlas:
   - blob3
   - explodePixel3
   - circleGlow
+  - roundRect20_gradient
   - blobBonus_mouthCorrect
   - explodePixel5
   - blobBonus_eye
@@ -157,8 +169,10 @@ SpriteAtlas:
   - blob
   - devicerEye
   - blob_eye
+  - circle128
   - roundRect8
   - explodePixel1
+  - roundRect20_glow
   - circle32x32
   - dot
   - blob5
@@ -183,7 +197,9 @@ SpriteAtlas:
   - nextArrow
   - ringGlow
   - blobBonus_mouthDrag
+  - roundRect32
   - blob_eyeClose
+  - roundRect32_6
   - blob2
   - devicerMouthClose
   - blob1
@@ -192,7 +208,9 @@ SpriteAtlas:
   - board_frame
   - blobBonus_mouthConnected
   - blobLarge
+  - roundRect20_4
   - diamond
+  - roundRect20
   - blob_link
   - edge_shade
   - blobBonus_mouthError
