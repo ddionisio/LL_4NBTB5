@@ -6,11 +6,13 @@ using UnityEngine.EventSystems;
 
 using TMPro;
 
-public class DigitWidget : MonoBehaviour, IPointerClickHandler {
+public class DigitWidget : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler {
     //NOTE: assume that interactive and number root have the same anchor config as the digit widget itself, so changing the size will work properly
     [Header("Display")]
     [SerializeField]
     RectTransform _interactiveRoot;
+    [SerializeField]
+    GameObject _highlightGO;
     [SerializeField]
     RectTransform _numberRoot;
     [SerializeField]
@@ -44,6 +46,11 @@ public class DigitWidget : MonoBehaviour, IPointerClickHandler {
                 else {
                     if(_numberRoot)
                         rectTransform.sizeDelta = _numberRoot.sizeDelta;
+
+                    if(mIsPointerEnter) {
+                        mIsPointerEnter = false;
+                        RefreshHighlight();
+                    }
                 }
             }
         }
@@ -61,6 +68,8 @@ public class DigitWidget : MonoBehaviour, IPointerClickHandler {
 
     private int mNumber;
     private bool mIsInit;
+
+    private bool mIsPointerEnter;
 
     public void Init(int aInd) {
         index = aInd;
@@ -85,7 +94,30 @@ public class DigitWidget : MonoBehaviour, IPointerClickHandler {
         if(_numberLabel) _numberLabel.text = "";
     }
 
+    void OnApplicationFocus(bool focus) {
+        if(!focus) {
+            mIsPointerEnter = false;
+            RefreshHighlight();
+        }
+    }
+
     void IPointerClickHandler.OnPointerClick(PointerEventData eventData) {
         clickCallback?.Invoke(index);
+    }
+
+    void IPointerEnterHandler.OnPointerEnter(PointerEventData eventData) {
+        mIsPointerEnter = true;
+        RefreshHighlight();
+    }
+
+    void IPointerExitHandler.OnPointerExit(PointerEventData eventData) {
+        mIsPointerEnter = false;
+        RefreshHighlight();
+    }
+
+    private void RefreshHighlight() {
+        if(_highlightGO) {
+            _highlightGO.SetActive(mIsPointerEnter && interactable);
+        }
     }
 }

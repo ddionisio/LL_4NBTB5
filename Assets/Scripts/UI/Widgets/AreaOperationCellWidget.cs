@@ -6,7 +6,7 @@ using UnityEngine.EventSystems;
 
 using TMPro;
 
-public class AreaOperationCellWidget : MonoBehaviour, IPointerClickHandler {
+public class AreaOperationCellWidget : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler {
     [Header("Display")]
     [SerializeField]
     GameObject _opRootGO;
@@ -22,6 +22,8 @@ public class AreaOperationCellWidget : MonoBehaviour, IPointerClickHandler {
     TMP_Text _factorRightLabel;
     [SerializeField]
     M8.UI.Graphics.ColorGroup _panelColorGroup;
+    [SerializeField]
+    GameObject _highlightGO;
     [SerializeField]
     GameObject _solvedRootGO;
 
@@ -75,6 +77,19 @@ public class AreaOperationCellWidget : MonoBehaviour, IPointerClickHandler {
         set {
             if(mGraphicRoot)
                 mGraphicRoot.raycastTarget = value;
+
+            if(!value && mIsPointerEnter) {
+                mIsPointerEnter = false;
+                RefreshHighlight();
+            }
+        }
+    }
+
+    public bool isHighlight {
+        get { return mIsHighlight; }
+        set {
+            mIsHighlight = value;
+            RefreshHighlight();
         }
     }
 
@@ -96,6 +111,9 @@ public class AreaOperationCellWidget : MonoBehaviour, IPointerClickHandler {
     private Dictionary<string, RectTransform> mAnchors;
 
     private bool mIsInit;
+
+    private bool mIsPointerEnter;
+    private bool mIsHighlight;
 
     public void Init() {
         if(!mIsInit) {
@@ -139,8 +157,30 @@ public class AreaOperationCellWidget : MonoBehaviour, IPointerClickHandler {
         RefreshDisplay(ignoreSolved);
     }
 
+    void OnApplicationFocus(bool focus) {
+        if(!focus) {
+            mIsPointerEnter = false;
+            RefreshHighlight();
+        }
+    }
+
+    void OnDisable() {
+        mIsPointerEnter = false;
+        RefreshHighlight();
+    }
+
     void IPointerClickHandler.OnPointerClick(PointerEventData eventData) {
         clickCallback?.Invoke(this);
+    }
+
+    void IPointerEnterHandler.OnPointerEnter(PointerEventData eventData) {
+        mIsPointerEnter = true;
+        RefreshHighlight();
+    }
+
+    void IPointerExitHandler.OnPointerExit(PointerEventData eventData) {
+        mIsPointerEnter = false;
+        RefreshHighlight();
     }
 
     private void RefreshDisplay(bool ignoreSolved) {
@@ -161,6 +201,12 @@ public class AreaOperationCellWidget : MonoBehaviour, IPointerClickHandler {
                 _factorLeftLabel.text = cellData.op.operand1.ToString();
             if(_factorRightLabel)
                 _factorRightLabel.text = cellData.op.operand2.ToString();
+        }
+    }
+
+    private void RefreshHighlight() {
+        if(_highlightGO) {
+            _highlightGO.SetActive(mIsHighlight || (mIsPointerEnter && interactable));
         }
     }
 }

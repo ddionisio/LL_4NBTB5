@@ -63,9 +63,11 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 2c182d91a96c3c949bcbade9ea5d4ba4, type: 3}
   - {fileID: 21300000, guid: 73bd99a19aa06ff4d90062fc5eb235a8, type: 3}
   - {fileID: 21300000, guid: a304b4c1c6dd3db4aa57d2c4a67c1c9a, type: 3}
+  - {fileID: 21300000, guid: 1041ffc133ef0b44fb2beefe29ceca8c, type: 3}
   - {fileID: 21300000, guid: cfce0ce1b6c72e54f9981e474f39ca7c, type: 3}
   - {fileID: 21300002, guid: bf8c0222be72dfd48a68e5cf2a7ed5c1, type: 3}
   - {fileID: 21300000, guid: bf8c0222be72dfd48a68e5cf2a7ed5c1, type: 3}
+  - {fileID: 21300000, guid: fdeea982a7f4b004a932c204b1b4811d, type: 3}
   - {fileID: 21300000, guid: 792773f2265a56344b5004cd19224541, type: 3}
   - {fileID: 21300000, guid: 1abaebf232c3b9d409c5c9383ee84f5d, type: 3}
   - {fileID: 21300000, guid: c05e5e136fe7a084084e48c38b81b054, type: 3}
@@ -82,6 +84,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 21c769e4040edd24e83c0830fb109b60, type: 3}
   - {fileID: 21300000, guid: ab4cd345c3d603044bbeba72a3891c43, type: 3}
   - {fileID: 21300000, guid: ed3ee745814d1bf44a0a1ff9061127df, type: 3}
+  - {fileID: 21300000, guid: 87fb1465e701320458980c1ed07f0d25, type: 3}
   - {fileID: 21300000, guid: c8445985f38534a4891c13ed4c0a9dd2, type: 3}
   - {fileID: 21300000, guid: 25f029e6fd1dbe34f9442686a376cbff, type: 3}
   - {fileID: 21300000, guid: 63a527f61ac87224cb15c6b6c304cbc6, type: 3}
@@ -146,9 +149,11 @@ SpriteAtlas:
   - tutorialArrow2
   - roundRect20_6
   - circleFrameSmallOffset
+  - circle128_glow
   - edge_shade_left_8x1
   - shadeWhite_bottomLeft
   - shadeWhite
+  - circle128_16
   - blob_mouthConnected
   - explodePixel2
   - roundRectGlow
@@ -165,6 +170,7 @@ SpriteAtlas:
   - explodePixel5
   - blobBonus_eye
   - devicerBody
+  - roundRect8_glow
   - blob_mouthCorrect
   - blob
   - devicerEye
