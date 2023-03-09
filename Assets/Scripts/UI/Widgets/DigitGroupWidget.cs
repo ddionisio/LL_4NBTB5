@@ -15,6 +15,13 @@ public class DigitGroupWidget : MonoBehaviour {
     [SerializeField]
     bool _hideLeadingZeroes;
 
+    [Header("Animation")]
+    [SerializeField]
+    M8.Animator.Animate _animator;
+    [M8.Animator.TakeSelector(animatorField = "_animator")]
+    [SerializeField]
+    string _takePulse;
+
     public int digitCapacity { get { return _digitCapacity; } }
     public int digitCount { get { return mNumberDigitCount; } }
 
@@ -176,6 +183,11 @@ public class DigitGroupWidget : MonoBehaviour {
             if(widget)
                 widget.gameObject.SetActive(isVisible);
         }
+    }
+
+    public void PlayPulse() {
+        if(_animator && !string.IsNullOrEmpty(_takePulse))
+            _animator.Play(_takePulse);
     }
 
     void OnDigitClick(int index) {

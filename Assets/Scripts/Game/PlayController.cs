@@ -403,8 +403,8 @@ public class PlayController : GameModeController<PlayController> {
             factorRight = grp.blobOpLeft.number;
         }
 
-        mAreaOp.Setup(factorLeft, factorRight);
-        //mAreaOp.Setup(256, 4);
+        //mAreaOp.Setup(factorLeft, factorRight);
+        mAreaOp.Setup(12, 34);
 
         mMistakeCurrent.Reset();
 

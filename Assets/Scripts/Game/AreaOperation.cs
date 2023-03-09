@@ -32,6 +32,42 @@ public class AreaOperation {
         }
     }
 
+    public bool canSplitFactorLeft {
+        get {
+            int digitSplittableCount = 0;
+
+            int newNum, digitNum;
+
+            var factorLeft = mainCell.op.operand1;
+
+            for(int c = 0; c < areaColCount - 1; c++) {
+                WholeNumber.ExtractDigit(factorLeft, c, out newNum, out digitNum);
+                if(digitNum > 0)
+                    digitSplittableCount++;
+            }
+
+            return digitSplittableCount > 0;
+        }
+    }
+
+    public bool canSplitFactorRight {
+        get {
+            int digitSplittableCount = 0;
+
+            int newNum, digitNum;
+
+            var factorRight = mainCell.op.operand2;
+
+            for(int r = 0; r < areaRowCount - 1; r++) {
+                WholeNumber.ExtractDigit(factorRight, r, out newNum, out digitNum);
+                if(digitNum > 0)
+                    digitSplittableCount++;
+            }
+
+            return digitSplittableCount > 0;
+        }
+    }
+
     private Cell[,] mAreaOperations; //[row, col]
 
     public void Setup(int factorLeft, int factorRight) {

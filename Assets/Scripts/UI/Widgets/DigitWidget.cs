@@ -18,6 +18,13 @@ public class DigitWidget : MonoBehaviour, IPointerClickHandler, IPointerEnterHan
     [SerializeField]
     TMP_Text _numberLabel;
 
+    [Header("Animation")]
+    [SerializeField]
+    M8.Animator.Animate _animator;
+    [M8.Animator.TakeSelector(animatorField = "_animator")]
+    [SerializeField]
+    string _takePulse;
+
     public int index { get; private set; }
     public int number {
         get { return mNumber; }
@@ -92,6 +99,11 @@ public class DigitWidget : MonoBehaviour, IPointerClickHandler, IPointerEnterHan
     public void SetNumberEmpty() {
         mNumber = -1;
         if(_numberLabel) _numberLabel.text = "";
+    }
+
+    public void PlayPulse() {
+        if(_animator && !string.IsNullOrEmpty(_takePulse))
+            _animator.Play(_takePulse);
     }
 
     void OnApplicationFocus(bool focus) {

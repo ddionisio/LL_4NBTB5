@@ -1793,6 +1793,8 @@ MonoBehaviour:
   _digitCapacity: 5
   _digitContainer: {fileID: 624710781}
   _hideLeadingZeroes: 0
+  _animator: {fileID: 0}
+  _takePulse: 
 --- !u!114 &624710782
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4213,6 +4215,8 @@ MonoBehaviour:
   opTemplate: {fileID: 8551078014862023610, guid: 4c0a818dfc8452a4c8a8032782911aba, type: 3}
   opCapacity: 3
   cacheRoot: {fileID: 35536621599847590}
+  animator: {fileID: 3909284040718641268}
+  takeFinish: success
   digitGroupTop: {fileID: 631536476365038670}
   digitGroupLeft: {fileID: 5236168784687762811}
   areaGrids:
@@ -4224,6 +4228,10 @@ MonoBehaviour:
   areaCellAnchorLeft: left
   areaCellAnchorOpTop: opTop
   areaCellAnchorOpLeft: opLeft
+  distributeNumberDelay: 0.5
+  distributeNumberJumpHeight: 80
+  distributeNumberEase: 4
+  finishEndDelay: 2
   signalInvokeAttackStateChange: {fileID: 11400000, guid: ebf9b91bb8b25644084fe225f3a38b36, type: 2}
 --- !u!114 &8863763520424743674
 MonoBehaviour:
@@ -10280,6 +10288,8 @@ MonoBehaviour:
   _digitCapacity: 5
   _digitContainer: {fileID: 6069309538011575343}
   _hideLeadingZeroes: 0
+  _animator: {fileID: 0}
+  _takePulse: 
 --- !u!114 &2261942745862103664
 MonoBehaviour:
   m_ObjectHideFlags: 0

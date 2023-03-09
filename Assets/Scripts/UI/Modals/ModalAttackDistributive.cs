@@ -1,6 +1,8 @@
 using System.Collections;
 using UnityEngine;
 
+using TMPro;
+
 public class ModalAttackDistributive : M8.ModalController, M8.IModalPush, M8.IModalPop {
     [Header("Templates")]
     public AreaOperationCellWidget areaCellTemplate;
@@ -14,6 +16,11 @@ public class ModalAttackDistributive : M8.ModalController, M8.IModalPush, M8.IMo
 
     public Transform cacheRoot;
 
+    [Header("Animation")]
+    public M8.Animator.Animate animator;
+    [M8.Animator.TakeSelector]
+    public string takeFinish;
+
     [Header("Digit Group")]
     public DigitGroupWidget digitGroupTop;
     public DigitGroupWidget digitGroupLeft;
@@ -26,6 +33,14 @@ public class ModalAttackDistributive : M8.ModalController, M8.IModalPush, M8.IMo
     public string areaCellAnchorLeft = "left";
     public string areaCellAnchorOpTop = "opTop";
     public string areaCellAnchorOpLeft = "opLeft";
+
+    [Header("Distribute Info")]
+    public float distributeNumberDelay = 0.3f;
+    public float distributeNumberJumpHeight = 20f;
+    public DG.Tweening.Ease distributeNumberEase = DG.Tweening.Ease.InOutSine;
+
+    [Header("Finish Info")]
+    public float finishEndDelay = 2f;
 
     [Header("Signal Invoke")]
     public SignalAttackState signalInvokeAttackStateChange;
@@ -60,6 +75,8 @@ public class ModalAttackDistributive : M8.ModalController, M8.IModalPush, M8.IMo
     private bool mIsInit;
 
     private Coroutine mDigitSplitRout;
+
+    private DG.Tweening.EaseFunction mDistributeNumberEaseFunc;
 
     public void Back() {
         Close();
@@ -138,6 +155,8 @@ public class ModalAttackDistributive : M8.ModalController, M8.IModalPush, M8.IMo
                 areaGrid.Init();
                 areaGrid.gameObject.SetActive(false);
             }
+
+            mDistributeNumberEaseFunc = DG.Tweening.Core.Easing.EaseManager.ToEaseFunction(distributeNumberEase);
 
             mIsInit = true;
         }
@@ -349,14 +368,38 @@ public class ModalAttackDistributive : M8.ModalController, M8.IModalPush, M8.IMo
 
         //apply new number of source
         digitGroupTop.number = mainCell.op.operand1;
+        digitGroupTop.PlayPulse();
 
         //apply new op to main area cell widget
         mainAreaCellWidget.ApplyCell(mAreaOp.mainCell, true);
 
-        //do digit split animation (number float from source to dest)
-
         //setup digit to dest, apply extracted number
-        SetDigitFixedColumn(digitIndex, mAreaOp.GetAreaOperation(mAreaOp.areaRowCount - 1, digitIndex).op.operand1);
+        var digitWidget = SetDigitFixedColumn(digitIndex, mAreaOp.GetAreaOperation(mAreaOp.areaRowCount - 1, digitIndex).op.operand1);
+
+        //do digit split animation (number float from source to dest)
+        var digitStartTrans = digitGroupTop.GetDigitTransform(digitIndex);
+        var digitWidgetTrans = digitWidget.rectTransform;
+
+        Vector2 startPos = digitStartTrans.position;
+        Vector2 endPos = digitWidgetTrans.position;
+
+        digitWidgetTrans.position = startPos;
+
+        var curTime = 0f;
+        while(curTime < distributeNumberDelay) {
+            yield return null;
+
+            curTime += Time.deltaTime;
+
+            var t = mDistributeNumberEaseFunc(curTime, distributeNumberDelay, 0f, 0f);
+
+            var x = Mathf.Lerp(startPos.x, endPos.x, t);
+            var y = Mathf.Lerp(startPos.y, endPos.y, t) + Mathf.Sin(Mathf.PI * t) * distributeNumberJumpHeight;
+
+            digitWidgetTrans.position = new Vector3(x, y, 0f);
+        }
+
+        digitWidget.PlayPulse();
 
         //update and show new area cell operations
         RefreshAreaCellWidgetOperations(0, digitIndex);
@@ -365,6 +408,9 @@ public class ModalAttackDistributive : M8.ModalController, M8.IModalPush, M8.IMo
         GenerateOperatorColumn(digitIndex);
 
         mDigitSplitRout = null;
+
+        if(!(mAreaOp.canSplitFactorLeft || mAreaOp.canSplitFactorRight))
+            StartCoroutine(DoFinish());
     }
 
     IEnumerator DoDigitSplitRow(int digitIndex) {
@@ -402,14 +448,35 @@ public class ModalAttackDistributive : M8.ModalController, M8.IModalPush, M8.IMo
 
         //apply new number of source
         digitGroupLeft.number = mainCell.op.operand2;
+        digitGroupLeft.PlayPulse();
 
         //apply new op to main area cell widget
         mainAreaCellWidget.ApplyCell(mAreaOp.mainCell, true);
 
-        //do digit split animation (number float from source to dest)
-
         //setup digit to dest, apply extracted number
-        SetDigitFixedRow(digitIndex, mAreaOp.GetAreaOperation(digitIndex, mAreaOp.areaColCount - 1).op.operand2);
+        var digitWidget = SetDigitFixedRow(digitIndex, mAreaOp.GetAreaOperation(digitIndex, mAreaOp.areaColCount - 1).op.operand2);
+
+        //do digit split animation (number float from source to dest)
+        var digitStartTrans = digitGroupLeft.GetDigitTransform(digitIndex);
+        var digitWidgetTrans = digitWidget.rectTransform;
+
+        Vector2 startPos = digitStartTrans.position;
+        Vector2 endPos = digitWidgetTrans.position;
+
+        digitWidgetTrans.position = startPos;
+
+        var curTime = 0f;
+        while(curTime < distributeNumberDelay) {
+            yield return null;
+
+            curTime += Time.deltaTime;
+
+            var t = mDistributeNumberEaseFunc(curTime, distributeNumberDelay, 0f, 0f);
+
+            digitWidgetTrans.position = Vector2.Lerp(startPos, endPos, t);
+        }
+
+        digitWidget.PlayPulse();
 
         //update and show new area cell operations
         RefreshAreaCellWidgetOperations(digitIndex, 0);
@@ -418,6 +485,18 @@ public class ModalAttackDistributive : M8.ModalController, M8.IModalPush, M8.IMo
         GenerateOperatorRow(digitIndex);
 
         mDigitSplitRout = null;
+
+        if(!(mAreaOp.canSplitFactorLeft || mAreaOp.canSplitFactorRight))
+            StartCoroutine(DoFinish());
+    }
+
+    IEnumerator DoFinish() {
+        if(animator && !string.IsNullOrEmpty(takeFinish))
+            yield return animator.PlayWait(takeFinish);
+
+        yield return new WaitForSeconds(finishEndDelay);
+
+        Proceed();
     }
 
     private void RefreshAreaCellWidgetTelemetries(int startRow, int startCol) {
@@ -494,10 +573,10 @@ public class ModalAttackDistributive : M8.ModalController, M8.IModalPush, M8.IMo
         return newAreaCellWidget;
     }
 
-    private void SetDigitFixedColumn(int colIndex, int number) {
+    private DigitWidget SetDigitFixedColumn(int colIndex, int number) {
         var digitWidget = GetOrGenerateDigitFixed(mDigitFixedHorizontalActives, colIndex);
         if(!digitWidget)
-            return;
+            return null;
 
         digitWidget.number = number;
 
@@ -516,12 +595,14 @@ public class ModalAttackDistributive : M8.ModalController, M8.IModalPush, M8.IMo
             rTrans.pivot = rTrans.anchorMin = rTrans.anchorMax = new Vector2 { x = 0.5f, y = 0f };
             rTrans.anchoredPosition = Vector2.zero;
         }
+
+        return digitWidget;
     }
 
-    private void SetDigitFixedRow(int rowIndex, int number) {
+    private DigitWidget SetDigitFixedRow(int rowIndex, int number) {
         var digitWidget = GetOrGenerateDigitFixed(mDigitFixedVerticalActives, rowIndex);
         if(!digitWidget)
-            return;
+            return null;
 
         digitWidget.number = number;
 
@@ -540,6 +621,8 @@ public class ModalAttackDistributive : M8.ModalController, M8.IModalPush, M8.IMo
             rTrans.pivot = rTrans.anchorMin = rTrans.anchorMax = new Vector2 { x = 1f, y = 0.5f };
             rTrans.anchoredPosition = Vector2.zero;
         }
+
+        return digitWidget;
     }
 
     private DigitWidget GetOrGenerateDigitFixed(DigitWidget[] digitWidgets, int index) {
