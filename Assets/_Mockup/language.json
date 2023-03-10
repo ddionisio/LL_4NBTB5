@@ -17,6 +17,7 @@
     "on": "ON",
     "off": "OFF",
     "ready": "READY",
-    "go": "GO"
+    "go": "GO",
+    "enter": "ENTER"
   }
 }
