@@ -18,8 +18,24 @@ public class ModalAttackAreaEvaluate : M8.ModalController, M8.IModalPush, M8.IMo
     [Header("Numpad Info")]
     public string numpadOpTextFormat = "{0} {1} {2} =";
 
+    [Header("Animation")]
+    public M8.Animator.Animate animator;
+    [M8.Animator.TakeSelector]
+    public string takeFinish;
+
+    [Header("Error Info")]
+    public float errorEndDelay = 0.5f;
+
+    [Header("Finish Info")]
+    public float finishEndDelay = 1f;
+
     [Header("Signal Invoke")]
     public SignalAttackState signalInvokeAttackStateChange;
+    public M8.SignalBoolean signalInvokeInputActive;
+    public M8.Signal signalInvokeCorrect;
+    public M8.Signal signalInvokeError;
+    public M8.SignalFloat signalInvokeValueChange;
+    public M8.SignalString signalInvokeChangeOpText;
 
     [Header("Signal Listen")]
     public M8.SignalFloat signalListenNumpadProceed;
@@ -40,7 +56,7 @@ public class ModalAttackAreaEvaluate : M8.ModalController, M8.IModalPush, M8.IMo
 
     private bool mIsInit;
 
-    private AreaOperationCellWidget mAreaOpCellWidgetClicked;
+    private AreaOperationCellWidget mAreaOpCellWidgetSelected;
 
     private Coroutine mAnswerProcessRout;
 
@@ -89,7 +105,6 @@ public class ModalAttackAreaEvaluate : M8.ModalController, M8.IModalPush, M8.IMo
             for(int i = 0; i < areaCellCapacity; i++) {
                 var newAreaCell = Instantiate(areaCellTemplate);
                 newAreaCell.Init();
-                newAreaCell.clickCallback += OnAreaCellClick;
 
                 newAreaCell.rectTransform.SetParent(cacheRoot, false);
 
@@ -161,7 +176,8 @@ public class ModalAttackAreaEvaluate : M8.ModalController, M8.IModalPush, M8.IMo
                         if(cell.isValid) { //only add valid cells
                             var areaCellWidget = GenerateAreaCell(row, col);
 
-                            areaCellWidget.interactable = !cell.isSolved;
+                            areaCellWidget.isHighlight = false;
+                            areaCellWidget.interactable = false;
                             areaCellWidget.solvedVisible = cell.isSolved;
 
                             //TODO: setup panel color
@@ -190,12 +206,14 @@ public class ModalAttackAreaEvaluate : M8.ModalController, M8.IModalPush, M8.IMo
 
         if(signalListenNumpadProceed)
             signalListenNumpadProceed.callback += OnNumpadProceed;
+
+        StartCoroutine(DoAreaEvaluations());
     }
 
     void M8.IModalPop.Pop() {
         StopAnswerProcess();
 
-        mAreaOpCellWidgetClicked = null;
+        mAreaOpCellWidgetSelected = null;
 
         if(signalListenNumpadProceed)
             signalListenNumpadProceed.callback -= OnNumpadProceed;
@@ -210,31 +228,22 @@ public class ModalAttackAreaEvaluate : M8.ModalController, M8.IModalPush, M8.IMo
         }
     }
 
-    void OnAreaCellClick(AreaOperationCellWidget cellWidget) {
-        mAreaOpCellWidgetClicked = cellWidget;
-
-        var op = cellWidget.cellData.op;
-
-        mNumpadParms[ModalCalculator.parmInitValue] = 0;
-        mNumpadParms[GameData.modalParamOperationText] = string.Format(numpadOpTextFormat, op.operand1, Operation.GetOperatorTypeChar(op.op), op.operand2);
-
-        M8.ModalManager.main.Open(GameData.instance.modalNumpad, mNumpadParms);
-    }
-
     void OnNumpadProceed(float val) {
-        M8.ModalManager.main.CloseUpTo(GameData.instance.modalNumpad, true);
+        //M8.ModalManager.main.CloseUpTo(GameData.instance.modalNumpad, true);
 
-        if(!mAreaOpCellWidgetClicked)
+        if(!mAreaOpCellWidgetSelected)
             return;
+
+        signalInvokeInputActive?.Invoke(false);
 
         var num = Mathf.RoundToInt(val);
 
         //check if matches
-        if(num == mAreaOpCellWidgetClicked.cellData.op.equal) {
+        if(num == mAreaOpCellWidgetSelected.cellData.op.equal) {
             //apply solved to shared data
-            mAreaOp.SetAreaOperationSolved(mAreaOpCellWidgetClicked.row, mAreaOpCellWidgetClicked.col, true);
+            mAreaOp.SetAreaOperationSolved(mAreaOpCellWidgetSelected.row, mAreaOpCellWidgetSelected.col, true);
 
-            StartCorrect(mAreaOpCellWidgetClicked);
+            StartCorrect(mAreaOpCellWidgetSelected);
         }
         else { //error
             //update mistake count in shared data
@@ -242,47 +251,106 @@ public class ModalAttackAreaEvaluate : M8.ModalController, M8.IModalPush, M8.IMo
 
             StartError();
         }
+    }
 
-        mAreaOpCellWidgetClicked = null;
+    IEnumerator DoAreaEvaluations() {
+        var modalMain = M8.ModalManager.main;
+
+        //wait for modal to finish entering
+        while(modalMain.isBusy)
+            yield return null;
+
+        //open up numpad
+        mNumpadParms[ModalCalculator.parmInitValue] = 0;
+        mNumpadParms[GameData.modalParamOperationText] = "";
+
+        M8.ModalManager.main.Open(GameData.instance.modalNumpad, mNumpadParms);
+
+        yield return null;
+
+        signalInvokeInputActive?.Invoke(false);
+
+        //go through each areas to evaluate (column to row)
+        for(int c = 0; c < mAreaOp.areaColCount; c++) {
+            for(int r = 0; r < mAreaOp.areaRowCount; r++) {
+                var areaCellWidget = mAreaCellActives[r, c];
+                if(areaCellWidget && !areaCellWidget.solvedVisible) {
+                    areaCellWidget.isHighlight = true;
+
+                    var cell = areaCellWidget.cellData;
+
+                    signalInvokeValueChange?.Invoke(0f);
+                    signalInvokeChangeOpText?.Invoke(string.Format(numpadOpTextFormat, cell.op.operand1, Operation.GetOperatorTypeChar(cell.op.op), cell.op.operand2));
+
+                    mAreaOpCellWidgetSelected = areaCellWidget;
+
+                    signalInvokeInputActive?.Invoke(true);
+
+                    //wait for correct answer
+                    while(!areaCellWidget.solvedVisible || isAnswerProcessing)
+                        yield return null;
+                }
+            }
+        }
+
+        //close up numpad
+        M8.ModalManager.main.CloseUpTo(GameData.instance.modalNumpad, true);
+
+        while(modalMain.isBusy)
+            yield return null;
+
+        //success
+        if(animator && !string.IsNullOrEmpty(takeFinish))
+            yield return animator.PlayWait(takeFinish);
+
+        yield return new WaitForSeconds(finishEndDelay);
+
+        Proceed();
     }
 
     IEnumerator DoError() {
-        //wait for modal to finish
-        while(M8.ModalManager.main.isBusy)
-            yield return null;
-
         //update mistake display
         mistakeCounterDisplay.UpdateMistakeCount(mMistakeInfo);
 
         //do error animation (also send signal for animation in background)
-
-        mAnswerProcessRout = null;
+        while(mistakeCounterDisplay.isBusy)
+            yield return null;
 
         //check if error is full, if so, close and then send signal
         if(mMistakeInfo.isFull) {
+            yield return new WaitForSeconds(errorEndDelay);
+
+            mAnswerProcessRout = null;
+
             Close();
 
             signalInvokeAttackStateChange?.Invoke(AttackState.Fail);
         }
+        else {
+            signalInvokeValueChange?.Invoke(0f);
+
+            signalInvokeInputActive?.Invoke(true);
+
+            mAnswerProcessRout = null;
+        }
     }
 
     IEnumerator DoCorrect(AreaOperationCellWidget areaOpCellWidget) {
-        //wait for modal to finish
-        while(M8.ModalManager.main.isBusy)
-            yield return null;
-
         //set display as solved
         areaOpCellWidget.ApplyCell(mAreaOp.GetAreaOperation(areaOpCellWidget.row, areaOpCellWidget.col), false);
 
-        areaOpCellWidget.interactable = false;
+        areaOpCellWidget.isHighlight = false;
         areaOpCellWidget.solvedVisible = true;
 
         //do correct animation (also send signal for animation in background)
+        yield return new WaitForSeconds(0.5f);
 
         mAnswerProcessRout = null;
     }
 
     private void StartError() {
+        signalInvokeError?.Invoke();
+
         if(mAnswerProcessRout != null)
             StopCoroutine(mAnswerProcessRout);
 
@@ -290,6 +358,8 @@ public class ModalAttackAreaEvaluate : M8.ModalController, M8.IModalPush, M8.IMo
     }
 
     private void StartCorrect(AreaOperationCellWidget areaOpCellWidget) {
+        signalInvokeCorrect?.Invoke();
+
         if(mAnswerProcessRout != null)
             StopCoroutine(mAnswerProcessRout);
 

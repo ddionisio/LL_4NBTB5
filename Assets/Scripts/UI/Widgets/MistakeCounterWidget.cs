@@ -38,7 +38,8 @@ public class MistakeCounterWidget : MonoBehaviour {
         var fillVal = ((float)mistakeFillCount) / maxMistakeCount;
 
         //setup initial display
-        _fillBar.normalizedValue = fillVal;
+        if(_fillBar)
+            _fillBar.normalizedValue = fillVal;
 
         if(_fillDangerGO)
             _fillDangerGO.SetActive(mistakeFillCount <= _fillDangerMinCount);
@@ -51,7 +52,7 @@ public class MistakeCounterWidget : MonoBehaviour {
         if(mRout != null)
             StopCoroutine(mRout);
 
-        StartCoroutine(DoUpdate(mistakeInfo));
+        mRout = StartCoroutine(DoUpdate(mistakeInfo));
     }
 
     void OnDisable() {
@@ -67,23 +68,25 @@ public class MistakeCounterWidget : MonoBehaviour {
 
         var mistakeFillCount = maxMistakeCount - curMistakeCount;
 
-        var curFillVal = _fillBar.normalizedValue;
-        var newFillVal = ((float)mistakeFillCount) / maxMistakeCount;
+        if(_fillBar) {
+            var curFillVal = _fillBar.normalizedValue;
+            var newFillVal = ((float)mistakeFillCount) / maxMistakeCount;
 
-        if(newFillVal < curFillVal) {
-            if(_animator && !string.IsNullOrEmpty(_takeHurt))
-                _animator.Play(_takeHurt);
-        }
+            if(newFillVal < curFillVal) {
+                if(_animator && !string.IsNullOrEmpty(_takeHurt))
+                    _animator.Play(_takeHurt);
+            }
 
-        var curTime = 0f;
-        while(curTime < _fillChangeDelay) {
-            yield return null;
+            var curTime = 0f;
+            while(curTime < _fillChangeDelay) {
+                yield return null;
 
-            curTime += Time.deltaTime;
+                curTime += Time.deltaTime;
 
-            var t = mFillChangeEaseFunc(curTime, _fillChangeDelay, 0f, 0f);
+                var t = mFillChangeEaseFunc(curTime, _fillChangeDelay, 0f, 0f);
 
-            _fillBar.normalizedValue = Mathf.Lerp(curFillVal, newFillVal, t);
+                _fillBar.normalizedValue = Mathf.Lerp(curFillVal, newFillVal, t);
+            }
         }
 
         if(_fillDangerGO)

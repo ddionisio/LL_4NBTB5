@@ -68,6 +68,7 @@ SpriteAtlas:
   - {fileID: 21300002, guid: bf8c0222be72dfd48a68e5cf2a7ed5c1, type: 3}
   - {fileID: 21300000, guid: bf8c0222be72dfd48a68e5cf2a7ed5c1, type: 3}
   - {fileID: 21300000, guid: fdeea982a7f4b004a932c204b1b4811d, type: 3}
+  - {fileID: 21300000, guid: 808e6cb2bf0d27d40af1d0fbc55bfabb, type: 3}
   - {fileID: 21300000, guid: 792773f2265a56344b5004cd19224541, type: 3}
   - {fileID: 21300000, guid: 1abaebf232c3b9d409c5c9383ee84f5d, type: 3}
   - {fileID: 21300000, guid: c05e5e136fe7a084084e48c38b81b054, type: 3}
@@ -86,6 +87,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: ed3ee745814d1bf44a0a1ff9061127df, type: 3}
   - {fileID: 21300000, guid: 87fb1465e701320458980c1ed07f0d25, type: 3}
   - {fileID: 21300000, guid: c8445985f38534a4891c13ed4c0a9dd2, type: 3}
+  - {fileID: 21300000, guid: a9f07236c774e5444866653f76271f35, type: 3}
   - {fileID: 21300000, guid: 25f029e6fd1dbe34f9442686a376cbff, type: 3}
   - {fileID: 21300000, guid: 63a527f61ac87224cb15c6b6c304cbc6, type: 3}
   - {fileID: 21300000, guid: a95d7047582255d489809362a46e6420, type: 3}
@@ -126,6 +128,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 36ce24ec9ae04524289ce0e80bf270be, type: 3}
   - {fileID: 21300000, guid: b678ba2d7d4bed94abb27c65899b8595, type: 3}
   - {fileID: 21300000, guid: 045d323db38cd114ebbe8393a77f4ce0, type: 3}
+  - {fileID: 21300000, guid: 735e018dda131a7429da17194c94360f, type: 3}
   - {fileID: 21300000, guid: 05e41c9d89f716a4c9524844d722c534, type: 3}
   - {fileID: 21300000, guid: 362a5aadc796dc545bd62987498ec00f, type: 3}
   - {fileID: 21300000, guid: f7072fbd00c4db747b9e90dec5c58c11, type: 3}
@@ -154,6 +157,7 @@ SpriteAtlas:
   - shadeWhite_bottomLeft
   - shadeWhite
   - circle128_16
+  - heartGlow
   - blob_mouthConnected
   - explodePixel2
   - roundRectGlow
@@ -172,6 +176,7 @@ SpriteAtlas:
   - devicerBody
   - roundRect8_glow
   - blob_mouthCorrect
+  - erase
   - blob
   - devicerEye
   - blob_eye
@@ -212,6 +217,7 @@ SpriteAtlas:
   - circleGlowTiny
   - circleFrameSmall
   - board_frame
+  - heart
   - blobBonus_mouthConnected
   - blobLarge
   - roundRect20_4

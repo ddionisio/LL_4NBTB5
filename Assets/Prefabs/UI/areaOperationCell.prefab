@@ -128,7 +128,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: 2, y: 2}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5395429115707784361
 CanvasRenderer:
@@ -150,8 +150,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 2100000, guid: e83ac30213f1d45408bf3b8631da5125, type: 2}
-  m_Color: {r: 0.3647059, g: 0.14509805, b: 0.10980393, a: 0.8}
+  m_Material: {fileID: 0}
+  m_Color: {r: 0.97647065, g: 0.5529412, b: 0.34509805, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -203,7 +203,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -4, y: -4}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4994579742404589157
 CanvasRenderer:
@@ -226,7 +226,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 2100000, guid: e83ac30213f1d45408bf3b8631da5125, type: 2}
-  m_Color: {r: 0.3647059, g: 0.14509805, b: 0.10980393, a: 0.6039216}
+  m_Color: {r: 0.59607846, g: 0.23529412, b: 0.18039216, a: 0.7019608}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -315,7 +315,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -2, y: -2}
+  m_SizeDelta: {x: -4, y: -4}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &653590347072561335
 MonoBehaviour:
@@ -447,10 +447,10 @@ MonoBehaviour:
           - 0.10980393
           - 1
         - vals:
-          - 0.3647059
-          - 0.14509805
-          - 0.10980393
-          - 0.6039216
+          - 0.59607846
+          - 0.23529412
+          - 0.18039216
+          - 0.7019608
         wpsTimeTable:
         - 0.35714287
         controlPoints:
@@ -464,13 +464,13 @@ MonoBehaviour:
             vals: []
         - a:
             vals:
-            - 0.3647059
-            - 0.14509805
-            - 0.10980393
-            - 0.20784318
+            - 0.827451
+            - 0.32549018
+            - 0.25098038
+            - 0.4039216
           b:
             vals: []
-        length: 1.4302721
+        length: 1.44311
         timesTable: []
         lengthsTable: []
         _isConstantSpeed: 0
@@ -503,7 +503,7 @@ MonoBehaviour:
       val: 0
       valString: 
       valObj: {fileID: 0}
-      vect4: {x: 0.3647059, y: 0.14509805, z: 0.10980393, w: 0.6039216}
+      vect4: {x: 0.59607846, y: 0.23529412, z: 0.18039216, w: 0.7019608}
     - interp: 0
       frame: 10
       easeType: 3
@@ -516,7 +516,7 @@ MonoBehaviour:
       val: 0
       valString: 
       valObj: {fileID: 0}
-      vect4: {x: 0.3647059, y: 0.14509805, z: 0.10980393, w: 0}
+      vect4: {x: 0.7019608, y: 0.3254902, z: 0.19215688, w: 0}
     - interp: 0
       frame: 20
       easeType: 1
@@ -529,7 +529,7 @@ MonoBehaviour:
       val: 0
       valString: 
       valObj: {fileID: 0}
-      vect4: {x: 0.3647059, y: 0.14509805, z: 0.10980393, w: 0.8}
+      vect4: {x: 0.97647065, y: 0.5529412, z: 0.34509805, w: 1}
     - interp: 0
       frame: 6
       easeType: 1
