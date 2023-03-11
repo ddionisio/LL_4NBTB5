@@ -67,6 +67,14 @@ public class DigitWidget : MonoBehaviour, IPointerClickHandler, IPointerEnterHan
 
     public RectTransform numberRoot { get { return _numberRoot; } }
 
+    public bool isHighlight {
+        get { return mIsHighlight; }
+        set {
+            mIsHighlight = value;
+            RefreshHighlight();
+        }
+    }
+
     public event System.Action<int> clickCallback;
 
     private RectTransform mRectTrans;
@@ -75,6 +83,8 @@ public class DigitWidget : MonoBehaviour, IPointerClickHandler, IPointerEnterHan
 
     private int mNumber;
     private bool mIsInit;
+
+    private bool mIsHighlight;
 
     private bool mIsPointerEnter;
 
@@ -94,6 +104,11 @@ public class DigitWidget : MonoBehaviour, IPointerClickHandler, IPointerEnterHan
         }
 
         interactable = false;
+
+        mIsHighlight = false;
+        mIsPointerEnter = false;
+
+        RefreshHighlight();
     }
 
     public void SetNumberEmpty() {
@@ -129,7 +144,7 @@ public class DigitWidget : MonoBehaviour, IPointerClickHandler, IPointerEnterHan
 
     private void RefreshHighlight() {
         if(_highlightGO) {
-            _highlightGO.SetActive(mIsPointerEnter && interactable);
+            _highlightGO.SetActive(mIsHighlight || (mIsPointerEnter && interactable));
         }
     }
 }

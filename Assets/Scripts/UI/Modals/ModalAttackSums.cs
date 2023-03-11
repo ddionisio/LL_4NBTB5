@@ -25,8 +25,24 @@ public class ModalAttackSums : M8.ModalController, M8.IModalPush, M8.IModalPop {
     public float highlightMoveDelay = 0.3f;
     public DG.Tweening.Ease highlightMoveEase = DG.Tweening.Ease.InOutSine;
 
+    [Header("Animation")]
+    public M8.Animator.Animate animator;
+    [M8.Animator.TakeSelector]
+    public string takeFinish;
+
+    [Header("Error Info")]
+    public float errorEndDelay = 0.5f;
+
+    [Header("Finish Info")]
+    public float finishEndDelay = 1f;
+
     [Header("Signal Invoke")]
     public SignalAttackState signalInvokeAttackStateChange;
+    public M8.SignalBoolean signalInvokeInputActive;
+    public M8.Signal signalInvokeCorrect;
+    public M8.Signal signalInvokeError;
+    public M8.SignalFloat signalInvokeValueChange;
+    public M8.SignalString signalInvokeChangeOpText;
 
     [Header("Signal Listen")]
     public M8.SignalFloat signalListenNumpadProceed;
@@ -38,8 +54,8 @@ public class ModalAttackSums : M8.ModalController, M8.IModalPush, M8.IModalPop {
 
     private int mAnswerDigitCount;
 
-    private int mInputDigitAnswerLastIndex;
-    private int mInputDigitAnswerNumber;
+    private int mInputAnswerDigitIndex;
+    private int mInputAnswerDigitNumber;
 
     private float mFactorElementWidth; //assume fixed width per digit element of each factor
 
@@ -57,6 +73,8 @@ public class ModalAttackSums : M8.ModalController, M8.IModalPush, M8.IModalPop {
     private DG.Tweening.EaseFunction mHighlightMoveFunc;
 
     private Coroutine mAnswerProcessRout;
+
+    private bool mIsCorrectAnswerProcessed;
 
     public void Back() {
         Close();
@@ -95,7 +113,6 @@ public class ModalAttackSums : M8.ModalController, M8.IModalPush, M8.IModalPop {
 
             //init input answer
             inputAnswerGroup.Init();
-            inputAnswerGroup.clickCallback += OnInputAnswerDigitClick;
 
             //init highlight
             var factorRootSizeDelta = factorRoot.sizeDelta;
@@ -174,6 +191,7 @@ public class ModalAttackSums : M8.ModalController, M8.IModalPush, M8.IModalPop {
         inputAnswerGroup.SetDigitEmpty(0);
         inputAnswerGroup.SetDigitVisible(0, true);
         inputAnswerGroup.SetDigitInteractive(0, true);
+        inputAnswerGroup.SetDigitHighlight(0, true);
 
         //setup initial highlight pos
         var highlightAnchorPos = highlightRoot.anchoredPosition;
@@ -182,10 +200,12 @@ public class ModalAttackSums : M8.ModalController, M8.IModalPush, M8.IModalPop {
 
         highlightRoot.gameObject.SetActive(true);
 
-        mInputDigitAnswerLastIndex = -1;
+        mInputAnswerDigitIndex = -1;
 
         if(signalListenNumpadProceed)
             signalListenNumpadProceed.callback += OnNumpadProceed;
+
+        StartCoroutine(DoSums());
     }
 
     void M8.IModalPop.Pop() {
@@ -197,56 +217,13 @@ public class ModalAttackSums : M8.ModalController, M8.IModalPush, M8.IModalPop {
         ClearFactors();
     }
 
-    void OnInputAnswerDigitClick(int digitIndex) {
-        if(mInputDigitAnswerLastIndex != digitIndex) {
-            //setup string and sums
-            mInputDigitAnswerNumber = 0;
-
-            mSumsStringBuild.Clear();
-
-            //check if there's a carry-over
-            var carryOverDigit = carryOverGroup.GetDigitNumber(digitIndex);
-            if(carryOverDigit > 0) {
-                mSumsStringBuild.Append(carryOverDigit);
-
-                mInputDigitAnswerNumber += carryOverDigit;
-            }
-
-            for(int i = 0; i < mFactorActives.Count; i++) {
-                var factorWidget = mFactorActives[i];
-
-                if(digitIndex < factorWidget.digitCount) {
-                    if(i > 0 || carryOverDigit > 0)
-                        mSumsStringBuild.Append(" + ");
-
-                    var digitNum = factorWidget.GetDigitNumber(digitIndex);
-
-                    mInputDigitAnswerNumber += digitNum;
-
-                    mSumsStringBuild.Append(digitNum);
-                }
-            }
-
-            mSumsStringBuild.Append(" =");
-
-            mInputDigitAnswerLastIndex = digitIndex;
-
-            mNumpadParms[GameData.modalParamOperationText] = mSumsStringBuild.ToString();
-        }
-
-        //call numpad
-        mNumpadParms[ModalCalculator.parmInitValue] = 0;
-
-        M8.ModalManager.main.Open(GameData.instance.modalNumpad, mNumpadParms);
-    }
-
     void OnNumpadProceed(float val) {
-        M8.ModalManager.main.CloseUpTo(GameData.instance.modalNumpad, true);
+        signalInvokeInputActive?.Invoke(false);
 
         int iVal = Mathf.RoundToInt(val);
 
-        if(mInputDigitAnswerNumber == iVal) { //correct
-            StartCorrect(mInputDigitAnswerLastIndex, mInputDigitAnswerNumber);
+        if(mInputAnswerDigitNumber == iVal) { //correct
+            StartCorrect(mInputAnswerDigitIndex, mInputAnswerDigitNumber);
         }
         else { //error
             //update mistake count in shared data
@@ -256,31 +233,119 @@ public class ModalAttackSums : M8.ModalController, M8.IModalPush, M8.IModalPop {
         }
     }
 
-    IEnumerator DoError() {
-        //wait for modal to finish
-        while(M8.ModalManager.main.isBusy)
+    IEnumerator DoSums() {
+        var modalMain = M8.ModalManager.main;
+
+        //wait for modal to finish entering
+        while(modalMain.isBusy)
             yield return null;
 
+        //open up numpad
+        mNumpadParms[ModalCalculator.parmInitValue] = 0;
+        mNumpadParms[GameData.modalParamOperationText] = "";
+
+        modalMain.Open(GameData.instance.modalNumpad, mNumpadParms);
+
+        yield return null;
+
+        signalInvokeInputActive?.Invoke(false);
+
+        mInputAnswerDigitIndex = 0;
+
+        while(inputAnswerGroup.number != mAreaOp.operation.equal) {
+            //setup string and sums
+            mInputAnswerDigitNumber = 0;
+
+            mSumsStringBuild.Clear();
+
+            //check if there's a carry-over
+            var carryOverDigit = carryOverGroup.GetDigitNumber(mInputAnswerDigitIndex);
+            if(carryOverDigit > 0) {
+                mSumsStringBuild.Append(carryOverDigit);
+
+                mInputAnswerDigitNumber += carryOverDigit;
+            }
+
+            for(int i = 0; i < mFactorActives.Count; i++) {
+                var factorWidget = mFactorActives[i];
+
+                if(mInputAnswerDigitIndex < factorWidget.digitCount) {
+                    if(i > 0 || carryOverDigit > 0)
+                        mSumsStringBuild.Append(" + ");
+
+                    var digitNum = factorWidget.GetDigitNumber(mInputAnswerDigitIndex);
+
+                    mInputAnswerDigitNumber += digitNum;
+
+                    mSumsStringBuild.Append(digitNum);
+                }
+            }
+
+            mSumsStringBuild.Append(" =");
+            //
+
+            signalInvokeChangeOpText?.Invoke(mSumsStringBuild.ToString());
+            signalInvokeValueChange?.Invoke(0f);
+
+            signalInvokeInputActive?.Invoke(true);
+
+            //wait for correct answer
+            mIsCorrectAnswerProcessed = false;
+            while(!mIsCorrectAnswerProcessed) {
+                if(mMistakeInfo.isFull)
+                    yield break;
+
+                yield return null;
+            }
+
+            mInputAnswerDigitIndex++;
+        }
+
+        //close up numpad
+        modalMain.CloseUpTo(GameData.instance.modalNumpad, true);
+
+        while(modalMain.isBusy)
+            yield return null;
+
+        //success
+        if(animator && !string.IsNullOrEmpty(takeFinish))
+            yield return animator.PlayWait(takeFinish);
+
+        yield return new WaitForSeconds(finishEndDelay);
+
+        Proceed();
+    }
+
+    IEnumerator DoError() {
         //update mistake display
         mistakeCounterDisplay.UpdateMistakeCount(mMistakeInfo);
 
         //do error animation (also send signal for animation in background)
+        while(mistakeCounterDisplay.isBusy)
+            yield return null;
 
         mAnswerProcessRout = null;
 
         //check if error is full, if so, close and then send signal
         if(mMistakeInfo.isFull) {
+            yield return new WaitForSeconds(errorEndDelay);
+
+            mAnswerProcessRout = null;
+
             Close();
 
             signalInvokeAttackStateChange?.Invoke(AttackState.Fail);
         }
+        else {
+            signalInvokeValueChange?.Invoke(0f);
+
+            signalInvokeInputActive?.Invoke(true);
+
+            mAnswerProcessRout = null;
+        }
     }
 
     IEnumerator DoCorrect(int digitIndex, int digitAnswer) {
-        //wait for modal to finish
-        while(M8.ModalManager.main.isBusy)
-            yield return null;
-
         int singleDigit = digitAnswer % 10;
 
         int carryOverDigit = (digitAnswer / 10) % 10;
@@ -290,18 +355,24 @@ public class ModalAttackSums : M8.ModalController, M8.IModalPush, M8.IModalPop {
 
         //hide interactive
         inputAnswerGroup.SetDigitInteractive(digitIndex, false);
+        inputAnswerGroup.SetDigitHighlight(digitIndex, false);
 
         int nextDigitIndex = digitIndex + 1;
         if(nextDigitIndex < mAnswerDigitCount && nextDigitIndex < inputAnswerGroup.digitCapacity) {
             //check carry-over
             if(carryOverDigit > 0) {
+                var answerDigitWidget = inputAnswerGroup.GetDigitWidget(digitIndex);
+
+                //apply new carryover for next digit
+                var carryOverDigitWidget = carryOverGroup.SetDigitNumber(nextDigitIndex, carryOverDigit);
+
                 //do animation
                 //-> show carry-over to the left of current digitIndex of input answer
                 //-> move carry-over to the top
                 //-> move carry-over to its designated space, hide
 
-                //apply new carryover for next digit
-                carryOverGroup.SetDigitNumber(nextDigitIndex, carryOverDigit);
+                carryOverDigitWidget.PlayPulse();
+                
             }
 
             //move highlight
@@ -326,6 +397,7 @@ public class ModalAttackSums : M8.ModalController, M8.IModalPush, M8.IModalPop {
             inputAnswerGroup.SetDigitEmpty(nextDigitIndex);
             inputAnswerGroup.SetDigitInteractive(nextDigitIndex, true);
             inputAnswerGroup.SetDigitVisible(nextDigitIndex, true);
+            inputAnswerGroup.SetDigitHighlight(nextDigitIndex, true);
         }
         else {
             //we are finish
@@ -333,9 +405,13 @@ public class ModalAttackSums : M8.ModalController, M8.IModalPush, M8.IModalPop {
         }
 
         mAnswerProcessRout = null;
+
+        mIsCorrectAnswerProcessed = true;
     }
 
     private void StartError() {
+        signalInvokeError?.Invoke();
+
         if(mAnswerProcessRout != null)
             StopCoroutine(mAnswerProcessRout);
 
@@ -343,6 +419,8 @@ public class ModalAttackSums : M8.ModalController, M8.IModalPush, M8.IModalPop {
     }
 
     private void StartCorrect(int digitIndex, int digitAnswer) {
+        signalInvokeCorrect?.Invoke();
+
         if(mAnswerProcessRout != null)
             StopCoroutine(mAnswerProcessRout);
 

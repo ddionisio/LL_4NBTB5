@@ -131,6 +131,13 @@ public class DigitGroupWidget : MonoBehaviour {
         return digitWidget ? digitWidget.number : 0;
     }
 
+    public DigitWidget GetDigitWidget(int digitIndex) {
+        if(digitIndex >= _digitCapacity)
+            return null;
+
+        return mDigitWidgets[digitIndex];
+    }
+
     public RectTransform GetDigitTransform(int digitIndex) {
         if(digitIndex >= _digitCapacity)
             return null;
@@ -140,15 +147,17 @@ public class DigitGroupWidget : MonoBehaviour {
         return digitWidget ? digitWidget.rectTransform : null;
     }
 
-    public void SetDigitNumber(int digitIndex, int digitNumber) {
+    public DigitWidget SetDigitNumber(int digitIndex, int digitNumber) {
         if(digitIndex >= _digitCapacity)
-            return;
+            return null;
 
         var digitWidget = mDigitWidgets[digitIndex];
         if(digitWidget)
             digitWidget.number = digitNumber;
 
         RefreshNumberFromDigits();
+
+        return digitWidget;
     }
 
     public void SetDigitInteractive(int digitIndex, bool interactive) {
@@ -183,6 +192,15 @@ public class DigitGroupWidget : MonoBehaviour {
             if(widget)
                 widget.gameObject.SetActive(isVisible);
         }
+    }
+
+    public void SetDigitHighlight(int digitIndex, bool isHighlight) {
+        if(digitIndex >= _digitCapacity)
+            return;
+
+        var digitWidget = mDigitWidgets[digitIndex];
+        if(digitWidget)
+            digitWidget.isHighlight = isHighlight;
     }
 
     public void PlayPulse() {

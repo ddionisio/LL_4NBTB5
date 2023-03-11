@@ -264,7 +264,7 @@ public class ModalAttackAreaEvaluate : M8.ModalController, M8.IModalPush, M8.IMo
         mNumpadParms[ModalCalculator.parmInitValue] = 0;
         mNumpadParms[GameData.modalParamOperationText] = "";
 
-        M8.ModalManager.main.Open(GameData.instance.modalNumpad, mNumpadParms);
+        modalMain.Open(GameData.instance.modalNumpad, mNumpadParms);
 
         yield return null;
 
@@ -287,14 +287,18 @@ public class ModalAttackAreaEvaluate : M8.ModalController, M8.IModalPush, M8.IMo
                     signalInvokeInputActive?.Invoke(true);
 
                     //wait for correct answer
-                    while(!areaCellWidget.solvedVisible || isAnswerProcessing)
+                    while(!areaCellWidget.solvedVisible) {
+                        if(mMistakeInfo.isFull)
+                            yield break;
+
                         yield return null;
+                    }
                 }
             }
         }
 
         //close up numpad
-        M8.ModalManager.main.CloseUpTo(GameData.instance.modalNumpad, true);
+        modalMain.CloseUpTo(GameData.instance.modalNumpad, true);
 
         while(modalMain.isBusy)
             yield return null;
