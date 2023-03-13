@@ -21,6 +21,17 @@ public class ModalAttackDistributiveMixUp : M8.ModalController, M8.IModalPush, M
     [Header("Mistake Display")]
     public MistakeCounterWidget mistakeCounterDisplay;
 
+    [Header("Error Info")]
+    public M8.Animator.Animate errorAnimator;
+    [M8.Animator.TakeSelector(animatorField = "errorAnimator")]
+    public string takeError;
+
+    [Header("Finish Info")]
+    public M8.Animator.Animate finishAnimator;
+    [M8.Animator.TakeSelector(animatorField = "finishAnimator")]
+    public string takeFinish;
+    public float finishEndDelay = 1f;
+
     [Header("Area Cell Anchors")]
     public string areaCellAnchorTop = "top";
     public string areaCellAnchorLeft = "left";
@@ -47,6 +58,8 @@ public class ModalAttackDistributiveMixUp : M8.ModalController, M8.IModalPush, M
 
     private ModalAttackParams mAttackParms;
 
+    private Coroutine mRout;
+
     private bool mIsInit;
 
     public void Back() {
@@ -56,6 +69,9 @@ public class ModalAttackDistributiveMixUp : M8.ModalController, M8.IModalPush, M
     }
 
     public void Proceed() {
+        if(mRout != null)
+            return;
+            
         //check if area product sums match areas
         var areaMatchCount = 0;
 
@@ -68,27 +84,10 @@ public class ModalAttackDistributiveMixUp : M8.ModalController, M8.IModalPush, M
             }
         }
 
-        if(areaMatchCount == mAreaOp.areaRowCount * mAreaOp.areaColCount) {
-            //TODO: do victory animation
-            Close();
-            M8.ModalManager.main.Open(GameData.instance.modalAttackAreaEvaluate, mAttackParms);
-        }
-        else {
-            //error animation for mismatched areas
-
-            if(mMistakeInfo != null) {
-                mMistakeInfo.AppendAreaEvaluateCount();
-
-                //update mistake display
-                mistakeCounterDisplay.UpdateMistakeCount(mMistakeInfo);
-
-                if(mMistakeInfo.isFull) {
-                    Close();
-
-                    signalInvokeAttackStateChange?.Invoke(AttackState.Fail);
-                }
-            }
-        }
+        if(areaMatchCount == mAreaOp.areaRowCount * mAreaOp.areaColCount)
+            mRout = StartCoroutine(DoFinish());
+        else
+            mRout = StartCoroutine(DoError());
     }
 
     void M8.IModalPush.Push(M8.GenericParams parms) {
@@ -293,6 +292,11 @@ public class ModalAttackDistributiveMixUp : M8.ModalController, M8.IModalPush, M
     }
 
     void M8.IModalPop.Pop() {
+        if(mRout != null) {
+            StopCoroutine(mRout);
+            mRout = null;
+        }
+
         ClearAreaCells();
         ClearDigits();
         ClearOps();
@@ -303,6 +307,42 @@ public class ModalAttackDistributiveMixUp : M8.ModalController, M8.IModalPush, M
 
             mAreaGridInd = -1;
         }
+    }
+
+    IEnumerator DoError() {
+        if(mMistakeInfo != null) {
+            mMistakeInfo.AppendAreaEvaluateCount();
+
+            //update mistake display
+            if(mistakeCounterDisplay)
+                mistakeCounterDisplay.UpdateMistakeCount(mMistakeInfo);
+
+            if(errorAnimator && !string.IsNullOrEmpty(takeError))
+                yield return errorAnimator.PlayWait(takeError);
+
+            mRout = null;
+
+            if(mMistakeInfo.isFull) {
+                Close();
+
+                signalInvokeAttackStateChange?.Invoke(AttackState.Fail);
+            }
+        }
+        else
+            mRout = null;
+    }
+
+    IEnumerator DoFinish() {
+        if(finishAnimator && !string.IsNullOrEmpty(takeFinish))
+            yield return finishAnimator.PlayWait(takeFinish);
+
+        yield return new WaitForSeconds(finishEndDelay);
+
+        mRout = null;
+
+        Close();
+
+        M8.ModalManager.main.Open(GameData.instance.modalAttackAreaEvaluate, mAttackParms);
     }
 
     private AreaOperationCellWidget GenerateAreaCell(int row, int col) {

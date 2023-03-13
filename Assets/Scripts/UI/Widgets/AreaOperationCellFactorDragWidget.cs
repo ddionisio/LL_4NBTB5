@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 
 using TMPro;
 
-public class AreaOperationCellFactorDragWidget : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler {
+public class AreaOperationCellFactorDragWidget : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler, IPointerEnterHandler, IPointerExitHandler {
     public enum FactorSideType {
         Left,
         Right
@@ -14,6 +14,9 @@ public class AreaOperationCellFactorDragWidget : MonoBehaviour, IDragHandler, IB
     [Header("Factor Data")]
     public FactorSideType factorSide;
     public Transform factorAnchor;
+
+    [Header("Hover")]
+    public GameObject hoverHighlightGO;
 
     [Header("Drag/Drop")]
     public RectTransform dragRoot;
@@ -78,6 +81,8 @@ public class AreaOperationCellFactorDragWidget : MonoBehaviour, IDragHandler, IB
 
     private AreaOperationCellFactorDragWidget mHoverCellDragWidget;
 
+    private bool mIsPointerEnter;
+
     public void SetFactorNumberVisible(bool visible) {
         switch(factorSide) {
             case FactorSideType.Left:
@@ -103,9 +108,18 @@ public class AreaOperationCellFactorDragWidget : MonoBehaviour, IDragHandler, IB
 
     void OnApplicationFocus(bool isActive) {
         if(!isActive) {
+            mIsPointerEnter = false;
+
             if(isDragging)
                 DragEnd();
+            else
+                RefreshHoverHighlight();
         }
+    }
+
+    void OnEnable() {
+        mIsPointerEnter = false;
+        RefreshHoverHighlight();
     }
 
     void OnDisable() {
@@ -152,6 +166,16 @@ public class AreaOperationCellFactorDragWidget : MonoBehaviour, IDragHandler, IB
         }
 
         StartMoveBackToOrigin();
+    }
+
+    void IPointerEnterHandler.OnPointerEnter(PointerEventData eventData) {
+        mIsPointerEnter = true;
+        RefreshHoverHighlight();
+    }
+
+    void IPointerExitHandler.OnPointerExit(PointerEventData eventData) {
+        mIsPointerEnter = false;
+        RefreshHoverHighlight();
     }
 
     IEnumerator DoMoveBackToOrigin() {
@@ -210,6 +234,8 @@ public class AreaOperationCellFactorDragWidget : MonoBehaviour, IDragHandler, IB
             SetFactorNumberVisible(false);
 
             isDragging = true;
+
+            RefreshHoverHighlight();
         }
     }
 
@@ -257,6 +283,13 @@ public class AreaOperationCellFactorDragWidget : MonoBehaviour, IDragHandler, IB
             SetFactorNumberVisible(true);
 
             isDragging = false;
+
+            RefreshHoverHighlight();
         }
+    }
+
+    private void RefreshHoverHighlight() {
+        if(hoverHighlightGO)
+            hoverHighlightGO.SetActive(mIsPointerEnter && !isDragging);
     }
 }

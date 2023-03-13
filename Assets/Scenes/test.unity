@@ -21097,7 +21097,7 @@ MonoBehaviour:
   numberBonusGroup:
     blobData: {fileID: 11400000, guid: 18bb64ee700701d4594f73009f6e1e00, type: 2}
     numbers: 09030000c701000085000000
-  numberBonusModal: attackSumsFill
+  numberBonusModal: attackDistributiveMixUp
   numberBonusModalParams:
   - key: emptyCount
     type: 1

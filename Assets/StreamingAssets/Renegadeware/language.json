@@ -18,6 +18,7 @@
     "off": "OFF",
     "ready": "READY",
     "go": "GO",
-    "enter": "ENTER"
+    "enter": "ENTER",
+    "proceed": "PROCEED"
   }
 }
