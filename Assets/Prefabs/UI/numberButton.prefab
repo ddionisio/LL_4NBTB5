@@ -297,6 +297,8 @@ GameObject:
   - component: {fileID: 2916928500818266283}
   - component: {fileID: 6970153895097748470}
   - component: {fileID: 5117059609041943577}
+  - component: {fileID: 2027945349622819663}
+  - component: {fileID: 3339313953408233515}
   m_Layer: 5
   m_Name: numberButton
   m_TagString: Untagged
@@ -379,7 +381,7 @@ MonoBehaviour:
     m_HighlightedColor: {r: 0.5411765, g: 0.32156864, b: 0.3647059, a: 1}
     m_PressedColor: {r: 0.35686275, g: 0.1764706, b: 0.24705884, a: 1}
     m_SelectedColor: {r: 0.40784317, g: 0.21960786, b: 0.28627452, a: 1}
-    m_DisabledColor: {r: 0.2784314, g: 0.14509805, b: 0.20392159, a: 1}
+    m_DisabledColor: {r: 0.40784317, g: 0.21960786, b: 0.28627452, a: 1}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
   m_SpriteState:
@@ -424,3 +426,61 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   signal: {fileID: 11400000, guid: 0d7bc916e7e0bc242b364ca791b670ff, type: 2}
   invokeValue: 0
+--- !u!114 &2027945349622819663
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7507651278842453959}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d1c59728dbf33c3498a7e92b62380e86, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target: {fileID: 6970153895097748470}
+  enableEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 3339313953408233515}
+        m_TargetAssemblyTypeName: M8.UI.Graphics.ColorGroup, Assembly-CSharp
+        m_MethodName: Revert
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  disableEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 3339313953408233515}
+        m_TargetAssemblyTypeName: M8.UI.Graphics.ColorGroup, Assembly-CSharp
+        m_MethodName: ApplyColor
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &3339313953408233515
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7507651278842453959}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d324cdbfb9a7cc0459b47cfbda9375d3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  type: 1
+  initOnAwake: 1
+  applyColor: {r: 0.496, g: 0.496, b: 0.496, a: 1}

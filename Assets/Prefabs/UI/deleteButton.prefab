@@ -13,6 +13,8 @@ GameObject:
   - component: {fileID: 5510058496277958809}
   - component: {fileID: 339560045016667076}
   - component: {fileID: 3178800423646144154}
+  - component: {fileID: 3635753850683156620}
+  - component: {fileID: 3597458396873037368}
   m_Layer: 5
   m_Name: deleteButton
   m_TagString: Untagged
@@ -95,7 +97,7 @@ MonoBehaviour:
     m_HighlightedColor: {r: 0.72156864, g: 0.1764706, b: 0.227451, a: 1}
     m_PressedColor: {r: 0.29799998, g: 0.06443243, b: 0.08590995, a: 1}
     m_SelectedColor: {r: 0.43529415, g: 0.09411766, b: 0.1254902, a: 1}
-    m_DisabledColor: {r: 0.241, g: 0.050736833, b: 0.06976313, a: 1}
+    m_DisabledColor: {r: 0.43529415, g: 0.09411766, b: 0.1254902, a: 1}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
   m_SpriteState:
@@ -139,6 +141,64 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   signal: {fileID: 11400000, guid: 2d743fd40b47bb64fa028e1d8aacbb28, type: 2}
+--- !u!114 &3635753850683156620
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 881618150780585973}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d1c59728dbf33c3498a7e92b62380e86, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target: {fileID: 339560045016667076}
+  enableEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 3597458396873037368}
+        m_TargetAssemblyTypeName: M8.UI.Graphics.ColorGroup, Assembly-CSharp
+        m_MethodName: Revert
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  disableEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 3597458396873037368}
+        m_TargetAssemblyTypeName: M8.UI.Graphics.ColorGroup, Assembly-CSharp
+        m_MethodName: ApplyColor
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &3597458396873037368
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 881618150780585973}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d324cdbfb9a7cc0459b47cfbda9375d3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  type: 1
+  initOnAwake: 1
+  applyColor: {r: 0.496, g: 0.496, b: 0.496, a: 1}
 --- !u!1 &1069895352673783855
 GameObject:
   m_ObjectHideFlags: 0

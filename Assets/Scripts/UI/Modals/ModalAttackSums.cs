@@ -14,6 +14,11 @@ public class ModalAttackSums : M8.ModalController, M8.IModalPush, M8.IModalPop {
     [Header("Carry Over")]
     public DigitGroupWidget carryOverGroup;
 
+    public float carryOverMoveLeftDelay = 0.1f;
+    public DG.Tweening.Ease carryOverMoveLeftEase = DG.Tweening.Ease.OutSine;
+    public float carryOverMoveUpDelay = 0.3f;
+    public DG.Tweening.Ease carryOverMoveUpEase = DG.Tweening.Ease.OutSine;
+
     [Header("Input Answer")]
     public DigitGroupWidget inputAnswerGroup;
 
@@ -72,6 +77,9 @@ public class ModalAttackSums : M8.ModalController, M8.IModalPush, M8.IModalPop {
 
     private DG.Tweening.EaseFunction mHighlightMoveFunc;
 
+    private DG.Tweening.EaseFunction mCarryOverMoveLeftEaseFunc;
+    private DG.Tweening.EaseFunction mCarryOverMoveUpEaseFunc;
+
     private Coroutine mAnswerProcessRout;
 
     private bool mIsCorrectAnswerProcessed;
@@ -124,6 +132,9 @@ public class ModalAttackSums : M8.ModalController, M8.IModalPush, M8.IModalPop {
             highlightRoot.sizeDelta = highlightSizeDelta;
 
             mHighlightMoveFunc = DG.Tweening.Core.Easing.EaseManager.ToEaseFunction(highlightMoveEase);
+
+            mCarryOverMoveLeftEaseFunc = DG.Tweening.Core.Easing.EaseManager.ToEaseFunction(carryOverMoveLeftEase);
+            mCarryOverMoveUpEaseFunc = DG.Tweening.Core.Easing.EaseManager.ToEaseFunction(carryOverMoveUpEase);
 
             mIsInit = true;
         }
@@ -357,6 +368,8 @@ public class ModalAttackSums : M8.ModalController, M8.IModalPush, M8.IModalPop {
         inputAnswerGroup.SetDigitInteractive(digitIndex, false);
         inputAnswerGroup.SetDigitHighlight(digitIndex, false);
 
+        float curTime;
+
         int nextDigitIndex = digitIndex + 1;
         if(nextDigitIndex < mAnswerDigitCount && nextDigitIndex < inputAnswerGroup.digitCapacity) {
             //check carry-over
@@ -365,14 +378,47 @@ public class ModalAttackSums : M8.ModalController, M8.IModalPush, M8.IModalPop {
 
                 //apply new carryover for next digit
                 var carryOverDigitWidget = carryOverGroup.SetDigitNumber(nextDigitIndex, carryOverDigit);
+                var carryOverDigitRoot = carryOverDigitWidget.numberRoot;
+
+                Vector2 startPos = new Vector2(
+                    answerDigitWidget.rectTransform.position.x - answerDigitWidget.rectTransform.sizeDelta.x * 0.5f - carryOverDigitRoot.sizeDelta.x * 0.5f,
+                    answerDigitWidget.rectTransform.position.y);
+
+                Vector2 endPos = new Vector2(carryOverDigitRoot.position.x, carryOverDigitRoot.position.y);
 
                 //do animation
+
                 //-> show carry-over to the left of current digitIndex of input answer
+                carryOverDigitRoot.position = startPos;
+
+                curTime = 0f;
+                while(curTime < carryOverMoveLeftDelay) {
+                    yield return null;
+
+                    curTime += Time.deltaTime;
+
+                    var t = mCarryOverMoveLeftEaseFunc(curTime, carryOverMoveLeftDelay, 0f, 0f);
+
+                    var curX = Mathf.Lerp(startPos.x, endPos.x, t);
+
+                    carryOverDigitRoot.position = new Vector3(curX, startPos.y, 0f);
+                }
+
                 //-> move carry-over to the top
-                //-> move carry-over to its designated space, hide
+                curTime = 0f;
+                while(curTime < carryOverMoveUpDelay) {
+                    yield return null;
+
+                    curTime += Time.deltaTime;
+
+                    var t = mCarryOverMoveUpEaseFunc(curTime, carryOverMoveUpDelay, 0f, 0f);
+
+                    var curY = Mathf.Lerp(startPos.y, endPos.y, t);
+
+                    carryOverDigitRoot.position = new Vector3(endPos.x, curY, 0f);
+                }
 
                 carryOverDigitWidget.PlayPulse();
-                
             }
 
             //move highlight
@@ -380,7 +426,7 @@ public class ModalAttackSums : M8.ModalController, M8.IModalPush, M8.IModalPop {
 
             var toHighlightPosX = -(mFactorElementWidth * nextDigitIndex) - (mFactorElementWidth * 0.5f);
 
-            var curTime = 0f;
+            curTime = 0f;
             while(curTime < highlightMoveDelay) {
                 yield return null;
 
