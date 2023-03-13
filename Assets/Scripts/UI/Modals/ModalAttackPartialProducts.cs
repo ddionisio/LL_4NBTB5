@@ -24,20 +24,30 @@ public class ModalAttackPartialProducts : M8.ModalController, M8.IModalPush, M8.
     [Header("Mistake Display")]
     public MistakeCounterWidget mistakeCounterDisplay;
 
+    [Header("Animation")]
+    public M8.Animator.Animate animator;
+    [M8.Animator.TakeSelector]
+    public string takeFinish;
+
     [Header("Evaluate Info")]
-    public float evaluateEachDelay = 0.3f;
     [M8.SoundPlaylist]
     public string evaluateSfxCorrect;
     [M8.SoundPlaylist]
     public string evaluateSfxWrong;
 
+    [Header("Finish Info")]
+    public float finishEndDelay = 0.5f;
+
     [Header("Signal Invoke")]
     public M8.SignalFloat signalInvokeValueChange;
-    public SignalAttackState signalInvokeAttackStateChange;
+    public M8.SignalBoolean signalInvokeInputActive;
+    public M8.SignalBoolean signalInvokeSubmitActive;
+    public SignalAttackState signalInvokeAttackStateChange;    
 
     [Header("Signal Listen")]
     public M8.Signal signalListenPrev;
     public M8.Signal signalListenNext;
+    public M8.SignalFloat signalListenNumpadUpdate;
     public M8.SignalFloat signalListenNumpadProceed;
 
     public bool isProceeding { get { return mProceedRout != null; } }
@@ -46,13 +56,10 @@ public class ModalAttackPartialProducts : M8.ModalController, M8.IModalPush, M8.
     private M8.CacheList<ProductInputWidget> mPartialProductCache;
 
     private List<ProductInputWidget> mPartialProductInputs;
-    private M8.CacheList<ProductInputWidget> mCorrectProductWidgets;
-    private M8.CacheList<ProductInputWidget> mIncorrectProductWidgets;
 
     private int[] mPartialProductIndices;
 
     private M8.CacheList<int> mCorrectAnswers;
-    private M8.CacheList<int> mCorrectAnswersChecked;
 
     private ProductInputWidget mSelectedProductWidget;
 
@@ -83,7 +90,7 @@ public class ModalAttackPartialProducts : M8.ModalController, M8.IModalPush, M8.
             for(int i = 0; i < partialProductCapacity; i++) {
                 var partialProductWidget = Instantiate(partialProductTemplate);
 
-                partialProductWidget.clickCallback += OnProductWidgetClick;
+                //partialProductWidget.clickCallback += OnProductWidgetClick;
 
                 partialProductWidget.rectTransform.SetParent(partialProductCacheRoot, false);
 
@@ -92,20 +99,20 @@ public class ModalAttackPartialProducts : M8.ModalController, M8.IModalPush, M8.
 
             //initialize caches (account for answer)
             mPartialProductInputs = new List<ProductInputWidget>(partialProductCapacity + 1);
-            mCorrectProductWidgets = new M8.CacheList<ProductInputWidget>(partialProductCapacity + 1);
-            mIncorrectProductWidgets = new M8.CacheList<ProductInputWidget>(partialProductCapacity + 1);
 
             mPartialProductIndices = new int[partialProductCapacity];
 
             mCorrectAnswers = new M8.CacheList<int>(partialProductCapacity);
-            mCorrectAnswersChecked = new M8.CacheList<int>(partialProductCapacity);
 
-            answerWidget.clickCallback += OnProductWidgetClick;
+            //answerWidget.clickCallback += OnProductWidgetClick;
 
             mNumpadParms = new M8.GenericParams();
             mNumpadParms[GameData.modalParamOperationText] = "";
             mNumpadParms[ModalCalculator.parmMaxDigit] = 8;
+            mNumpadParms[ModalCalculator.parmKeyboardFlags] = ModalCalculator.InputKeyboardFlag.Numeric | ModalCalculator.InputKeyboardFlag.Erase;
             mNumpadParms["showPrevNext"] = true;
+            mNumpadParms["submitInteractable"] = false;
+            mNumpadParms["canvasInteractable"] = true;
 
             mIsInit = true;
         }
@@ -228,8 +235,13 @@ public class ModalAttackPartialProducts : M8.ModalController, M8.IModalPush, M8.
             signalListenPrev.callback += OnNumpadPrev;
         if(signalListenNext)
             signalListenNext.callback += OnNumpadNext;
+        if(signalListenNumpadUpdate)
+            signalListenNumpadUpdate.callback += OnNumpadUpdate;
         if(signalListenNumpadProceed)
             signalListenNumpadProceed.callback += OnNumpadProceed;
+
+        if(mPartialProductInputs.Count > 0)
+            OnProductWidgetClick(mPartialProductInputs[0]);
     }
 
     void M8.IModalPop.Pop() {
@@ -239,11 +251,7 @@ public class ModalAttackPartialProducts : M8.ModalController, M8.IModalPush, M8.
 
         mPartialProductInputs.Clear();
 
-        mCorrectProductWidgets.Clear();
-        mIncorrectProductWidgets.Clear();
-
         mCorrectAnswers.Clear();
-        mCorrectAnswersChecked.Clear();
 
         mSelectedProductWidget = null;
 
@@ -251,6 +259,8 @@ public class ModalAttackPartialProducts : M8.ModalController, M8.IModalPush, M8.
             signalListenPrev.callback -= OnNumpadPrev;
         if(signalListenNext)
             signalListenNext.callback -= OnNumpadNext;
+        if(signalListenNumpadUpdate)
+            signalListenNumpadUpdate.callback -= OnNumpadUpdate;
         if(signalListenNumpadProceed)
             signalListenNumpadProceed.callback -= OnNumpadProceed;
     }
@@ -311,19 +321,46 @@ public class ModalAttackPartialProducts : M8.ModalController, M8.IModalPush, M8.
         }
     }
 
-    void OnNumpadProceed(float val) {
-        M8.ModalManager.main.CloseUpTo(GameData.instance.modalNumpad, true);
-
+    void OnNumpadUpdate(float val) {
         if(mSelectedProductWidget) {
             int iVal = Mathf.RoundToInt(val);
 
             mSelectedProductWidget.inputNumber = iVal;
         }
 
+        //check if all inputs have values in them
+        int fillCount = 0;
+        for(int i = 0; i < mPartialProductInputs.Count; i++) {
+            var productWidget = mPartialProductInputs[i];
+            if(productWidget) {
+                if(productWidget.inputNumber > 0)
+                    fillCount++;
+                else if(productWidget != answerWidget) { //answer will never be '0'
+                    //check if there is a correct value as '0' (this is a fail-safe, should never have a partial product be '0')
+                    for(int j = 0; j < mCorrectAnswers.Count; j++) {
+                        if(productWidget.inputNumber == mCorrectAnswers[j]) {
+                            fillCount++;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        //allow submit once everything is filled
+        signalInvokeSubmitActive?.Invoke(fillCount == mPartialProductInputs.Count);
+    }
+
+    void OnNumpadProceed(float val) {
         ClearSelected();
+
+        StartProceed();
     }
 
     void OnProductWidgetClick(ProductInputWidget widget) {
+        if(isProceeding) //fail-safe
+            return;
+
         ClearSelected();
 
         mSelectedProductWidget = widget;
@@ -335,10 +372,15 @@ public class ModalAttackPartialProducts : M8.ModalController, M8.IModalPush, M8.
     }
 
     IEnumerator DoProceed() {
-        //grab new incorrects and corrects
-        mCorrectProductWidgets.Clear();
-        mIncorrectProductWidgets.Clear();
+        signalInvokeInputActive?.Invoke(false);
+        M8.ModalManager.main.CloseUpTo(GameData.instance.modalNumpad, true);
 
+        while(M8.ModalManager.main.isBusy)
+            yield return null;
+
+        int incorrectCount = 0;
+
+        //evaluate and animate each
         for(int i = 0; i < mPartialProductInputs.Count; i++) {
             var productWidget = mPartialProductInputs[i];
             if(productWidget.interactable) {
@@ -352,7 +394,6 @@ public class ModalAttackPartialProducts : M8.ModalController, M8.IModalPush, M8.
 
                         if(productWidget.inputNumber == answer) {
                             mCorrectAnswers.RemoveAt(j);
-                            mCorrectAnswersChecked.Add(answer);
 
                             isCorrect = true;
                             break;
@@ -360,76 +401,44 @@ public class ModalAttackPartialProducts : M8.ModalController, M8.IModalPush, M8.
                     }
                 }
 
-                if(isCorrect)
-                    mCorrectProductWidgets.Add(productWidget);
-                else
-                    mIncorrectProductWidgets.Add(productWidget);
-            }
-        }
+                if(isCorrect) {
+                    productWidget.PlayCorrect();
+                    while(productWidget.isAnimating)
+                        yield return null;
 
-        //reset correct answer buffer
-        for(int i = 0; i < mCorrectAnswersChecked.Count; i++)
-            mCorrectAnswers.Add(mCorrectAnswersChecked[i]);
+                    productWidget.correctActive = true;
+                    productWidget.interactable = false;
 
-        mCorrectAnswersChecked.Clear();
+                    mPartialProductInputs.Remove(productWidget);
+                    i--;
+                }
+                else {
+                    productWidget.PlayError();
+                    while(productWidget.isAnimating)
+                        yield return null;
 
-        //do animations
+                    productWidget.SetEmpty();
 
-        int animFinishCount = 0;
-
-        //animate correct widgets
-        for(int i = 0; i < mCorrectProductWidgets.Count; i++)
-            mCorrectProductWidgets[i].PlayCorrect();
-        
-        while(animFinishCount < mCorrectProductWidgets.Count) {
-            yield return null;
-
-            for(int i = 0; i < mCorrectProductWidgets.Count; i++) {
-                if(!mCorrectProductWidgets[i].isAnimating)
-                    animFinishCount++;
-            }
-        }
-
-        //set as correct active, non-interactable
-        for(int i = 0; i < mCorrectProductWidgets.Count; i++) {
-            var correctWidget = mCorrectProductWidgets[i];
-
-            correctWidget.correctActive = true;
-            correctWidget.interactable = false;
-
-            mPartialProductInputs.Remove(correctWidget);
-
-            mCorrectAnswers.Remove(correctWidget.inputNumber);
-        }
-
-        yield return new WaitForSeconds(evaluateEachDelay);
-
-        animFinishCount = 0;
-
-        //animate incorrect widgets
-        for(int i = 0; i < mIncorrectProductWidgets.Count; i++)
-            mIncorrectProductWidgets[i].PlayError();
-
-        while(animFinishCount < mIncorrectProductWidgets.Count) {
-            yield return null;
-
-            for(int i = 0; i < mIncorrectProductWidgets.Count; i++) {
-                if(!mIncorrectProductWidgets[i].isAnimating)
-                    animFinishCount++;
+                    incorrectCount++;
+                }
             }
         }
 
         //all correct?
-        if(mIncorrectProductWidgets.Count == 0) {
+        if(incorrectCount == 0) {
             //TODO: fanfare animation
+            if(animator && !string.IsNullOrEmpty(takeFinish))
+                yield return animator.PlayWait(takeFinish);
+
+            yield return new WaitForSeconds(finishEndDelay);
+
+            mProceedRout = null;
 
             Close();
 
             signalInvokeAttackStateChange?.Invoke(AttackState.Success);
         }
         else {
-            //error animation
-
             if(mMistakeInfo != null) {
                 mMistakeInfo.AppendAreaEvaluateCount();
 
@@ -437,17 +446,32 @@ public class ModalAttackPartialProducts : M8.ModalController, M8.IModalPush, M8.
                 mistakeCounterDisplay.UpdateMistakeCount(mMistakeInfo);
 
                 if(mMistakeInfo.isFull) {
+                    while(mistakeCounterDisplay.isBusy)
+                        yield return null;
+
+                    mProceedRout = null;
+
                     Close();
 
                     signalInvokeAttackStateChange?.Invoke(AttackState.Fail);
                 }
-            }
-        }
+                else {
+                    mProceedRout = null;
 
-        mProceedRout = null;
+                    //select new product input
+                    if(mPartialProductInputs.Count > 0)
+                        OnProductWidgetClick(mPartialProductInputs[0]);
+                }
+            }
+            else
+                mProceedRout = null;
+        }
     }
 
     private void StartProceed() {
+        if(mProceedRout != null) //fail-safe
+            StopCoroutine(mProceedRout);
+
         mProceedRout = StartCoroutine(DoProceed());
     }
 

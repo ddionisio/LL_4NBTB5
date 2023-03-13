@@ -21097,11 +21097,11 @@ MonoBehaviour:
   numberBonusGroup:
     blobData: {fileID: 11400000, guid: 18bb64ee700701d4594f73009f6e1e00, type: 2}
     numbers: 09030000c701000085000000
-  numberBonusModal: attackDistributiveMixUp
+  numberBonusModal: attackSumsFill
   numberBonusModalParams:
   - key: emptyCount
     type: 1
-    iVal: 2
+    iVal: 3
     vectorVal: {x: 0, y: 0, z: 0, w: 0}
     sVal: 
     oVal: {fileID: 0}

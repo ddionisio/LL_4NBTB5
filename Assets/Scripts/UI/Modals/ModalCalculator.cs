@@ -11,6 +11,7 @@ using TMPro;
 public class ModalCalculator : M8.ModalController, M8.IModalPush, M8.IModalPop, M8.IModalActive {
     public const string parmInitValue = "initialValue";
     public const string parmMaxDigit = "maxDigit";
+    public const string parmKeyboardFlags = "keyboardFlags";
 
     [System.Flags]
     public enum InputKeyboardFlag {
@@ -79,6 +80,8 @@ public class ModalCalculator : M8.ModalController, M8.IModalPush, M8.IModalPop, 
     public M8.SignalFloat signalProceed;
 
     public float curValueFloat { get { return (float)mCurValue; } }
+
+    private InputKeyboardFlag mInputKeyboardFlags;
 
     private double mCurValue;
     private bool mCurValueIsSpecial; //when we click on constants such as PI
@@ -268,6 +271,12 @@ public class ModalCalculator : M8.ModalController, M8.IModalPush, M8.IModalPop, 
             }
             else
                 mMaxDigits = _defaultMaxDigits;
+
+            if(parms.ContainsKey(parmKeyboardFlags)) {
+                mInputKeyboardFlags = parms.GetValue<InputKeyboardFlag>(parmKeyboardFlags);
+            }
+            else
+                mInputKeyboardFlags = _inputKeyboardFlags;
         }
 
         SetCurrentValue(val);
@@ -287,7 +296,7 @@ public class ModalCalculator : M8.ModalController, M8.IModalPush, M8.IModalPop, 
     void Update() {
         if(mIsActive) {
             //allow keyboard input?
-            if((_inputKeyboardFlags & InputKeyboardFlag.Numeric) != InputKeyboardFlag.None) {
+            if((mInputKeyboardFlags & InputKeyboardFlag.Numeric) != InputKeyboardFlag.None) {
                 if(Input.GetKeyDown(KeyCode.Alpha0) || Input.GetKeyDown(KeyCode.Keypad0))
                     InputNumber(0);
                 else if(Input.GetKeyDown(KeyCode.Alpha1) || Input.GetKeyDown(KeyCode.Keypad1))
@@ -310,12 +319,12 @@ public class ModalCalculator : M8.ModalController, M8.IModalPush, M8.IModalPop, 
                     InputNumber(9);
             }
 
-            if((_inputKeyboardFlags & InputKeyboardFlag.Proceed) != InputKeyboardFlag.None) {
+            if((mInputKeyboardFlags & InputKeyboardFlag.Proceed) != InputKeyboardFlag.None) {
                 if(Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
                     Proceed();
             }
 
-            if((_inputKeyboardFlags & InputKeyboardFlag.Erase) != InputKeyboardFlag.None) {
+            if((mInputKeyboardFlags & InputKeyboardFlag.Erase) != InputKeyboardFlag.None) {
                 if(Input.GetKeyDown(KeyCode.Delete) || Input.GetKeyDown(KeyCode.Backspace))
                     Erase();
             }

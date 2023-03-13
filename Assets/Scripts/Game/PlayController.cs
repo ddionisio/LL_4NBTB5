@@ -410,8 +410,8 @@ public class PlayController : GameModeController<PlayController> {
 
         string attackModal;
 
-        if(true) {
-        //if(bonusBlobIsConnected) {
+        //if(true) {
+        if(bonusBlobIsConnected) {
             attackModal = numberBonusModal;
 
             M8.GenericParamSerialized.ApplyAll(mModalAttackParms, numberBonusModalParams);
