@@ -13,14 +13,18 @@ public class ModalVictory : M8.ModalController, M8.IModalPush, M8.IModalPop {
     public const string parmRoundCount = "rc";
 
     [Header("Combo Display")]
-    public TMP_Text comboCountLabel;
+    public GameObject comboCountGO;
+    public TMP_Text comboCountLabel;    
     public string comboCountFormat = "x{0}";
+    public TMP_Text comboCountTitleLabel;
 
     [Header("Bonus Display")]
     public GameObject bonusAchievedGO;
+    public TMP_Text bonusAchievedTitleLabel;
 
     [Header("Perfect Display")]
     public GameObject perfectAchievedGO;
+    public TMP_Text perfectAchievedTitleLabel;
 
     [Header("Errors Display")]
     public M8.TextMeshPro.TextMeshProCounter errorMultiplyCounterLabel;
@@ -30,11 +34,19 @@ public class ModalVictory : M8.ModalController, M8.IModalPush, M8.IModalPop {
     public M8.TextMeshPro.TextMeshProCounter scoreCounterLabel;
     public RankWidget rankDisplay;
 
+    [Header("Proceed Display")]
+    public GameObject proceedGO;
+
+    [Header("Flow Info")]
+    public Color flowLabelDisabled = Color.white;
+    public Color flowLabelEnabled = Color.white;
+    public float flowDelay = 0.3f;    
+
     private MistakeInfo mMistakeInfo;
     private int mScore;
     private int mComboCount;
     private int mBonusCount;
-    
+
     public void Proceed() {
         Close();
 
@@ -76,33 +88,119 @@ public class ModalVictory : M8.ModalController, M8.IModalPush, M8.IModalPop {
                 roundCount = parms.GetValue<int>(parmRoundCount);
         }
 
-        bool isPerfect = mMistakeInfo != null ? mMistakeInfo.totalMistakeCount <= 0 : false;
+        //setup initial display state
+        if(comboCountGO)
+            comboCountGO.SetActive(false);
+
+        if(bonusAchievedGO)
+            bonusAchievedGO.SetActive(false);
+
+        if(perfectAchievedGO)
+            perfectAchievedGO.SetActive(false);
+
+        if(comboCountTitleLabel)
+            comboCountTitleLabel.color = flowLabelDisabled;
+
+        if(bonusAchievedTitleLabel)
+            bonusAchievedTitleLabel.color = flowLabelDisabled;
+
+        if(perfectAchievedTitleLabel)
+            perfectAchievedTitleLabel.color = flowLabelDisabled;
+
 
         if(comboCountLabel)
             comboCountLabel.text = string.Format(comboCountFormat, mComboCount);
 
-        if(bonusAchievedGO)
-            bonusAchievedGO.SetActive(mBonusCount > 0);
-
-        if(perfectAchievedGO)
-            perfectAchievedGO.SetActive(isPerfect);
 
         if(errorMultiplyCounterLabel)
-            errorMultiplyCounterLabel.count = mMistakeInfo != null ? mMistakeInfo.areaEvaluateMistakeCount : 0;
+            errorMultiplyCounterLabel.SetCountImmediate(0);
 
         if(errorSumsCounterLabel)
-            errorSumsCounterLabel.count = mMistakeInfo != null ? mMistakeInfo.sumsMistakeCount : 0;
+            errorSumsCounterLabel.SetCountImmediate(0);
 
         if(scoreCounterLabel)
-            scoreCounterLabel.count = mScore;
+            scoreCounterLabel.SetCountImmediate(0);
+
 
         var rankIndex = GameData.instance.GetRankIndex(roundCount, mScore);
 
-        if(rankDisplay)
+        if(rankDisplay) {
+            rankDisplay.gameObject.SetActive(false);
             rankDisplay.Apply(rankIndex);
+        }
+
+        if(proceedGO)
+            proceedGO.SetActive(false);
+
+        StartCoroutine(DoProcess());
     }
 
     void M8.IModalPop.Pop() {
 
+    }
+
+    IEnumerator DoProcess() {
+        //wait for modal to finish entering
+        var modalMain = M8.ModalManager.main;
+        while(modalMain.isBusy)
+            yield return null;
+
+        var flowWait = new WaitForSeconds(flowDelay);
+
+        //show combo
+        if(comboCountGO)
+            comboCountGO.SetActive(true);
+
+        if(comboCountTitleLabel)
+            comboCountTitleLabel.color = flowLabelEnabled;
+
+        yield return flowWait;
+
+        //show bonus
+        if(mBonusCount > 0) {
+            if(bonusAchievedGO)
+                bonusAchievedGO.SetActive(true);
+
+            if(bonusAchievedTitleLabel)
+                bonusAchievedTitleLabel.color = flowLabelEnabled;
+
+            yield return flowWait;
+        }
+
+        if(mMistakeInfo != null) {
+            //show perfect
+            if(mMistakeInfo.totalMistakeCount <= 0) {
+                if(perfectAchievedGO)
+                    perfectAchievedGO.SetActive(true);
+
+                if(perfectAchievedTitleLabel)
+                    perfectAchievedTitleLabel.color = flowLabelEnabled;
+
+                yield return flowWait;
+            }
+            else {
+                //apply error counters
+                if(errorMultiplyCounterLabel)
+                    errorMultiplyCounterLabel.count = mMistakeInfo.areaEvaluateMistakeCount;
+
+                if(errorSumsCounterLabel)
+                    errorSumsCounterLabel.count = mMistakeInfo.sumsMistakeCount;
+
+                yield return flowWait;
+            }
+        }
+
+        //apply score
+        if(scoreCounterLabel)
+            scoreCounterLabel.count = mScore;
+
+        yield return flowWait;
+
+        //show rank and proceed display
+        if(rankDisplay)
+            rankDisplay.gameObject.SetActive(true);
+
+        if(proceedGO)
+            proceedGO.SetActive(true);
     }
 }

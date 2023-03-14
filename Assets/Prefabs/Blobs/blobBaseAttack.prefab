@@ -13063,7 +13063,7 @@ MonoBehaviour:
   - {fileID: 844375532857789312}
   - {fileID: 9038606311261177535}
   - {fileID: 6411791925239152398}
-  m_Color: {r: 1, g: 0.98823535, b: 0.73333335, a: 1}
+  m_Color: {r: 1, g: 0.84313726, b: 0.6, a: 1}
   m_ReferencePointParent: {fileID: 0}
   m_Sprite: {fileID: 21300000, guid: 362a5aadc796dc545bd62987498ec00f, type: 3}
   m_Material: {fileID: 2100000, guid: 51ad4c8018306ee41af5305540b4653e, type: 2}
@@ -14519,7 +14519,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 10.75
+  m_fontSize: 11.6
   m_fontSizeBase: 8
   m_fontWeight: 400
   m_enableAutoSizing: 1

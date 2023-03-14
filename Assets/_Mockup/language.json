@@ -19,6 +19,10 @@
     "ready": "READY",
     "go": "GO",
     "enter": "ENTER",
-    "proceed": "PROCEED"
+    "proceed": "PROCEED",
+    "victory": "VICTORY",
+    "combo": "COMBO",
+    "bonus": "BONUS",
+    "perfect": "PERFECT"
   }
 }
