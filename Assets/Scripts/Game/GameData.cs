@@ -49,6 +49,7 @@ public class GameData : M8.SingletonScriptableObject<GameData> {
     public int correctPoints = 100;
     public int bonusPoints = 1000;
     public int perfectPoints = 500;
+    public int mistakePenaltyPoints = 10;
 
     public int maxRetryCount = 2;
 
@@ -56,8 +57,8 @@ public class GameData : M8.SingletonScriptableObject<GameData> {
 
     public bool isProceed { get; private set; }
 
-    public void ScoreApply(int level, int aScore, int aCombo, int aBonus, MistakeInfo mistakeInfo) {
-        var saveInfo = new SaveInfo(aScore, aCombo, aBonus, mistakeInfo);
+    public void ScoreApply(int level, int aScore, int aBonus, int aRankInd, MistakeInfo mistakeInfo) {
+        var saveInfo = new SaveInfo(aScore, aBonus, aRankInd, mistakeInfo);
 
         saveInfo.SaveTo(LoLManager.instance.userData, level);
     }
@@ -66,15 +67,32 @@ public class GameData : M8.SingletonScriptableObject<GameData> {
         return SaveInfo.LoadFrom(LoLManager.instance.userData, level);
     }
 
-    public int GetRankIndex(int roundCount, int score) {
+    /// <summary>
+    /// Set bonusRoundIndex to -1 for no bonus
+    /// </summary>
+    public int GetMaxScore(int roundCount, int bonusRoundIndex) {
         int maxScore = 0;
 
-        for(int i = 0; i < roundCount; i++)
+        for(int i = 0; i < roundCount; i++) {
             maxScore += (i + 1) * correctPoints;
 
-        maxScore += bonusPoints;
+            if(i == bonusRoundIndex)
+                break;
+        }
+
+        if(bonusRoundIndex > 0)
+            maxScore += bonusPoints;
 
         maxScore += perfectPoints;
+
+        return maxScore;
+    }
+
+    /// <summary>
+    /// Set bonusRoundIndex to -1 for no bonus
+    /// </summary>
+    public int GetRankIndex(int roundCount, int bonusRoundIndex, int score) {
+        var maxScore = GetMaxScore(roundCount, bonusRoundIndex);
 
         float scoreScale = (float)score / maxScore;
 
@@ -104,7 +122,7 @@ public class GameData : M8.SingletonScriptableObject<GameData> {
         LoLManager.instance.ApplyProgress(0, 0);
     }
 
-    public void Proceed() {
+    public void ProceedNext() {
         int curProgress;
 
         //var nextProgress = LoLManager.instance.curProgress + 1;

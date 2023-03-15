@@ -17,25 +17,35 @@ MonoBehaviour:
   modalAttackSums: attackSums
   modalNumpad: numpad
   modalVictory: victory
-  levelScenes: []
+  levels: []
+  endScene:
+    name: 
+    path: 
   ranks:
   - grade: S+
-    scale: 0.95
-  - grade: S
+    icon: {fileID: 0}
     scale: 0.9
-  - grade: A
+  - grade: S
+    icon: {fileID: 0}
     scale: 0.8
-  - grade: B
+  - grade: A
+    icon: {fileID: 0}
     scale: 0.6
+  - grade: B
+    icon: {fileID: 0}
+    scale: 0.4
   - grade: C
-    scale: 0.5
+    icon: {fileID: 0}
+    scale: 0.3
   - grade: D
+    icon: {fileID: 0}
     scale: 0
   rankIndexRetry: 4
   areaRowCapacity: 2
   areaColCapacity: 4
   mistakeCount: 3
-  correctPoints: 100
-  bonusPoints: 1000
-  perfectPoints: 1000
+  correctPoints: 150
+  bonusPoints: 800
+  perfectPoints: 200
+  mistakePenaltyPoints: 5
   maxRetryCount: 2

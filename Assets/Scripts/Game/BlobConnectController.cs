@@ -267,6 +267,23 @@ public class BlobConnectController : MonoBehaviour {
         return null;
     }
 
+    public Group GenerateConnect(Blob blobLeft, Blob blobRight, OperatorType op) {
+        var newGrp = NewGroup();
+        if(newGrp != null) {
+            mConnectSpawnParms.Clear();
+            //params?
+
+            var connect = mPool.Spawn<BlobConnect>(connectTemplate.name, "", null, mConnectSpawnParms);
+
+            connect.op = op;
+            connect.ApplyLink(blobLeft, blobRight);
+
+            newGrp.SetOp(blobLeft, blobRight, connect);
+        }
+
+        return newGrp;
+    }
+
     public void SetGroupEqual(Group group, bool isConnectLeft, Blob blob) {
         //create a connect
         mConnectSpawnParms.Clear();

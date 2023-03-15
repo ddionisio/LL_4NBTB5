@@ -24,7 +24,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3387208}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0.58495766, w: 0.8110638}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -40,7 +40,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: -180, y: 0}
+  m_AnchoredPosition: {x: 271.2, y: -381.7}
   m_SizeDelta: {x: 300, y: 454}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!225 &1632049424727883249
@@ -1961,6 +1961,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targetSelectable: {fileID: 1683201055815982413}
+  defaultInteractable: 1
   parmKey: submitInteractable
 --- !u!114 &7721289460627399932
 MonoBehaviour:
@@ -1975,6 +1976,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targetCanvasGroup: {fileID: 1632049424727883249}
+  defaultInteractable: 0
   parmKey: canvasInteractable
 --- !u!114 &6501900655655187864
 MonoBehaviour:
@@ -4923,7 +4925,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 1003015444040718776}
-  rotatePerSecond: {x: 0, y: 0, z: -180}
+  rotatePerSecond: {x: 0, y: 0, z: -10}
   local: 1
   updateType: 0
   resetOnDisable: 0
@@ -32489,7 +32491,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 994303554632782471}
-  rotatePerSecond: {x: 0, y: 0, z: 180}
+  rotatePerSecond: {x: 0, y: 0, z: 10}
   local: 1
   updateType: 0
   resetOnDisable: 0

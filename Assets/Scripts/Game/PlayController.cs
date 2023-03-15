@@ -96,9 +96,6 @@ public class PlayController : GameModeController<PlayController> {
     [Header("Signal Invoke")]
     public M8.Signal signalInvokePlayEnd;
 
-    [Header("Debug")]
-    public bool debugAutoGenerateAttackBlob = false;
-
     public int curRoundIndex { get; private set; }
     public int roundCount { get { return mRoundCount; } }
     public OperatorType curRoundOp { get { return OperatorType.Multiply; } }
@@ -120,7 +117,7 @@ public class PlayController : GameModeController<PlayController> {
 
     private int mRoundCount;
 
-    private bool mIsAnswerCorrectWait;
+    private bool mIsRoundWait;
 
     private float mPlayLastTime;
 
@@ -137,8 +134,33 @@ public class PlayController : GameModeController<PlayController> {
     private MistakeInfo mMistakeTotal;
 
     private int mBonusCount;
+    private int mBonusRoundInd;
 
     private ModalAttackParams mModalAttackParms = new ModalAttackParams();
+
+    public void DebugClearActiveBlobs() {
+        for(int i = blobSpawner.blobActives.Count - 1; i >= 0; i--) {
+            var blob = blobSpawner.blobActives[i];
+            if(blob && blob.state == Blob.State.Normal)
+                blob.state = Blob.State.Despawning;
+
+            blobClearedCount++;
+        }
+
+        blobClearedCount += blobSpawner.spawnQueueCount;
+        blobSpawner.SpawnStop();
+
+        mIsRoundWait = false;
+    }
+
+    public void DebugAutoConnect() {
+        StartCoroutine(DoAutoConnect());
+    }
+
+    public void DebugComboSubtract() {
+        if(comboCount > 1)
+            comboCount--;
+    }
 
     protected override void OnInstanceDeinit() {
         if(connectControl) {
@@ -206,6 +228,7 @@ public class PlayController : GameModeController<PlayController> {
         mMistakeTotal = new MistakeInfo(GameData.instance.mistakeCount);
 
         mBonusCount = 0;
+        mBonusRoundInd = -1;
 
         connectControl.groupAddedCallback += OnGroupAdded;
         connectControl.evaluateCallback += OnGroupEval;
@@ -285,8 +308,8 @@ public class PlayController : GameModeController<PlayController> {
             var roundBeginLastTime = Time.time;
 
             //wait for correct answer
-            mIsAnswerCorrectWait = true;
-            while(mIsAnswerCorrectWait) {
+            mIsRoundWait = true;
+            while(mIsRoundWait) {
                 yield return null;
             }
 
@@ -315,6 +338,10 @@ public class PlayController : GameModeController<PlayController> {
         while(blobSpawner.blobActives.Count > 0)
             yield return null;
 
+        //check for perfect
+        if(mMistakeTotal.totalMistakeCount == 0)
+            curScore += GameData.instance.perfectPoints;
+
         //play finish
         signalInvokePlayEnd.Invoke();
 
@@ -322,19 +349,15 @@ public class PlayController : GameModeController<PlayController> {
         if(animator && !string.IsNullOrEmpty(takeEnd))
             yield return animator.PlayWait(takeEnd);
 
-        //check for perfect
-        if(mMistakeTotal.totalMistakeCount == 0)
-            curScore += GameData.instance.perfectPoints;
-
         //show victory
         var parms = new M8.GenericParams();
-        /*parms[ModalVictory.parmLevel] = levelIndex;
+
+        parms[ModalVictory.parmMistakeInfo] = mMistakeTotal;
         parms[ModalVictory.parmScore] = curScore;
-        parms[ModalVictory.parmBonusRoundScore] = mBonusRoundScore;
-        parms[ModalVictory.parmTime] = playTotalTime;
-        parms[ModalVictory.parmRoundsCount] = mRoundOps.Length;
-        parms[ModalVictory.parmMistakeCount] = mistakeCount;
-        parms[ModalVictory.parmNextScene] = nextScene;*/
+        parms[ModalVictory.parmComboCount] = comboCount;
+        parms[ModalVictory.parmBonusCount] = mBonusCount;
+        parms[ModalVictory.parmBonusRoundIndex] = mBonusRoundInd;
+        parms[ModalVictory.parmRoundCount] = mRoundCount;
 
         M8.ModalManager.main.Open(GameData.instance.modalVictory, parms);
     }
@@ -385,6 +408,47 @@ public class PlayController : GameModeController<PlayController> {
         }
 
         mSpawnRout = null;
+    }
+
+    IEnumerator DoAutoConnect() {
+        //wait for blobs to spawn
+        while(blobSpawner.isSpawning)
+            yield return null;
+
+        //grab a blob
+        Blob blob = null;
+
+        for(int i = blobSpawner.blobActives.Count - 1; i >= 0; i--) {
+            var blobCheck = blobSpawner.blobActives[i];
+            if(blobCheck && blobCheck.state == Blob.State.Normal) {
+                blob = blobCheck;
+                break;
+            }
+        }
+
+        if(!blob)
+            yield break;
+
+        //get another blob
+        Blob blobTarget = null;
+        for(int i = 0; i < blobSpawner.blobActives.Count; i++) {
+            var blobCheck = blobSpawner.blobActives[i];
+            if(blobCheck && blobCheck != blob && blobCheck.state == Blob.State.Normal && CheckBlobConnectCriteria(blob, blobCheck)) {
+                blobTarget = blobCheck;
+                break;
+            }
+        }
+
+        if(!blobTarget)
+            yield break;
+
+        var grp = connectControl.GenerateConnect(blob, blobTarget, curRoundOp);
+        if(grp == null)
+            yield break;
+
+        mMistakeCurrent.Reset();
+
+        yield return DoAttackSuccess(grp);
     }
 
     IEnumerator DoAttack(BlobConnectController.Group grp) {
@@ -458,98 +522,37 @@ public class PlayController : GameModeController<PlayController> {
                         bonusBlob.state = Blob.State.Despawning;
                     }
                 }
+
+                //decrement combo count
+                if(comboCount > 1)
+                    comboCount--;
                 break;
 
             case AttackState.Success:
-                var camCtrl = CameraController.main;
-                if(camCtrl)
-                    camCtrl.raycastTarget = false; //disable blob input
-
-                //generate attack blob and connect it to the group to be evaluated
-
-                //do fancy animation on board
-                if(animator && !string.IsNullOrEmpty(takeCorrect))
-                    animator.Play(takeCorrect);
-
-                yield return new WaitForSeconds(correctSpawnDelay);
-
-                /////////////////////
-                blobSpawner.Spawn(blobAttackName, mBlobAttackTemplateInd, grp.blobOpLeft.number * grp.blobOpRight.number);
-
-                while(blobSpawner.isSpawning)
-                    yield return null;
-                
-                var attackBlob = blobSpawner.GetBlobActiveByName(blobAttackName);
-
-                //wait for attack blob to spawn completely
-                while(attackBlob.state == Blob.State.Spawning)
-                    yield return null;
-
-                //connect
-                connectControl.SetGroupEqual(grp, !grp.isOpLeftGreaterThanRight, attackBlob);
-
-                yield return new WaitForSeconds(correctEvaluateDelay);
-
-                //evaluate
-                connectControl.GroupEvaluate(grp);
-
-                //wait for attack blob to release
-                while(attackBlob.state != Blob.State.None)
-                    yield return null;
-                /////////////////////
-
-                //check if bonus blob is part of the group, then clear out the other blobs on board
-                if(bonusBlobIsConnected) {
-                    //do fancy animation on board
-                    if(animator && !string.IsNullOrEmpty(takeBonus))
-                        animator.Play(takeBonus);
-
-                    yield return new WaitForSeconds(bonusClearStartDelay);
-
-                    for(int i = blobSpawner.blobActives.Count - 1; i >= 0; i--) {
-                        var blob = blobSpawner.blobActives[i];
-                        if(blob) {
-                            blob.state = Blob.State.Correct;
-
-                            while(blob.state != Blob.State.None)
-                                yield return null;
-                        }
-
-                        blobClearedCount++;
-                    }
-
-                    //fail-safe, there should no longer be any blob to spawn at this point.
-                    blobClearedCount += blobSpawner.spawnQueueCount;
-                    blobSpawner.SpawnStop();
-                }
-                else if(bonusBlob) //clear it out
-                    bonusBlob.state = Blob.State.Despawning;
-
-                blobClearedCount += 2;
-
-                //go to next round
-                mIsAnswerCorrectWait = false;
-
-                if(camCtrl)
-                    camCtrl.raycastTarget = true;
+                yield return DoAttackSuccess(grp);
                 break;
         }
 
         mAttackRout = null;
     }
 
-    IEnumerator DoAttackAutoGenerateAttackDebug(BlobConnectController.Group grp) {
-        //yield return new WaitForSeconds(1f);
-        //connectControl.GroupError(grp);
-        //yield return null;
+    IEnumerator DoAttackSuccess(BlobConnectController.Group grp) {
+        var bonusBlob = blobSpawner.GetBlobActiveByName(blobBonusName);
+        var bonusBlobIsConnected = bonusBlob ? grp.IsBlobInGroup(bonusBlob) : false;
 
-        
+        var camCtrl = CameraController.main;
+        if(camCtrl)
+            camCtrl.raycastTarget = false; //disable blob input
 
-        //mModalAttackParms
-        //var areaOp = new AreaOperation();
-        //areaOp.Init(factorLeft, factorRight);
+        //generate attack blob and connect it to the group to be evaluated
 
-        //generate attack blob
+        //do fancy animation on board
+        if(animator && !string.IsNullOrEmpty(takeCorrect))
+            animator.Play(takeCorrect);
+
+        yield return new WaitForSeconds(correctSpawnDelay);
+
+        /////////////////////
         blobSpawner.Spawn(blobAttackName, mBlobAttackTemplateInd, grp.blobOpLeft.number * grp.blobOpRight.number);
 
         while(blobSpawner.isSpawning)
@@ -564,23 +567,68 @@ public class PlayController : GameModeController<PlayController> {
         //connect
         connectControl.SetGroupEqual(grp, !grp.isOpLeftGreaterThanRight, attackBlob);
 
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(correctEvaluateDelay);
 
         //evaluate
         connectControl.GroupEvaluate(grp);
 
-        mAttackRout = null;
+        //wait for attack blob to release
+        while(attackBlob.state != Blob.State.None)
+            yield return null;
+        /////////////////////
+
+        //check if bonus blob is part of the group, then clear out the other blobs on board
+        if(bonusBlobIsConnected) {
+            //ensure blobs are no longer being spawned
+            blobClearedCount += blobSpawner.spawnQueueCount;
+            blobSpawner.SpawnStop();
+
+            //do fancy animation on board
+            if(animator && !string.IsNullOrEmpty(takeBonus))
+                animator.Play(takeBonus);
+
+            yield return new WaitForSeconds(bonusClearStartDelay);
+
+            for(int i = blobSpawner.blobActives.Count - 1; i >= 0; i--) {
+                var blob = blobSpawner.blobActives[i];
+                if(blob) {
+                    //wait for it to spawn
+                    while(blob.state == Blob.State.Spawning)
+                        yield return null;
+
+                    blob.state = Blob.State.Correct;
+
+                    while(blob.state != Blob.State.None)
+                        yield return null;
+
+                    blobClearedCount++;
+                }
+            }
+
+            if(mBonusRoundInd == -1)
+                mBonusRoundInd = curRoundIndex;
+        }
+        else if(bonusBlob) //clear it out
+            bonusBlob.state = Blob.State.Despawning;
+
+        blobClearedCount += 2;
+
+        //increase combo if we still have rounds left
+        if(blobClearedCount / 2 < roundCount)
+            comboCount++;
+
+        //go to next round
+        mIsRoundWait = false;
+
+        if(camCtrl)
+            camCtrl.raycastTarget = true;
     }
 
     void OnGroupAdded(BlobConnectController.Group grp) {
         if(grp.isOpFilled) {
             //Debug.Log("Launch attack: " + grp.blobOpLeft.number + " x " + grp.blobOpRight.number);
-            if(mAttackRout == null) {
-                if(!debugAutoGenerateAttackBlob)
-                    mAttackRout = StartCoroutine(DoAttack(grp));
-                else
-                    mAttackRout = StartCoroutine(DoAttackAutoGenerateAttackDebug(grp));
-            }
+            if(mAttackRout == null)
+                mAttackRout = StartCoroutine(DoAttack(grp));
         }
         //else {
             //Debug.Log("Can't attack yet!");
@@ -633,8 +681,15 @@ public class PlayController : GameModeController<PlayController> {
             if(connectOp) connectOp.state = BlobConnect.State.Correct;
             if(connectEq) connectEq.state = BlobConnect.State.Correct;
 
+            int correctPoints = 0;
+
+            //subtract mistake penalties
+            var mistakePenaltyPoints = GameData.instance.mistakePenaltyPoints * mMistakeCurrent.totalMistakeCount;
+            if(GameData.instance.correctPoints > mistakePenaltyPoints)
+                correctPoints = GameData.instance.correctPoints - mistakePenaltyPoints;
+
             //add score
-            curScore += GameData.instance.correctPoints * comboCount;
+            curScore += correctPoints * comboCount;
 
             //add bonus
             if(isBonus) {
@@ -642,8 +697,6 @@ public class PlayController : GameModeController<PlayController> {
 
                 mBonusCount++;
             }
-
-            comboCount++;
         }
         else {
             //do error thing for blobs
@@ -654,10 +707,6 @@ public class PlayController : GameModeController<PlayController> {
             //clean out op
             if(connectOp) connectOp.state = BlobConnect.State.Error;
             if(connectEq) connectEq.state = BlobConnect.State.Error;
-
-            //decrement combo count
-            if(comboCount > 1)
-                comboCount--;
         }
 
         //append error count, bonus not counted (special operations potentially not accounted-for)

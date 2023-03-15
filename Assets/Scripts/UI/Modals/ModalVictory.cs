@@ -10,6 +10,7 @@ public class ModalVictory : M8.ModalController, M8.IModalPush, M8.IModalPop {
     public const string parmScore = "sc";
     public const string parmComboCount = "cc";
     public const string parmBonusCount = "bc";
+    public const string parmBonusRoundIndex = "bi";
     public const string parmRoundCount = "rc";
 
     [Header("Combo Display")]
@@ -44,8 +45,8 @@ public class ModalVictory : M8.ModalController, M8.IModalPush, M8.IModalPop {
 
     private MistakeInfo mMistakeInfo;
     private int mScore;
-    private int mComboCount;
     private int mBonusCount;
+    private int mRankIndex;
 
     public void Proceed() {
         Close();
@@ -54,21 +55,22 @@ public class ModalVictory : M8.ModalController, M8.IModalPush, M8.IModalPop {
 
         //save level data and update score
         if(levelIndex >= 0) {
-            GameData.instance.ScoreApply(levelIndex, mScore, mComboCount, mBonusCount, mMistakeInfo);
+            GameData.instance.ScoreApply(levelIndex, mScore, mBonusCount, mRankIndex, mMistakeInfo);
 
             LoLManager.instance.curScore += mScore;
         }
 
         //go to the next level
-        GameData.instance.Proceed();
+        GameData.instance.ProceedNext();
     }
 
     void M8.IModalPush.Push(M8.GenericParams parms) {
         mMistakeInfo = null;
-        mScore = 0;
-        mComboCount = 1;
+        mScore = 0;        
         mBonusCount = 0;
 
+        int comboCount = 1;
+        int bonusRoundIndex = -1;
         int roundCount = 0;
 
         if(parms != null) {
@@ -79,10 +81,13 @@ public class ModalVictory : M8.ModalController, M8.IModalPush, M8.IModalPop {
                 mScore = parms.GetValue<int>(parmScore);
 
             if(parms.ContainsKey(parmComboCount))
-                mComboCount = parms.GetValue<int>(parmComboCount);
+                comboCount = parms.GetValue<int>(parmComboCount);
 
             if(parms.ContainsKey(parmBonusCount))
                 mBonusCount = parms.GetValue<int>(parmBonusCount);
+
+            if(parms.ContainsKey(parmBonusRoundIndex))
+                bonusRoundIndex = parms.GetValue<int>(parmBonusRoundIndex);
 
             if(parms.ContainsKey(parmRoundCount))
                 roundCount = parms.GetValue<int>(parmRoundCount);
@@ -109,7 +114,7 @@ public class ModalVictory : M8.ModalController, M8.IModalPush, M8.IModalPop {
 
 
         if(comboCountLabel)
-            comboCountLabel.text = string.Format(comboCountFormat, mComboCount);
+            comboCountLabel.text = string.Format(comboCountFormat, comboCount);
 
 
         if(errorMultiplyCounterLabel)
@@ -122,11 +127,11 @@ public class ModalVictory : M8.ModalController, M8.IModalPush, M8.IModalPop {
             scoreCounterLabel.SetCountImmediate(0);
 
 
-        var rankIndex = GameData.instance.GetRankIndex(roundCount, mScore);
+        mRankIndex = GameData.instance.GetRankIndex(roundCount, bonusRoundIndex, mScore);
 
         if(rankDisplay) {
             rankDisplay.gameObject.SetActive(false);
-            rankDisplay.Apply(rankIndex);
+            rankDisplay.Apply(mRankIndex);
         }
 
         if(proceedGO)

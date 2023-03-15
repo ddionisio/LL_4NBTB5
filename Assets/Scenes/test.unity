@@ -21786,7 +21786,6 @@ MonoBehaviour:
   signalListenBlobDragEnd: {fileID: 11400000, guid: e277b755729c85042a3893c829311846, type: 2}
   signalListenAttackStateChanged: {fileID: 11400000, guid: ebf9b91bb8b25644084fe225f3a38b36, type: 2}
   signalInvokePlayEnd: {fileID: 11400000, guid: 127cfa7748ca7294ab1ff53ec219a30c, type: 2}
-  debugAutoGenerateAttackBlob: 0
 --- !u!4 &2088719856
 Transform:
   m_ObjectHideFlags: 0
@@ -22686,7 +22685,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 2100923836}
-  rotatePerSecond: {x: 0, y: 0, z: -45}
+  rotatePerSecond: {x: 0, y: 0, z: -15}
   local: 1
   updateType: 0
   resetOnDisable: 0
