@@ -10,7 +10,6 @@ public class ModalVictory : M8.ModalController, M8.IModalPush, M8.IModalPop {
     public const string parmScore = "sc";
     public const string parmComboCount = "cc";
     public const string parmBonusCount = "bc";
-    public const string parmBonusRoundIndex = "bi";
     public const string parmRoundCount = "rc";
 
     [Header("Combo Display")]
@@ -70,7 +69,6 @@ public class ModalVictory : M8.ModalController, M8.IModalPush, M8.IModalPop {
         mBonusCount = 0;
 
         int comboCount = 1;
-        int bonusRoundIndex = -1;
         int roundCount = 0;
 
         if(parms != null) {
@@ -85,9 +83,6 @@ public class ModalVictory : M8.ModalController, M8.IModalPush, M8.IModalPop {
 
             if(parms.ContainsKey(parmBonusCount))
                 mBonusCount = parms.GetValue<int>(parmBonusCount);
-
-            if(parms.ContainsKey(parmBonusRoundIndex))
-                bonusRoundIndex = parms.GetValue<int>(parmBonusRoundIndex);
 
             if(parms.ContainsKey(parmRoundCount))
                 roundCount = parms.GetValue<int>(parmRoundCount);
@@ -127,7 +122,7 @@ public class ModalVictory : M8.ModalController, M8.IModalPush, M8.IModalPop {
             scoreCounterLabel.SetCountImmediate(0);
 
 
-        mRankIndex = GameData.instance.GetRankIndex(roundCount, bonusRoundIndex, mScore);
+        mRankIndex = GameData.instance.GetRankIndex(roundCount, mScore);
 
         if(rankDisplay) {
             rankDisplay.gameObject.SetActive(false);

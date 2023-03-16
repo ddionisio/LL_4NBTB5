@@ -134,7 +134,6 @@ public class PlayController : GameModeController<PlayController> {
     private MistakeInfo mMistakeTotal;
 
     private int mBonusCount;
-    private int mBonusRoundInd;
 
     private ModalAttackParams mModalAttackParms = new ModalAttackParams();
 
@@ -228,7 +227,6 @@ public class PlayController : GameModeController<PlayController> {
         mMistakeTotal = new MistakeInfo(GameData.instance.mistakeCount);
 
         mBonusCount = 0;
-        mBonusRoundInd = -1;
 
         connectControl.groupAddedCallback += OnGroupAdded;
         connectControl.evaluateCallback += OnGroupEval;
@@ -298,8 +296,10 @@ public class PlayController : GameModeController<PlayController> {
 
     IEnumerator DoRounds() {
 
+        bool isRoundsContinue = true;
         curRoundIndex = 0;
-        while(curRoundIndex < mRoundCount) {
+
+        while(isRoundsContinue) {
             connectControl.curOp = curRoundOp;
 
             //signal new round
@@ -328,6 +328,12 @@ public class PlayController : GameModeController<PlayController> {
                 curRoundIndex = newRoundIndex;
             }
 
+            isRoundsContinue = curRoundIndex < mRoundCount;
+
+            //all rounds finish, check for perfect
+            if(!isRoundsContinue && mMistakeTotal.totalMistakeCount == 0)
+                curScore += GameData.instance.perfectPoints;
+
             //signal complete round
             roundEndCallback?.Invoke();
         }
@@ -337,10 +343,7 @@ public class PlayController : GameModeController<PlayController> {
         //wait for blobs to clear out
         while(blobSpawner.blobActives.Count > 0)
             yield return null;
-
-        //check for perfect
-        if(mMistakeTotal.totalMistakeCount == 0)
-            curScore += GameData.instance.perfectPoints;
+        
 
         //play finish
         signalInvokePlayEnd.Invoke();
@@ -356,7 +359,6 @@ public class PlayController : GameModeController<PlayController> {
         parms[ModalVictory.parmScore] = curScore;
         parms[ModalVictory.parmComboCount] = comboCount;
         parms[ModalVictory.parmBonusCount] = mBonusCount;
-        parms[ModalVictory.parmBonusRoundIndex] = mBonusRoundInd;
         parms[ModalVictory.parmRoundCount] = mRoundCount;
 
         M8.ModalManager.main.Open(GameData.instance.modalVictory, parms);
@@ -577,10 +579,16 @@ public class PlayController : GameModeController<PlayController> {
             yield return null;
         /////////////////////
 
+        blobClearedCount += 2;
+
+        //increase combo if we still have rounds left
+        if(blobClearedCount / 2 < roundCount)
+            comboCount++;
+
         //check if bonus blob is part of the group, then clear out the other blobs on board
         if(bonusBlobIsConnected) {
             //ensure blobs are no longer being spawned
-            blobClearedCount += blobSpawner.spawnQueueCount;
+            var bonusClearCount = blobSpawner.spawnQueueCount;
             blobSpawner.SpawnStop();
 
             //do fancy animation on board
@@ -601,21 +609,25 @@ public class PlayController : GameModeController<PlayController> {
                     while(blob.state != Blob.State.None)
                         yield return null;
 
-                    blobClearedCount++;
+                    bonusClearCount++;
                 }
             }
 
-            if(mBonusRoundInd == -1)
-                mBonusRoundInd = curRoundIndex;
+            //add up score for blobs cleared
+            int bonusRoundCount = bonusClearCount / 2;
+
+            for(int i = 0; i < bonusRoundCount; i++) {
+                curScore += GameData.instance.correctPoints * comboCount;
+
+                if(i < bonusRoundCount - 1)
+                    comboCount++;
+            }
+            //
+
+            blobClearedCount += bonusClearCount;
         }
         else if(bonusBlob) //clear it out
             bonusBlob.state = Blob.State.Despawning;
-
-        blobClearedCount += 2;
-
-        //increase combo if we still have rounds left
-        if(blobClearedCount / 2 < roundCount)
-            comboCount++;
 
         //go to next round
         mIsRoundWait = false;

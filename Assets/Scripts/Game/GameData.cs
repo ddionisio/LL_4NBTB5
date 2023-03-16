@@ -70,18 +70,12 @@ public class GameData : M8.SingletonScriptableObject<GameData> {
     /// <summary>
     /// Set bonusRoundIndex to -1 for no bonus
     /// </summary>
-    public int GetMaxScore(int roundCount, int bonusRoundIndex) {
+    public int GetMaxScore(int roundCount) {
         int maxScore = 0;
 
         for(int i = 0; i < roundCount; i++) {
             maxScore += (i + 1) * correctPoints;
-
-            if(i == bonusRoundIndex)
-                break;
         }
-
-        if(bonusRoundIndex > 0)
-            maxScore += bonusPoints;
 
         maxScore += perfectPoints;
 
@@ -91,8 +85,8 @@ public class GameData : M8.SingletonScriptableObject<GameData> {
     /// <summary>
     /// Set bonusRoundIndex to -1 for no bonus
     /// </summary>
-    public int GetRankIndex(int roundCount, int bonusRoundIndex, int score) {
-        var maxScore = GetMaxScore(roundCount, bonusRoundIndex);
+    public int GetRankIndex(int roundCount, int score) {
+        var maxScore = GetMaxScore(roundCount);
 
         float scoreScale = (float)score / maxScore;
 

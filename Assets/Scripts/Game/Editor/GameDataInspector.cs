@@ -6,7 +6,6 @@ using UnityEditor;
 [CustomEditor(typeof(GameData))]
 public class GameDataInspector : Editor {
     public int roundCount;
-    public int bonusRoundIndex;
 
     public override void OnInspectorGUI() {
         base.OnInspectorGUI();
@@ -18,9 +17,8 @@ public class GameDataInspector : Editor {
         GUILayout.Label("Score Calculations");
 
         roundCount = EditorGUILayout.IntField("Round Count", roundCount);
-        bonusRoundIndex = EditorGUILayout.IntField("Bonus Round Index", bonusRoundIndex);
 
-        int maxScore = dat.GetMaxScore(roundCount, bonusRoundIndex);
+        int maxScore = dat.GetMaxScore(roundCount);
 
         EditorGUILayout.LabelField("Max Score", maxScore.ToString());
 
