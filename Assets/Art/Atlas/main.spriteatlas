@@ -48,6 +48,7 @@ SpriteAtlas:
     - {fileID: 102900000, guid: 1752d9d272a3d0c41bb751343a2c0a2d, type: 3}
     - {fileID: 102900000, guid: ed20d182ff55d054f89b0173a56290cf, type: 3}
     - {fileID: 102900000, guid: 711685e922895e944a6a92a4fb581f1e, type: 3}
+    - {fileID: 102900000, guid: 0ce09cc2b9d65e9479bde13527ba924b, type: 3}
     bindAsDefault: 1
     isAtlasV2: 0
     cachedData: {fileID: 0}
@@ -80,6 +81,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 1e895d6389f998c4781133379f3a9d30, type: 3}
   - {fileID: 21300000, guid: e5dc777390553e4499a405c82af83aef, type: 3}
   - {fileID: 21300000, guid: 761a39f37c970494692893c09089ec0a, type: 3}
+  - {fileID: 21300000, guid: 4d55550453e5146458a90a0a232bda2d, type: 3}
   - {fileID: 21300000, guid: 44a2e43498084d140b46c5499e074241, type: 3}
   - {fileID: 21300000, guid: d985b654a2dd4e54482f774cec3f7b9c, type: 3}
   - {fileID: 21300000, guid: 65c14d745fa726840ac8e7512d9c0ad8, type: 3}
@@ -178,6 +180,7 @@ SpriteAtlas:
   - blob_mouthError
   - explodePixel4
   - blob3
+  - cloudCircularInvert
   - explodePixel3
   - circleGlow
   - roundRect20_gradient

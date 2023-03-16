@@ -23,6 +23,9 @@
     "victory": "VICTORY",
     "combo": "COMBO",
     "bonus": "BONUS",
-    "perfect": "PERFECT"
+    "perfect": "PERFECT",
+    "victory_errorMult": "Multiply Error:",
+    "victory_errorSums": "Sums Error:",
+    "victory_score": "Score:"
   }
 }

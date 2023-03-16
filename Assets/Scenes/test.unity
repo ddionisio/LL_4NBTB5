@@ -23604,6 +23604,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 4769267989678773334, guid: ef26c774d3a66ea43aa940f01368d15c, type: 3}
+      propertyPath: m_ClearFlags
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4769267989678773334, guid: ef26c774d3a66ea43aa940f01368d15c, type: 3}
       propertyPath: m_projectionMatrixMode
       value: 1
       objectReference: {fileID: 0}

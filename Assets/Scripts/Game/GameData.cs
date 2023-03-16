@@ -6,11 +6,6 @@ using LoLExt;
 
 [CreateAssetMenu(fileName = "gameData", menuName = "Game/GameData")]
 public class GameData : M8.SingletonScriptableObject<GameData> {
-    public const string userKeyLevelScore = "s";
-    public const string userKeyComboCount = "c";
-    public const string userKeyBonusCount = "b";
-    public const string userKeyErrorMultCount = "em";
-    public const string userKeyErrorSumsCount = "es";
 
     public const string modalParamOperationText = "opTxt";
 
@@ -57,8 +52,8 @@ public class GameData : M8.SingletonScriptableObject<GameData> {
 
     public bool isProceed { get; private set; }
 
-    public void ScoreApply(int level, int aScore, int aBonus, int aRankInd, MistakeInfo mistakeInfo) {
-        var saveInfo = new SaveInfo(aScore, aBonus, aRankInd, mistakeInfo);
+    public void ScoreApply(int level, int aScore, int aBonus, int aRoundCount, MistakeInfo mistakeInfo) {
+        var saveInfo = new SaveInfo(aScore, aBonus, aRoundCount, mistakeInfo);
 
         saveInfo.SaveTo(LoLManager.instance.userData, level);
     }
@@ -67,9 +62,6 @@ public class GameData : M8.SingletonScriptableObject<GameData> {
         return SaveInfo.LoadFrom(LoLManager.instance.userData, level);
     }
 
-    /// <summary>
-    /// Set bonusRoundIndex to -1 for no bonus
-    /// </summary>
     public int GetMaxScore(int roundCount) {
         int maxScore = 0;
 
@@ -82,9 +74,6 @@ public class GameData : M8.SingletonScriptableObject<GameData> {
         return maxScore;
     }
 
-    /// <summary>
-    /// Set bonusRoundIndex to -1 for no bonus
-    /// </summary>
     public int GetRankIndex(int roundCount, int score) {
         var maxScore = GetMaxScore(roundCount);
 

@@ -45,7 +45,7 @@ public class ModalVictory : M8.ModalController, M8.IModalPush, M8.IModalPop {
     private MistakeInfo mMistakeInfo;
     private int mScore;
     private int mBonusCount;
-    private int mRankIndex;
+    private int mRoundCount;
 
     public void Proceed() {
         Close();
@@ -54,7 +54,7 @@ public class ModalVictory : M8.ModalController, M8.IModalPush, M8.IModalPop {
 
         //save level data and update score
         if(levelIndex >= 0) {
-            GameData.instance.ScoreApply(levelIndex, mScore, mBonusCount, mRankIndex, mMistakeInfo);
+            GameData.instance.ScoreApply(levelIndex, mScore, mBonusCount, mRoundCount, mMistakeInfo);
 
             LoLManager.instance.curScore += mScore;
         }
@@ -65,11 +65,11 @@ public class ModalVictory : M8.ModalController, M8.IModalPush, M8.IModalPop {
 
     void M8.IModalPush.Push(M8.GenericParams parms) {
         mMistakeInfo = null;
-        mScore = 0;        
+        mScore = 0;
         mBonusCount = 0;
+        mRoundCount = 0;
 
         int comboCount = 1;
-        int roundCount = 0;
 
         if(parms != null) {
             if(parms.ContainsKey(parmMistakeInfo))
@@ -85,7 +85,7 @@ public class ModalVictory : M8.ModalController, M8.IModalPush, M8.IModalPop {
                 mBonusCount = parms.GetValue<int>(parmBonusCount);
 
             if(parms.ContainsKey(parmRoundCount))
-                roundCount = parms.GetValue<int>(parmRoundCount);
+                mRoundCount = parms.GetValue<int>(parmRoundCount);
         }
 
         //setup initial display state
@@ -122,11 +122,11 @@ public class ModalVictory : M8.ModalController, M8.IModalPush, M8.IModalPop {
             scoreCounterLabel.SetCountImmediate(0);
 
 
-        mRankIndex = GameData.instance.GetRankIndex(roundCount, mScore);
+        int rankIndex = GameData.instance.GetRankIndex(mRoundCount, mScore);
 
         if(rankDisplay) {
             rankDisplay.gameObject.SetActive(false);
-            rankDisplay.Apply(mRankIndex);
+            rankDisplay.Apply(rankIndex);
         }
 
         if(proceedGO)
