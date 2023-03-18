@@ -26,6 +26,8 @@
     "perfect": "PERFECT",
     "victory_errorMult": "Multiply Error:",
     "victory_errorSums": "Sums Error:",
-    "victory_score": "Score:"
+    "victory_score": "Score:",
+    "distributiveProperty": "Distributive Property",
+    "areaOfRectangle": "Area of Rectangle"
   }
 }
