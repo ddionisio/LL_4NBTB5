@@ -1,9 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-using TMPro;
-
-public class ModalAttackDistributive : M8.ModalController, M8.IModalPush, M8.IModalPop {
+public class ModalAttackDistributive : M8.ModalController, M8.IModalPush, M8.IModalPop, M8.IModalActive {
     [Header("Templates")]
     public AreaOperationCellWidget areaCellTemplate;
     public int areaCellCapacity = 4;
@@ -44,6 +42,7 @@ public class ModalAttackDistributive : M8.ModalController, M8.IModalPush, M8.IMo
 
     [Header("Signal Invoke")]
     public SignalAttackState signalInvokeAttackStateChange;
+    public M8.SignalBoolean signalInvokeActive;
 
     public AreaOperationCellWidget mainAreaCellWidget {
         get {
@@ -89,7 +88,11 @@ public class ModalAttackDistributive : M8.ModalController, M8.IModalPush, M8.IMo
 
         M8.ModalManager.main.Open(GameData.instance.modalAttackAreaEvaluate, mAttackParms);
     }
-    
+
+    void M8.IModalActive.SetActive(bool aActive) {
+        signalInvokeActive?.Invoke(aActive);
+    }
+
     void M8.IModalPush.Push(M8.GenericParams parms) {
         if(!mIsInit) {
             ///////////////////////////////////
@@ -161,7 +164,7 @@ public class ModalAttackDistributive : M8.ModalController, M8.IModalPush, M8.IMo
             mIsInit = true;
         }
 
-        //setup shared data across attack phases
+        //setup shared data across attack phases        
         mAttackParms = parms as ModalAttackParams;
         if(mAttackParms != null) {
             mAreaOp = mAttackParms.GetAreaOperation();

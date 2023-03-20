@@ -20,6 +20,8 @@ public class CameraController : MonoBehaviour {
         }
     }
 
+    public Camera cameraTarget { get { return mCamera; } }
+
     public bool raycastTarget {
         get { return mRaycaster ? mRaycaster.enabled : false; }
         set {

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 public class ModalAttackParams : M8.GenericParams {
     public const string areaOp = "ao";
     public const string mistakeInfo = "mi";
+    public const string showTutorial = "st";
 
     public AreaOperation GetAreaOperation() {
         if(ContainsKey(areaOp))
@@ -28,5 +29,16 @@ public class ModalAttackParams : M8.GenericParams {
 
     public void SetMistakeInfo(MistakeInfo aInfo) {
         this[mistakeInfo] = aInfo;
+    }
+
+    public bool IsShowTutorial() {
+        if(ContainsKey(showTutorial))
+            return GetValue<bool>(showTutorial);
+
+        return false;
+    }
+
+    public void SetShowTutorial(bool isShowTutorial) {
+        this[showTutorial] = isShowTutorial;
     }
 }

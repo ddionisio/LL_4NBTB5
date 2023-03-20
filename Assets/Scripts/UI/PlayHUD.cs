@@ -414,8 +414,10 @@ public class PlayHUD : MonoBehaviour {
 
                                 blobSelect = playCtrl.connectControl.curBlobDragging;
 
-                                isEqActive = (grp.blobOpLeft && grp.blobOpLeft.isHighlighted) || (grp.blobOpRight && grp.blobOpRight.isHighlighted);
+                                //isEqActive = (grp.blobOpLeft && grp.blobOpLeft.isHighlighted) || (grp.blobOpRight && grp.blobOpRight.isHighlighted);
                             }
+
+                            isEqActive = grp.blobOpLeft && grp.blobOpRight;
                         }
 
                         if(blobSelect)

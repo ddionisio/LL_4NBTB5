@@ -20,7 +20,7 @@ namespace LoLExt {
         public TMP_Text nameLabel;
 
         public TMP_Text textLabel;
-        public float textCharPerSecond = 0.04f;
+        public float textCharDelay = 0.04f;
 
         public GameObject textProcessActiveGO;
         public GameObject textProcessFinishGO;
@@ -269,9 +269,9 @@ namespace LoLExt {
             WaitForSecondsRealtime waitRT = null;
 
             if(isRealtime)
-                waitRT = new WaitForSecondsRealtime(textCharPerSecond);
+                waitRT = new WaitForSecondsRealtime(textCharDelay);
             else
-                wait = new WaitForSeconds(textCharPerSecond);
+                wait = new WaitForSeconds(textCharDelay);
 
             textLabel.text = "";
 

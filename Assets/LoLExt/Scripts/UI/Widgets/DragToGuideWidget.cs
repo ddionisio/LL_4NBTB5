@@ -6,9 +6,9 @@ using UnityEngine.UI;
 namespace LoLExt {
     public class DragToGuideWidget : MonoBehaviour {
 
-        public GameObject displayRootGO;
-        public Transform dragRoot;
-        public RectTransform lineRoot;
+        public RectTransform root;
+        public RectTransform cursor;
+        public RectTransform line;
 
         [Header("Animation")]
         public Image cursorImage;
@@ -27,11 +27,11 @@ namespace LoLExt {
                 if(!Application.isPlaying)
                     return;
 
-                dragRoot.position = Vector2.Lerp(mDragStart, mDragEnd, mDragPosition);
+                cursor.position = Vector2.Lerp(mDragStart, mDragEnd, mDragPosition);
             }
         }
 
-        public bool isActive { get { return displayRootGO ? displayRootGO.activeSelf : false; } }
+        public bool isActive { get { return root ? root.gameObject.activeSelf : false; } }
 
         public Vector2 dragStart { get { return mDragStart; } }
         public Vector2 dragEnd { get { return mDragEnd; } }
@@ -42,6 +42,18 @@ namespace LoLExt {
         private float mDragPosition;
         private bool mIsPaused;
 
+        public void UpdatePositionsFromScreen(Camera cam, Vector2 start, Vector2 end) {
+            Vector3 startUI, endUI;
+
+            RectTransformUtility.ScreenPointToWorldPointInRectangle(root, start, cam, out startUI);
+            RectTransformUtility.ScreenPointToWorldPointInRectangle(root, end, cam, out endUI);
+
+            UpdatePositions(startUI, endUI);
+        }
+
+        /// <summary>
+        /// start and end in UI world space
+        /// </summary>
         public void UpdatePositions(Vector2 start, Vector2 end) {
             mDragStart = start;
             mDragEnd = end;
@@ -53,21 +65,30 @@ namespace LoLExt {
             var dist = dpos.magnitude;
 
             //set line position, rotation, and size
-            lineRoot.pivot = new Vector2(0.5f, 0f);
-            lineRoot.position = mDragStart;
+            line.pivot = new Vector2(0.5f, 0f);
+            line.position = mDragStart;
 
             if(dist > 0f)
-                lineRoot.up = dpos / dist;
+                line.up = dpos / dist;
 
             //HACK: need a way to scale properly based on canvas resolution scaling
-            lineRoot.sizeDelta = new Vector2(lineRoot.sizeDelta.x, dist * (576f / Screen.height));
+            line.sizeDelta = new Vector2(line.sizeDelta.x, dist * (576f / Screen.height));
             //
 
-            dragRoot.position = Vector2.Lerp(mDragStart, mDragEnd, mDragPosition);
+            cursor.position = Vector2.Lerp(mDragStart, mDragEnd, mDragPosition);
+        }
+
+        public void ShowFromScreen(bool pause, Camera cam, Vector2 start, Vector2 end) {
+            Vector3 startUI, endUI;
+
+            RectTransformUtility.ScreenPointToWorldPointInRectangle(root, start, cam, out startUI);
+            RectTransformUtility.ScreenPointToWorldPointInRectangle(root, end, cam, out endUI);
+
+            Show(pause, startUI, endUI);
         }
 
         /// <summary>
-        /// start and end in UI space
+        /// start and end in UI world space
         /// </summary>
         public void Show(bool pause, Vector2 start, Vector2 end) {
             StopAllCoroutines();
@@ -78,7 +99,7 @@ namespace LoLExt {
 
             UpdatePositions(start, end);
 
-            if(displayRootGO) displayRootGO.SetActive(true);
+            if(root) root.gameObject.SetActive(true);
 
             StartCoroutine(DoCursorMove());
         }
@@ -86,7 +107,7 @@ namespace LoLExt {
         public void Hide() {
             SetPause(false);
 
-            if(displayRootGO) displayRootGO.SetActive(false);
+            if(root) root.gameObject.SetActive(false);
 
             StopAllCoroutines();
         }
@@ -96,7 +117,7 @@ namespace LoLExt {
         }
 
         void Awake() {
-            if(displayRootGO) displayRootGO.SetActive(false);
+            if(root) root.gameObject.SetActive(false);
         }
 
         IEnumerator DoCursorMove() {

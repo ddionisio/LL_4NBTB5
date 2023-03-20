@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ModalAttackSums : M8.ModalController, M8.IModalPush, M8.IModalPop {
+public class ModalAttackSums : M8.ModalController, M8.IModalPush, M8.IModalPop, M8.IModalActive {
     [Header("Factors")]
     public DigitGroupWidget factorTemplate;
     public int factorCapacity;
@@ -43,6 +43,7 @@ public class ModalAttackSums : M8.ModalController, M8.IModalPush, M8.IModalPop {
 
     [Header("Signal Invoke")]
     public SignalAttackState signalInvokeAttackStateChange;
+    public M8.SignalBoolean signalInvokeActive;
     public M8.SignalBoolean signalInvokeInputActive;
     public M8.Signal signalInvokeCorrect;
     public M8.Signal signalInvokeError;
@@ -99,6 +100,10 @@ public class ModalAttackSums : M8.ModalController, M8.IModalPush, M8.IModalPop {
         else {
             //show message (shouldn't get here)
         }
+    }
+
+    void M8.IModalActive.SetActive(bool aActive) {
+        signalInvokeActive?.Invoke(aActive);
     }
 
     void M8.IModalPush.Push(M8.GenericParams parms) {

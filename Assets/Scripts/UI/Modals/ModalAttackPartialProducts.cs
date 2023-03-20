@@ -4,7 +4,7 @@ using UnityEngine;
 
 using TMPro;
 
-public class ModalAttackPartialProducts : M8.ModalController, M8.IModalPush, M8.IModalPop {
+public class ModalAttackPartialProducts : M8.ModalController, M8.IModalPush, M8.IModalPop, M8.IModalActive {
     public const string parmEmptyCount = "emptyCount"; //number of partial products that need to be filled by player
     public const string parmAttackEmpty = "isAttackEmpty"; //if true, then player needs to fill in answer
 
@@ -42,7 +42,8 @@ public class ModalAttackPartialProducts : M8.ModalController, M8.IModalPush, M8.
     public M8.SignalFloat signalInvokeValueChange;
     public M8.SignalBoolean signalInvokeInputActive;
     public M8.SignalBoolean signalInvokeSubmitActive;
-    public SignalAttackState signalInvokeAttackStateChange;    
+    public SignalAttackState signalInvokeAttackStateChange;
+    public M8.SignalBoolean signalInvokeActive;
 
     [Header("Signal Listen")]
     public M8.Signal signalListenPrev;
@@ -79,6 +80,10 @@ public class ModalAttackPartialProducts : M8.ModalController, M8.IModalPush, M8.
             return;
 
         StartProceed();
+    }
+
+    void M8.IModalActive.SetActive(bool aActive) {
+        signalInvokeActive?.Invoke(aActive);
     }
 
     void M8.IModalPush.Push(M8.GenericParams parms) {

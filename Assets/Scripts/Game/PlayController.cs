@@ -32,9 +32,7 @@ public class PlayController : GameModeController<PlayController> {
         public void Init(BlobSpawner blobSpawner) {
             M8.ArrayUtil.Shuffle(numbers);
 
-            templateIndex = blobSpawner.GetTemplateIndex(blobData);
-
-            blobSpawner.InitBlobTemplate(templateIndex);
+            templateIndex = blobSpawner.InitBlobTemplate(blobData);
 
             mCurNumIndex = 0;
         }
@@ -47,7 +45,7 @@ public class PlayController : GameModeController<PlayController> {
     public BlobTemplateData blobAttackTemplate; //used for spawning an attack blob
     public int blobSpawnCount = 4;
 
-    [Header("Numbers")]    
+    [Header("Numbers")]
     public NumberGroup[] numberGroups;
     public bool numberCriteriaUnlocked; //if true, no blob connect restriction is made
 
@@ -58,7 +56,7 @@ public class PlayController : GameModeController<PlayController> {
 
     [Header("Controls")]
     public BlobConnectController connectControl;
-    public BlobSpawner blobSpawner;    
+    public BlobSpawner blobSpawner;
 
     [Header("Rounds")]
     public Transform roundsRoot; //grab SpriteColorFromPalette for each child
@@ -135,7 +133,7 @@ public class PlayController : GameModeController<PlayController> {
 
     private int mBonusCount;
 
-    private ModalAttackParams mModalAttackParms = new ModalAttackParams();
+    private ModalAttackParams mModalAttackParms;
 
     public void DebugClearActiveBlobs() {
         for(int i = blobSpawner.blobActives.Count - 1; i >= 0; i--) {
@@ -203,9 +201,7 @@ public class PlayController : GameModeController<PlayController> {
         if(isBonusEnabled)
             numberBonusGroup.Init(blobSpawner);
 
-        mBlobAttackTemplateInd = blobSpawner.GetTemplateIndex(blobAttackTemplate);
-        if(mBlobAttackTemplateInd != -1)
-            blobSpawner.InitBlobTemplate(mBlobAttackTemplateInd);
+        mBlobAttackTemplateInd = blobSpawner.InitBlobTemplate(blobAttackTemplate);
 
         mRoundCount = Mathf.FloorToInt(numberCount / 2.0f);
 
@@ -228,6 +224,10 @@ public class PlayController : GameModeController<PlayController> {
 
         mBonusCount = 0;
 
+        mModalAttackParms = new ModalAttackParams();
+        mModalAttackParms.SetAreaOperation(mAreaOp);
+        mModalAttackParms.SetMistakeInfo(mMistakeCurrent);
+
         connectControl.groupAddedCallback += OnGroupAdded;
         connectControl.evaluateCallback += OnGroupEval;
 
@@ -242,7 +242,8 @@ public class PlayController : GameModeController<PlayController> {
         yield return base.Start();
 
         //music
-        M8.MusicPlaylist.instance.Play(playMusic, true, false);
+        if(!string.IsNullOrEmpty(playMusic))
+            M8.MusicPlaylist.instance.Play(playMusic, true, false);
 
         //play enter if available
         if(animator && !string.IsNullOrEmpty(takeBegin))
@@ -484,9 +485,6 @@ public class PlayController : GameModeController<PlayController> {
         }
         else
             attackModal = GameData.instance.modalAttackDistributive;
-
-        mModalAttackParms.SetAreaOperation(mAreaOp);
-        mModalAttackParms.SetMistakeInfo(mMistakeCurrent);
 
         M8.ModalManager.main.Open(attackModal, mModalAttackParms);
 

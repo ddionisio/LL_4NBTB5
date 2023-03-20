@@ -89,14 +89,16 @@ public class BlobSpawner : MonoBehaviour {
 
     private Collider2D[] mColliderCache = new Collider2D[128];
 
-    public void InitBlobTemplate(BlobTemplateData blobTemplateData) {        
+    public int InitBlobTemplate(BlobTemplateData blobTemplateData) {        
         int templateInd = GetTemplateIndex(blobTemplateData);
         if(templateInd == -1) {
             Debug.LogError("Template Not Found: " + blobTemplateData.name);
-            return;
+            return -1;
         }
 
         InitBlobTemplate(templateInd);
+
+        return templateInd;
     }
 
     public void InitBlobTemplate(int templateInd) {

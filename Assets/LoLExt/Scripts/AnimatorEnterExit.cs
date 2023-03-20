@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace LoLExt {
     public class AnimatorEnterExit : MonoBehaviour {
+        [SerializeField]
+        GameObject _rootGO;
+
         public M8.Animator.Animate animator;
         [M8.Animator.TakeSelector(animatorField = "animator")]
         public string takeEnter;
@@ -12,9 +15,26 @@ namespace LoLExt {
 
         public bool resetOnEnable = false;
 
+        public GameObject rootGO { 
+            get {
+                if(!_rootGO)
+                    _rootGO = gameObject;
+
+                return _rootGO; 
+            } 
+        }
+
         public bool isPlaying { get { return animator ? animator.isPlaying : false; } }
         public bool isEntering { get { return animator ? animator.currentPlayingTakeName == takeEnter : false; } }
         public bool isExiting { get { return animator ? animator.currentPlayingTakeName == takeExit : false; } }
+
+        public void Show() {
+            rootGO.SetActive(true);
+        }
+
+        public void Hide() {
+            rootGO.SetActive(false);
+        }
 
         public void Stop() {
             if(animator)

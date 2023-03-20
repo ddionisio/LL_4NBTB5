@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ModalAttackAreaEvaluate : M8.ModalController, M8.IModalPush, M8.IModalPop {
+public class ModalAttackAreaEvaluate : M8.ModalController, M8.IModalPush, M8.IModalPop, M8.IModalActive {
     [Header("Templates")]
     public AreaOperationCellWidget areaCellTemplate;
     public int areaCellCapacity = 4;
@@ -31,6 +31,7 @@ public class ModalAttackAreaEvaluate : M8.ModalController, M8.IModalPush, M8.IMo
 
     [Header("Signal Invoke")]
     public SignalAttackState signalInvokeAttackStateChange;
+    public M8.SignalBoolean signalInvokeActive;
     public M8.SignalBoolean signalInvokeInputActive;
     public M8.Signal signalInvokeCorrect;
     public M8.Signal signalInvokeError;
@@ -91,6 +92,10 @@ public class ModalAttackAreaEvaluate : M8.ModalController, M8.IModalPush, M8.IMo
         else {
             //show message
         }
+    }
+
+    void M8.IModalActive.SetActive(bool aActive) {
+        signalInvokeActive?.Invoke(aActive);
     }
 
     void M8.IModalPush.Push(M8.GenericParams parms) {
