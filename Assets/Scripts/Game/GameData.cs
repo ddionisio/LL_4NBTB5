@@ -12,7 +12,7 @@ public class GameData : M8.SingletonScriptableObject<GameData> {
     [System.Serializable]
     public struct LevelInfo {
         public M8.SceneAssetPath scene;
-        public bool isGameplay;
+        //public bool isGameplay;
     }
 
     [System.Serializable]

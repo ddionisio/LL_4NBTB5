@@ -36,6 +36,14 @@
     "lesson1_area_2": "As you can see, the rectangle is split into two.",
     "lesson1_area_3": "Then we compute the area of those two rectangles.",
     "lesson1_area_4": "And finally, we add these two areas together to get the area of the whole rectangle.",
-    "lesson1_connect_1": "Let’s give it a try. Connect these two blobs to initiate the attack!"
+    "lesson1_connect_1": "Let’s give it a try. Connect these two blobs to initiate the attack!",
+    "lesson1_attack_distribute_1": "Here we will be splitting the numbers up by multiples of 10.",
+    "lesson1_attack_distribute_2": "Simply click on the boxed number to split it!",
+    "lesson1_attack_eval_1": "Now we will compute the product of each sub areas by using the numpad to type in the digits.",
+    "lesson1_attack_eval_2": "Once you’re happy with the number, press the enter button.",
+    "lesson1_attack_sums_1": "Finally, we add the products together to form the final product!",
+    "lesson1_attack_sums_2": "Once again, use the numpad to compute each digit of the number.",
+    "lesson1_end_1": "Excellent! As you can see, it’s much easier to solve an equation by splitting it up into smaller pieces.",
+    "lesson1_end_2": "Now you are ready to banish the blobs!"
   }
 }

@@ -2398,8 +2398,26 @@ MonoBehaviour:
   tutorialConnectDialog:
     dialogTextRefs:
     - lesson1_connect_1
+  tutorialAttackDistributiveDialog:
+    dialogTextRefs:
+    - lesson1_attack_distribute_1
+    - lesson1_attack_distribute_2
+  tutorialAttackEvalDialog:
+    dialogTextRefs:
+    - lesson1_attack_eval_1
+    - lesson1_attack_eval_2
+  tutorialAttackSumsDialog:
+    dialogTextRefs:
+    - lesson1_attack_sums_1
+    - lesson1_attack_sums_2
+  tutorialEndDialog:
+    dialogTextRefs:
+    - lesson1_end_1
+    - lesson1_end_2
   boardHUDRootGO: {fileID: 1717019432157608628}
   boardDragGuide: {fileID: 895757119}
+  clickInstructWidgetRoot: {fileID: 1102342356}
+  clickInstructOfs: {x: 10, y: -10}
   equationOp1Anim: {fileID: 2005900538217044084}
   equationOp1Text: {fileID: 2005900538217044083}
   equationOp2Anim: {fileID: 1717019433122311658}
@@ -2425,6 +2443,9 @@ MonoBehaviour:
   signalListenBlobDragBegin: {fileID: 11400000, guid: 0dd1c40d5bbeef54a8aaf4b6c89d5235, type: 2}
   signalListenBlobDragEnd: {fileID: 11400000, guid: e277b755729c85042a3893c829311846, type: 2}
   signalListenAttackStateChanged: {fileID: 11400000, guid: ebf9b91bb8b25644084fe225f3a38b36, type: 2}
+  signalListenAttackDistributive: {fileID: 11400000, guid: f8c5861b916fb934ba0cb833d9bd90ef, type: 2}
+  signalListenAttackEvaluate: {fileID: 11400000, guid: a83d3f9fbc37daa489326a1f298887b2, type: 2}
+  signalListenAttackSums: {fileID: 11400000, guid: fec4f81b3bb3fb046829d3373d28303b, type: 2}
 --- !u!114 &683097900
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5342,6 +5363,103 @@ CanvasRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1065209737}
+  m_CullTransparentMesh: 1
+--- !u!1 &1102342355
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1102342356}
+  - component: {fileID: 1102342359}
+  - component: {fileID: 1102342358}
+  - component: {fileID: 1102342357}
+  m_Layer: 5
+  m_Name: clickCursor
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1102342356
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1102342355}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 956693232}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -486.5, y: -15.9}
+  m_SizeDelta: {x: 38, y: 44}
+  m_Pivot: {x: 0.1625046, y: 0.8718799}
+--- !u!114 &1102342357
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1102342355}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 60b443870714ccb41b7904ffdf839afd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  frameHolder: {fileID: 1102342358}
+  frames:
+  - {fileID: 21300000, guid: d100bf3fba8e48343b4f69fe5447d682, type: 3}
+  - {fileID: 21300000, guid: b5f1f248fc842084cb79fa132167e30b, type: 3}
+  framesPerSecond: 2
+  resetOnStop: 1
+  autoPlay: 1
+  autoSize: 1
+  shuffleOnPlay: 0
+--- !u!114 &1102342358
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1102342355}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 0.9333334, g: 0.8745099, b: 0.8431373, a: 1}
+  m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: d100bf3fba8e48343b4f69fe5447d682, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &1102342359
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1102342355}
   m_CullTransparentMesh: 1
 --- !u!1 &1126106341
 GameObject:

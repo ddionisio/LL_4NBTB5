@@ -19,10 +19,16 @@ public class Lesson1Controller : GameModeController<Lesson1Controller> {
     public AnimatorEnterExit areaIllustrate;
     public ModalDialogFlow areaDialog;
     public ModalDialogFlow tutorialConnectDialog;
+    public ModalDialogFlow tutorialAttackDistributiveDialog;
+    public ModalDialogFlow tutorialAttackEvalDialog;
+    public ModalDialogFlow tutorialAttackSumsDialog;
+    public ModalDialogFlow tutorialEndDialog;
 
     [Header("Board UI")]
     public GameObject boardHUDRootGO;
     public DragToGuideWidget boardDragGuide;
+    public RectTransform clickInstructWidgetRoot;
+    public Vector2 clickInstructOfs;
 
     [Header("Equation Display")]
     public M8.Animator.Animate equationOp1Anim; //play take index 0 when highlight
@@ -94,6 +100,10 @@ public class Lesson1Controller : GameModeController<Lesson1Controller> {
 
     private ModalAttackParams mModalAttackParms;
 
+    private bool mIsAttackDistributiveExplained;
+    private bool mIsAttackEvaluateExplained;
+    private bool mIsAttackSumsExplained;
+
     private bool mIsAttackComplete;
 
     protected override void OnInstanceDeinit() {
@@ -102,10 +112,14 @@ public class Lesson1Controller : GameModeController<Lesson1Controller> {
             connectControl.evaluateCallback -= OnGroupEval;
         }
 
-        signalListenBlobDragBegin.callback -= OnSignalBlobDragBegin;
-        signalListenBlobDragEnd.callback -= OnSignalBlobDragEnd;
+        if(signalListenBlobDragBegin) signalListenBlobDragBegin.callback -= OnSignalBlobDragBegin;
+        if(signalListenBlobDragEnd) signalListenBlobDragEnd.callback -= OnSignalBlobDragEnd;
 
-        signalListenAttackStateChanged.callback -= OnSignalAttackStateChanged;
+        if(signalListenAttackDistributive) signalListenAttackDistributive.callback -= OnSignalAttackDistributiveActive;
+        if(signalListenAttackEvaluate) signalListenAttackEvaluate.callback -= OnSignalAttackEvaluateActive;
+        if(signalListenAttackSums) signalListenAttackSums.callback -= OnSignalAttackSumsActive;
+
+        if(signalListenAttackStateChanged) signalListenAttackStateChanged.callback -= OnSignalAttackStateChanged;
 
         if(mAttackRout != null) {
             StopCoroutine(mAttackRout);
@@ -154,11 +168,18 @@ public class Lesson1Controller : GameModeController<Lesson1Controller> {
         if(equationOpGO) equationOpGO.SetActive(false);
         if(equationEqGO) equationEqGO.SetActive(false);
 
+        if(clickInstructWidgetRoot) clickInstructWidgetRoot.gameObject.SetActive(false);
+
+        //signals
         connectControl.groupAddedCallback += OnGroupAdded;
         connectControl.evaluateCallback += OnGroupEval;
 
         signalListenBlobDragBegin.callback += OnSignalBlobDragBegin;
         signalListenBlobDragEnd.callback += OnSignalBlobDragEnd;
+
+        signalListenAttackDistributive.callback += OnSignalAttackDistributiveActive;
+        signalListenAttackEvaluate.callback += OnSignalAttackEvaluateActive;
+        signalListenAttackSums.callback += OnSignalAttackSumsActive;
 
         signalListenAttackStateChanged.callback += OnSignalAttackStateChanged;
     }
@@ -241,9 +262,12 @@ public class Lesson1Controller : GameModeController<Lesson1Controller> {
         SetEquationUpdateActive(false);
 
         //conclusion
+        yield return tutorialEndDialog.Play();
 
         if(boardAnimator && !string.IsNullOrEmpty(takeBoardEnd))
             yield return boardAnimator.PlayWait(takeBoardEnd);
+
+        GameData.instance.ProceedNext();
     }
 
     IEnumerator DoDragGuide() {
@@ -489,6 +513,66 @@ public class Lesson1Controller : GameModeController<Lesson1Controller> {
         }
     }
 
+    IEnumerator DoAttackDistributiveTutorial() {
+        do {
+            yield return null;
+        } while(M8.ModalManager.main.isBusy);
+
+        var modalAttackDist = M8.ModalManager.main.GetBehaviour<ModalAttackDistributive>(GameData.instance.modalAttackDistributive);
+        var digitGrpWidget = modalAttackDist.digitGroupTop;
+
+        //grab interact digit
+        DigitWidget digitInteractWidget = null;
+
+        for(int i = 0; i < digitGrpWidget.digitCount; i++) {
+            var digitWidget = digitGrpWidget.GetDigitWidget(i);
+            if(digitWidget && digitWidget.interactable) {
+                digitInteractWidget = digitWidget;
+                break;
+            }
+        }
+
+        Transform clickLastParent = null;
+
+        //show click
+        if(digitInteractWidget) {
+            if(clickInstructWidgetRoot) {
+                clickLastParent = clickInstructWidgetRoot.parent;
+
+                clickInstructWidgetRoot.SetParent(DragHolder.instance.dragRoot, false);
+
+                var pos = digitInteractWidget.rectTransform.position;
+                pos.x += clickInstructOfs.x;
+                pos.y += clickInstructOfs.y;
+
+                clickInstructWidgetRoot.position = pos;
+
+                clickInstructWidgetRoot.gameObject.SetActive(true);
+            }
+        }
+
+        yield return tutorialAttackDistributiveDialog.Play();
+
+        if(digitInteractWidget) {
+            //wait for it to be distributed
+            while(digitInteractWidget.interactable)
+                yield return null;
+
+            if(clickInstructWidgetRoot) {
+                clickInstructWidgetRoot.SetParent(clickLastParent);
+                clickInstructWidgetRoot.gameObject.SetActive(false);
+            }
+        }
+    }
+
+    IEnumerator DoDialog(ModalDialogFlow dlg) {
+        do {
+            yield return null;
+        } while(M8.ModalManager.main.isBusy);
+
+        yield return dlg.Play();
+    }
+
     void OnSignalBlobDragBegin(Blob blob) {
         var blobActives = blobSpawner.blobActives;
         for(int i = 0; i < blobActives.Count; i++) {
@@ -508,6 +592,27 @@ public class Lesson1Controller : GameModeController<Lesson1Controller> {
                 continue;
 
             blobActive.highlightLock = false;
+        }
+    }
+    
+    void OnSignalAttackDistributiveActive(bool aActive) {
+        if(!mIsAttackDistributiveExplained && aActive) {
+            StartCoroutine(DoAttackDistributiveTutorial());
+            mIsAttackDistributiveExplained = true;
+        }
+    }
+
+    void OnSignalAttackEvaluateActive(bool aActive) {
+        if(!mIsAttackEvaluateExplained && aActive) {
+            StartCoroutine(DoDialog(tutorialAttackEvalDialog));
+            mIsAttackEvaluateExplained = true;
+        }
+    }
+
+    void OnSignalAttackSumsActive(bool aActive) {
+        if(!mIsAttackSumsExplained && aActive) {
+            StartCoroutine(DoDialog(tutorialAttackSumsDialog));
+            mIsAttackSumsExplained = true;
         }
     }
 

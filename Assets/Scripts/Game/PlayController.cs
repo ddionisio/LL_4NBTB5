@@ -165,11 +165,11 @@ public class PlayController : GameModeController<PlayController> {
             connectControl.evaluateCallback -= OnGroupEval;
         }
 
-        signalListenPlayStart.callback -= OnSignalPlayBegin;
-        signalListenBlobDragBegin.callback -= OnSignalBlobDragBegin;
-        signalListenBlobDragEnd.callback -= OnSignalBlobDragEnd;
+        if(signalListenPlayStart) signalListenPlayStart.callback -= OnSignalPlayBegin;
+        if(signalListenBlobDragBegin) signalListenBlobDragBegin.callback -= OnSignalBlobDragBegin;
+        if(signalListenBlobDragEnd) signalListenBlobDragEnd.callback -= OnSignalBlobDragEnd;
 
-        signalListenAttackStateChanged.callback -= OnSignalAttackStateChanged;
+        if(signalListenAttackStateChanged) signalListenAttackStateChanged.callback -= OnSignalAttackStateChanged;
 
         if(mSpawnRout != null) {
             StopCoroutine(mSpawnRout);
