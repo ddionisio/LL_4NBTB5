@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class MistakeCounterWidget : MonoBehaviour {
+    public const string userDataKeyWarning = "healthWarning";
+
     [Header("Fill Info")]
     [SerializeField]
     Slider _fillBar;
@@ -15,6 +17,12 @@ public class MistakeCounterWidget : MonoBehaviour {
     int _fillDangerMinCount = 1;
     [SerializeField]
     GameObject _fillDangerGO;
+
+    [Header("Display Warning")]
+    public GameObject warningGO;
+    [M8.Localize]
+    public string warningTextRef;
+    public float warningDelay = 5f;
 
     [Header("Animation")]
     [SerializeField]
@@ -62,6 +70,10 @@ public class MistakeCounterWidget : MonoBehaviour {
         }
     }
 
+    void OnEnable() {
+        if(warningGO) warningGO.SetActive(false);
+    }
+
     IEnumerator DoUpdate(MistakeInfo mistakeInfo) {
         var curMistakeCount = mistakeInfo.totalMistakeCount;
         var maxMistakeCount = mistakeInfo.maxMistakeCount;
@@ -92,6 +104,23 @@ public class MistakeCounterWidget : MonoBehaviour {
         if(_fillDangerGO)
             _fillDangerGO.SetActive(mistakeFillCount <= _fillDangerMinCount);
 
+        var isWarningDone = LoLExt.LoLManager.instance.userData.GetInt(userDataKeyWarning, 0) > 0;
+        if(!isWarningDone) {
+            LoLExt.LoLManager.instance.userData.SetInt(userDataKeyWarning, 1);
+            StartCoroutine(DoWarning());
+        }
+
         mRout = null;
+    }
+
+    IEnumerator DoWarning() {
+        if(warningGO) warningGO.SetActive(true);
+
+        if(!string.IsNullOrEmpty(warningTextRef))
+            LoLExt.LoLManager.instance.SpeakText(warningTextRef);
+
+        yield return new WaitForSeconds(warningDelay);
+
+        if(warningGO) warningGO.SetActive(false);
     }
 }

@@ -5,7 +5,7 @@ using UnityEngine;
 namespace LoLExt {
     public class LoLSpeakTextFromLocalizer : MonoBehaviour {
 
-        M8.TextMeshPro.LocalizerTextMeshPro localizer;
+        public M8.TextMeshPro.LocalizerTextMeshPro localizer;
 
         public string playGroup = "default";
         public int playIndex = -1;
