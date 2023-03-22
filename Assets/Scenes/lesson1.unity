@@ -2342,6 +2342,7 @@ GameObject:
   - component: {fileID: 683097898}
   - component: {fileID: 683097899}
   - component: {fileID: 683097900}
+  - component: {fileID: 683097901}
   m_Layer: 0
   m_Name: controller
   m_TagString: Untagged
@@ -2846,6 +2847,25 @@ MonoBehaviour:
       index: 1
       keyIndices: 0200000003000000
     _takeTrackCounts: 030000000200000002000000
+--- !u!114 &683097901
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 683097897}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98a3b310f44d1a645bfbac55afb4e22e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  source: {fileID: 11400000, guid: 300660c31f42a394aabddbb03eff8868, type: 2}
+  sourceIndex: 0
+  destination: {fileID: 11400000, guid: e7834c0d2432fc2498bc57059a1e0caa, type: 2}
+  destinationIndex: 0
+  length: 0
+  applyOnEnable: 1
+  revertOnDisable: 1
 --- !u!1 &684207105
 GameObject:
   m_ObjectHideFlags: 0

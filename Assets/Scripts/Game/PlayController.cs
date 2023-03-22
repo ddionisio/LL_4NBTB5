@@ -30,10 +30,12 @@ public class PlayController : GameModeController<PlayController> {
         private int mCurNumIndex;
 
         public void Init(BlobSpawner blobSpawner) {
-            M8.ArrayUtil.Shuffle(numbers);
-
             templateIndex = blobSpawner.InitBlobTemplate(blobData);
+            Reset();
+        }
 
+        public void Reset() {
+            M8.ArrayUtil.Shuffle(numbers);
             mCurNumIndex = 0;
         }
     }
@@ -43,7 +45,7 @@ public class PlayController : GameModeController<PlayController> {
 
     [Header("Blob Info")]
     public BlobTemplateData blobAttackTemplate; //used for spawning an attack blob
-    public int blobSpawnCount = 4;
+    public int blobSpawnLimit = 4;
 
     [Header("Numbers")]
     public NumberGroup[] numberGroups;
@@ -54,13 +56,14 @@ public class PlayController : GameModeController<PlayController> {
     public string numberBonusModal;
     public M8.GenericParamSerialized[] numberBonusModalParams; //extra parameters to be passed to modal
 
+    [Header("Rounds")]
+    public int roundCount = 3;
+    public Transform roundsRoot; //grab SpriteColorFromPalette for each child
+    public float roundCompleteBrightness = 0.3f;
+
     [Header("Controls")]
     public BlobConnectController connectControl;
     public BlobSpawner blobSpawner;
-
-    [Header("Rounds")]
-    public Transform roundsRoot; //grab SpriteColorFromPalette for each child
-    public float roundCompleteBrightness = 0.3f;
 
     [Header("Correct Info")]
     public float correctSpawnDelay = 0.5f;
@@ -95,7 +98,6 @@ public class PlayController : GameModeController<PlayController> {
     public M8.Signal signalInvokePlayEnd;
 
     public int curRoundIndex { get; private set; }
-    public int roundCount { get { return mRoundCount; } }
     public OperatorType curRoundOp { get { return OperatorType.Multiply; } }
     public int comboCount { get; private set; }
     public bool comboIsActive { get { return comboCount > 1; } }
@@ -112,8 +114,6 @@ public class PlayController : GameModeController<PlayController> {
     public event System.Action<Operation, int, bool> groupEvalCallback; //params: equation, answer, isCorrect
 
     private int mBlobAttackTemplateInd;
-
-    private int mRoundCount;
 
     private bool mIsRoundWait;
 
@@ -203,11 +203,9 @@ public class PlayController : GameModeController<PlayController> {
 
         mBlobAttackTemplateInd = blobSpawner.InitBlobTemplate(blobAttackTemplate);
 
-        mRoundCount = Mathf.FloorToInt(numberCount / 2.0f);
-
         //init rounds display
         mRoundWidgets = roundsRoot.GetComponentsInChildren<RoundWidget>();
-        int roundsDisplayCount = Mathf.Min(mRoundCount, mRoundWidgets.Length);
+        int roundsDisplayCount = Mathf.Min(roundCount, mRoundWidgets.Length);
 
         for(int i = 0; i < roundsDisplayCount; i++)
             mRoundWidgets[i].Setup(true);
@@ -329,7 +327,7 @@ public class PlayController : GameModeController<PlayController> {
                 curRoundIndex = newRoundIndex;
             }
 
-            isRoundsContinue = curRoundIndex < mRoundCount;
+            isRoundsContinue = curRoundIndex < roundCount;
 
             //all rounds finish, check for perfect
             if(!isRoundsContinue && mMistakeTotal.totalMistakeCount == 0)
@@ -360,12 +358,15 @@ public class PlayController : GameModeController<PlayController> {
         parms[ModalVictory.parmScore] = curScore;
         parms[ModalVictory.parmComboCount] = comboCount;
         parms[ModalVictory.parmBonusCount] = mBonusCount;
-        parms[ModalVictory.parmRoundCount] = mRoundCount;
+        parms[ModalVictory.parmRoundCount] = roundCount;
 
         M8.ModalManager.main.Open(GameData.instance.modalVictory, parms);
     }
 
     IEnumerator DoBlobSpawn() {
+        int blobSpawnCount = 0;
+        int blobSpawnMax = roundCount * 2;
+
         int curGroupNumberIndex = 0;
 
         bool isComplete = false;
@@ -374,30 +375,26 @@ public class PlayController : GameModeController<PlayController> {
                 yield return null;
 
             //check if we have enough on the board
-            while(blobSpawner.blobActives.Count + blobSpawner.spawnQueueCount < blobSpawnCount) {
+            while(blobSpawner.blobActives.Count + blobSpawner.spawnQueueCount < blobSpawnLimit) {
                 var numGrp = numberGroups[curGroupNumberIndex];
-                if(!numGrp.isFinish) {
-                    var newNumber = numGrp.number;
+                if(numGrp.isFinish)
+                    numGrp.Reset();
 
-                    blobSpawner.Spawn(numGrp.templateIndex, newNumber);
+                var newNumber = numGrp.number;
+
+                blobSpawner.Spawn(numGrp.templateIndex, newNumber);
+                blobSpawnCount++;
+
+                //check if we are finish
+                if(blobSpawnCount >= blobSpawnMax) {
+                    isComplete = true;
+                    break;
                 }
 
+                //cycle through groups of numbers
                 curGroupNumberIndex++;
-                if(curGroupNumberIndex == numberGroups.Length) {
+                if(curGroupNumberIndex == numberGroups.Length)
                     curGroupNumberIndex = 0;
-
-                    //check if we are finish with all the groups
-                    int finishCount = 0;
-                    for(int i = 0; i < numberGroups.Length; i++) {
-                        if(numberGroups[i].isFinish)
-                            finishCount++;
-                    }
-
-                    if(finishCount == numberGroups.Length) {
-                        isComplete = true;
-                        break;
-                    }
-                }
             }
 
             yield return null;

@@ -57,6 +57,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: efb30510923c8e341a94021d37b90f02, type: 3}
   - {fileID: 21300000, guid: fb5a0560cfe4a104b8e92a4f1b2e642b, type: 3}
   - {fileID: 21300000, guid: be98f690b6a68d8478a95623f406a172, type: 3}
+  - {fileID: 21300000, guid: 3f0fc0d04a813dd4194ab0526b0b32f0, type: 3}
   - {fileID: 21300000, guid: e9c073d0fa6bcbb4894ddf875e703fc1, type: 3}
   - {fileID: 21300000, guid: cb808bf025d43324fa355c4c6fb7dd52, type: 3}
   - {fileID: 21300000, guid: f4683e31b11d8c249ac19e37611319cd, type: 3}
@@ -136,6 +137,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 36ce24ec9ae04524289ce0e80bf270be, type: 3}
   - {fileID: 21300000, guid: b678ba2d7d4bed94abb27c65899b8595, type: 3}
   - {fileID: 21300000, guid: 045d323db38cd114ebbe8393a77f4ce0, type: 3}
+  - {fileID: 21300000, guid: a5e8287d832e5b445b95e58261bb16af, type: 3}
   - {fileID: 21300000, guid: 998bcf7d461949f43b6363e2e6b63f42, type: 3}
   - {fileID: 21300000, guid: 735e018dda131a7429da17194c94360f, type: 3}
   - {fileID: 21300000, guid: 05e41c9d89f716a4c9524844d722c534, type: 3}
@@ -156,6 +158,7 @@ SpriteAtlas:
   - rank_SS
   - board_frame_glow
   - star
+  - circle400_64_quarter
   - donutFX
   - roundRect8_4
   - downArrow
@@ -235,6 +238,7 @@ SpriteAtlas:
   - circleGlowTiny
   - circleFrameSmall
   - board_frame
+  - circle400_quarter
   - rank_B
   - heart
   - blobBonus_mouthConnected

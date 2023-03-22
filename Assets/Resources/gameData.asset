@@ -21,19 +21,22 @@ MonoBehaviour:
   - scene:
       name: lesson1
       path: Assets/Scenes/lesson1.unity
+  - scene:
+      name: level1
+      path: Assets/Scenes/level1.unity
   endScene:
     name: 
     path: 
   ranks:
   - grade: S+
     icon: {fileID: 0}
-    scale: 1.12
+    scale: 1
   - grade: S
     icon: {fileID: 0}
-    scale: 1
+    scale: 0.9
   - grade: A
     icon: {fileID: 0}
-    scale: 0.8
+    scale: 0.75
   - grade: B
     icon: {fileID: 0}
     scale: 0.6
