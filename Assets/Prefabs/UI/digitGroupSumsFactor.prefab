@@ -50,7 +50,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _digitTemplate: {fileID: 2046084415502993238, guid: 7f5fa36c227e753468c7450c4eaf5154, type: 3}
-  _digitCapacity: 4
+  _digitCapacity: 5
   _digitContainer: {fileID: 7590607209917863204}
   _hideLeadingZeroes: 1
   _animator: {fileID: 0}
