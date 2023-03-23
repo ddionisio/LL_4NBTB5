@@ -24,6 +24,9 @@ MonoBehaviour:
   - scene:
       name: level1
       path: Assets/Scenes/level1.unity
+  - scene:
+      name: level2
+      path: Assets/Scenes/level2.unity
   endScene:
     name: 
     path: 
