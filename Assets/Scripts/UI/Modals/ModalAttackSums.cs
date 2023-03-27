@@ -376,13 +376,33 @@ public class ModalAttackSums : M8.ModalController, M8.IModalPush, M8.IModalPop, 
         float curTime;
 
         int nextDigitIndex = digitIndex + 1;
-        if(nextDigitIndex < mAnswerDigitCount && nextDigitIndex < inputAnswerGroup.digitCapacity) {
+        if(nextDigitIndex < mAnswerDigitCount) {
             //check carry-over
             if(carryOverDigit > 0) {
+                //check if next digit is pass all numbers
+                int maxDigitCount = 0;
+                for(int i = 0; i < mFactorActives.Count; i++) {
+                    if(mFactorActives[i].digitCount > maxDigitCount)
+                        maxDigitCount = mFactorActives[i].digitCount;
+                }
+
+                bool isLastDigit = nextDigitIndex >= maxDigitCount;
+
                 var answerDigitWidget = inputAnswerGroup.GetDigitWidget(digitIndex);
 
                 //apply new carryover for next digit
-                var carryOverDigitWidget = carryOverGroup.SetDigitNumber(nextDigitIndex, carryOverDigit);
+                DigitWidget carryOverDigitWidget;
+
+                //auto-fill next answer digit?
+                if(isLastDigit) {
+                    carryOverDigitWidget = inputAnswerGroup.SetDigitNumber(nextDigitIndex, carryOverDigit);
+                    inputAnswerGroup.SetDigitVisible(nextDigitIndex, true);
+
+                    nextDigitIndex++;
+                }
+                else
+                    carryOverDigitWidget = carryOverGroup.SetDigitNumber(nextDigitIndex, carryOverDigit);
+
                 var carryOverDigitRoot = carryOverDigitWidget.numberRoot;
 
                 Vector2 startPos = new Vector2(
@@ -409,46 +429,53 @@ public class ModalAttackSums : M8.ModalController, M8.IModalPush, M8.IModalPop, 
                     carryOverDigitRoot.position = new Vector3(curX, startPos.y, 0f);
                 }
 
-                //-> move carry-over to the top
-                curTime = 0f;
-                while(curTime < carryOverMoveUpDelay) {
-                    yield return null;
+                if(!isLastDigit) {
+                    //-> move carry-over to the top
+                    curTime = 0f;
+                    while(curTime < carryOverMoveUpDelay) {
+                        yield return null;
 
-                    curTime += Time.deltaTime;
+                        curTime += Time.deltaTime;
 
-                    var t = mCarryOverMoveUpEaseFunc(curTime, carryOverMoveUpDelay, 0f, 0f);
+                        var t = mCarryOverMoveUpEaseFunc(curTime, carryOverMoveUpDelay, 0f, 0f);
 
-                    var curY = Mathf.Lerp(startPos.y, endPos.y, t);
+                        var curY = Mathf.Lerp(startPos.y, endPos.y, t);
 
-                    carryOverDigitRoot.position = new Vector3(endPos.x, curY, 0f);
+                        carryOverDigitRoot.position = new Vector3(endPos.x, curY, 0f);
+                    }
                 }
 
                 carryOverDigitWidget.PlayPulse();
             }
 
             //move highlight
-            var curHighlightAnchorPos = highlightRoot.anchoredPosition;
+            //double check next digit index if it's still valid
+            if(nextDigitIndex < mAnswerDigitCount) {
+                var curHighlightAnchorPos = highlightRoot.anchoredPosition;
 
-            var toHighlightPosX = -(mFactorElementWidth * nextDigitIndex) - (mFactorElementWidth * 0.5f);
+                var toHighlightPosX = -(mFactorElementWidth * nextDigitIndex) - (mFactorElementWidth * 0.5f);
 
-            curTime = 0f;
-            while(curTime < highlightMoveDelay) {
-                yield return null;
+                curTime = 0f;
+                while(curTime < highlightMoveDelay) {
+                    yield return null;
 
-                curTime += Time.deltaTime;
+                    curTime += Time.deltaTime;
 
-                var t = mHighlightMoveFunc(curTime, highlightMoveDelay, 0f, 0f);
+                    var t = mHighlightMoveFunc(curTime, highlightMoveDelay, 0f, 0f);
 
-                 var newX = Mathf.Lerp(curHighlightAnchorPos.x, toHighlightPosX, t);
+                    var newX = Mathf.Lerp(curHighlightAnchorPos.x, toHighlightPosX, t);
 
-                highlightRoot.anchoredPosition = new Vector2 { x = newX, y = curHighlightAnchorPos.y };
+                    highlightRoot.anchoredPosition = new Vector2 { x = newX, y = curHighlightAnchorPos.y };
+                }
+
+                //show next input digit interaction
+                inputAnswerGroup.SetDigitEmpty(nextDigitIndex);
+                inputAnswerGroup.SetDigitInteractive(nextDigitIndex, true);
+                inputAnswerGroup.SetDigitVisible(nextDigitIndex, true);
+                inputAnswerGroup.SetDigitHighlight(nextDigitIndex, true);
             }
-
-            //show next input digit interaction
-            inputAnswerGroup.SetDigitEmpty(nextDigitIndex);
-            inputAnswerGroup.SetDigitInteractive(nextDigitIndex, true);
-            inputAnswerGroup.SetDigitVisible(nextDigitIndex, true);
-            inputAnswerGroup.SetDigitHighlight(nextDigitIndex, true);
+            else //we are finish
+                highlightRoot.gameObject.SetActive(false);
         }
         else {
             //we are finish

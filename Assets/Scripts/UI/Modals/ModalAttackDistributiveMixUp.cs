@@ -252,21 +252,54 @@ public class ModalAttackDistributiveMixUp : M8.ModalController, M8.IModalPush, M
                 }
 
                 //mix up the factors between all area cells
-                var factorNumbers = new int[mAreaOp.areaRowCount * mAreaOp.areaColCount * 2];
+                int validCount = 0;
+                for(int r = 0; r < mAreaOp.areaRowCount; r++) {
+                    for(int c = 0; c < mAreaOp.areaColCount; c++) {
+                        var cell = mAreaOp.GetAreaOperation(r, c);
+                        if(cell.isValid)
+                            validCount++;
+                    }
+                }
+
+                var factorNumbers = new int[validCount * 2];
                 var factorInd = 0;
 
                 for(int r = 0; r < mAreaOp.areaRowCount; r++) {
                     for(int c = 0; c < mAreaOp.areaColCount; c++) {
                         var cell = mAreaOp.GetAreaOperation(r, c);
+                        if(cell.isValid) {
+                            factorNumbers[factorInd] = cell.op.operand1;
+                            factorNumbers[factorInd + 1] = cell.op.operand2;
 
-                        factorNumbers[factorInd] = cell.op.operand1;
-                        factorNumbers[factorInd + 1] = cell.op.operand2;
-
-                        factorInd += 2;
+                            factorInd += 2;
+                        }
                     }
                 }
 
+                //shuffle
                 M8.ArrayUtil.Shuffle(factorNumbers);
+
+                //swap some numbers around if they match
+                factorInd = 0;
+                for(int r = 0; r < mAreaOp.areaRowCount; r++) {
+                    for(int c = 0; c < mAreaOp.areaColCount; c++) {
+                        var cell = mAreaOp.GetAreaOperation(r, c);
+                        if(cell.isValid) {
+                            var factorEq = factorNumbers[factorInd] + factorNumbers[factorInd + 1];
+                            if(cell.op.equal == factorEq) {
+                                int swapInd = factorInd + 2;
+                                if(swapInd >= factorNumbers.Length)
+                                    swapInd = 0;
+
+                                int lastNum = factorNumbers[factorInd + 1];
+                                factorNumbers[factorInd + 1] = factorNumbers[swapInd];
+                                factorNumbers[swapInd] = lastNum;
+                            }
+
+                            factorInd += 2;
+                        }
+                    }
+                }
 
                 //apply mixups to area cell widgets
                 factorInd = 0;
@@ -276,12 +309,14 @@ public class ModalAttackDistributiveMixUp : M8.ModalController, M8.IModalPush, M
                         var areaOpWidget = mAreaCellActives[r, c];
 
                         var cell = areaOpWidget.cellData;
-                        cell.op.operand1 = factorNumbers[factorInd];
-                        cell.op.operand2 = factorNumbers[factorInd + 1];
+                        if(cell.isValid) {
+                            cell.op.operand1 = factorNumbers[factorInd];
+                            cell.op.operand2 = factorNumbers[factorInd + 1];
 
-                        areaOpWidget.ApplyCell(cell, false);
+                            areaOpWidget.ApplyCell(cell, false);
 
-                        factorInd += 2;
+                            factorInd += 2;
+                        }
                     }
                 }
             }

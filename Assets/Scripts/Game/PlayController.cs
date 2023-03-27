@@ -6,37 +6,39 @@ using LoLExt;
 public class PlayController : GameModeController<PlayController> {
     [System.Serializable]
     public class NumberGroup {
-        public BlobTemplateData blobData;
-        public int[] numbers;
+        public int[] leftNumbers;
+        public int[] rightNumbers;
 
-        public int templateIndex { get; private set; }
-
-        public int number {
+        public int leftNumber {
             get {
-                if(mCurNumIndex < numbers.Length) {
-                    var num = numbers[mCurNumIndex];
+                var num = leftNumbers[mCurLeftIndex];
 
-                    mCurNumIndex++;
+                mCurLeftIndex++;
+                if(mCurLeftIndex == leftNumbers.Length)
+                    mCurLeftIndex = 0;
 
-                    return num;
-                }
-                else
-                    return numbers[numbers.Length - 1];
+                return num;
             }
         }
 
-        public bool isFinish { get { return mCurNumIndex >= numbers.Length; } }
+        public int rightNumber {
+            get {
+                var num = rightNumbers[mCurRightIndex];
 
-        private int mCurNumIndex;
+                mCurRightIndex++;
+                if(mCurRightIndex == rightNumbers.Length)
+                    mCurRightIndex = 0;
 
-        public void Init(BlobSpawner blobSpawner) {
-            templateIndex = blobSpawner.InitBlobTemplate(blobData);
-            Reset();
+                return num;
+            }
         }
 
-        public void Reset() {
-            M8.ArrayUtil.Shuffle(numbers);
-            mCurNumIndex = 0;
+        private int mCurLeftIndex;
+        private int mCurRightIndex;
+
+        public void Init() {
+            M8.ArrayUtil.Shuffle(leftNumbers);
+            M8.ArrayUtil.Shuffle(rightNumbers);
         }
     }
 
@@ -48,16 +50,18 @@ public class PlayController : GameModeController<PlayController> {
     public int blobSpawnLimit = 4;
 
     [Header("Numbers")]
-    public NumberGroup[] numberGroups;
+    public BlobTemplateData blobLeftTemplate;
+    public BlobTemplateData blobRightTemplate;
+    public NumberGroup[] numberGroups; //determines rounds
     public bool numberCriteriaUnlocked; //if true, no blob connect restriction is made
 
     [Header("Bonus Number")]
-    public NumberGroup numberBonusGroup; //set numbers to none to disable bonus
+    public BlobTemplateData blobBonusTemplate;
+    public int[] numberBonuses; //set numbers to none to disable bonus
     public string numberBonusModal;
     public M8.GenericParamSerialized[] numberBonusModalParams; //extra parameters to be passed to modal
 
     [Header("Rounds")]
-    public int roundCount = 3;
     public Transform roundsRoot; //grab SpriteColorFromPalette for each child
     public float roundCompleteBrightness = 0.3f;
 
@@ -97,6 +101,7 @@ public class PlayController : GameModeController<PlayController> {
     [Header("Signal Invoke")]
     public M8.Signal signalInvokePlayEnd;
 
+    public int roundCount { get { return numberGroups.Length; } }
     public int curRoundIndex { get; private set; }
     public OperatorType curRoundOp { get { return OperatorType.Multiply; } }
     public int comboCount { get; private set; }
@@ -106,7 +111,7 @@ public class PlayController : GameModeController<PlayController> {
 
     public float curPlayTime { get { return Time.time - mPlayLastTime; } }
 
-    public bool isBonusEnabled { get { return numberBonusGroup.blobData != null && numberBonusGroup.numbers.Length > 0; } }
+    public bool isBonusEnabled { get { return numberBonuses != null && numberBonuses.Length > 0 && mBlobBonusTemplateInd != -1; } }
 
     //callbacks
     public event System.Action roundBeginCallback;
@@ -114,6 +119,9 @@ public class PlayController : GameModeController<PlayController> {
     public event System.Action<Operation, int, bool> groupEvalCallback; //params: equation, answer, isCorrect
 
     private int mBlobAttackTemplateInd;
+    private int mBlobLeftTemplateInd;
+    private int mBlobRightTemplateInd;
+    private int mBlobBonusTemplateInd;
 
     private bool mIsRoundWait;
 
@@ -188,20 +196,20 @@ public class PlayController : GameModeController<PlayController> {
         base.OnInstanceInit();
 
         //setup template and numbers
-        int numberCount = 0;
+        mBlobLeftTemplateInd = blobLeftTemplate ? blobSpawner.InitBlobTemplate(blobLeftTemplate) : -1;
+        mBlobRightTemplateInd = blobRightTemplate ? blobSpawner.InitBlobTemplate(blobRightTemplate) : -1;
 
         for(int i = 0; i < numberGroups.Length; i++) {
             var grp = numberGroups[i];
-
-            grp.Init(blobSpawner);
-
-            numberCount += grp.numbers.Length;
+            grp.Init();
         }
 
-        if(isBonusEnabled)
-            numberBonusGroup.Init(blobSpawner);
+        mBlobBonusTemplateInd = blobBonusTemplate ? blobSpawner.InitBlobTemplate(blobBonusTemplate) : -1;
 
-        mBlobAttackTemplateInd = blobSpawner.InitBlobTemplate(blobAttackTemplate);
+        if(isBonusEnabled)
+            M8.ArrayUtil.Shuffle(numberBonuses);
+
+        mBlobAttackTemplateInd = blobAttackTemplate ? blobSpawner.InitBlobTemplate(blobAttackTemplate) : -1;
 
         //init rounds display
         mRoundWidgets = roundsRoot.GetComponentsInChildren<RoundWidget>();
@@ -369,6 +377,8 @@ public class PlayController : GameModeController<PlayController> {
 
         int curGroupNumberIndex = 0;
 
+        bool isLeft = true;
+
         bool isComplete = false;
         while(!isComplete) {
             while(blobSpawner.isSpawning)
@@ -377,12 +387,12 @@ public class PlayController : GameModeController<PlayController> {
             //check if we have enough on the board
             while(blobSpawner.blobActives.Count + blobSpawner.spawnQueueCount < blobSpawnLimit) {
                 var numGrp = numberGroups[curGroupNumberIndex];
-                if(numGrp.isFinish)
-                    numGrp.Reset();
 
-                var newNumber = numGrp.number;
+                var templateInd = isLeft ? mBlobLeftTemplateInd : mBlobRightTemplateInd;
 
-                blobSpawner.Spawn(numGrp.templateIndex, newNumber);
+                var newNumber = isLeft ? numGrp.leftNumber : numGrp.rightNumber;
+
+                blobSpawner.Spawn(templateInd, newNumber);
                 blobSpawnCount++;
 
                 //check if we are finish
@@ -391,10 +401,16 @@ public class PlayController : GameModeController<PlayController> {
                     break;
                 }
 
-                //cycle through groups of numbers
-                curGroupNumberIndex++;
-                if(curGroupNumberIndex == numberGroups.Length)
-                    curGroupNumberIndex = 0;
+                //go to next number or group
+                if(isLeft)
+                    isLeft = false;
+                else {
+                    isLeft = true;
+
+                    curGroupNumberIndex++;
+                    if(curGroupNumberIndex == numberGroups.Length)
+                        curGroupNumberIndex = 0;
+                }
             }
 
             yield return null;
@@ -402,9 +418,9 @@ public class PlayController : GameModeController<PlayController> {
 
         //spawn bonus blob as last blob
         if(isBonusEnabled) {
-            var bonusNumber = numberBonusGroup.number;
+            var bonusNumber = numberBonuses[0];
 
-            blobSpawner.Spawn(blobBonusName, numberBonusGroup.blobData, bonusNumber);
+            blobSpawner.Spawn(blobBonusName, mBlobBonusTemplateInd, bonusNumber);
         }
 
         mSpawnRout = null;
@@ -468,7 +484,7 @@ public class PlayController : GameModeController<PlayController> {
         }
 
         mAreaOp.Setup(factorLeft, factorRight);
-        //mAreaOp.Setup(4712, 5);
+        //mAreaOp.Setup(506, 7);
 
         mMistakeCurrent.Reset();
 

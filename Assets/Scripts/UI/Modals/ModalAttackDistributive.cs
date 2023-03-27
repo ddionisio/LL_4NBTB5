@@ -91,6 +91,12 @@ public class ModalAttackDistributive : M8.ModalController, M8.IModalPush, M8.IMo
 
     void M8.IModalActive.SetActive(bool aActive) {
         signalInvokeActive?.Invoke(aActive);
+
+        if(aActive) {
+            //nothing to split?
+            if(!(mAreaOp.canSplitFactorLeft || mAreaOp.canSplitFactorRight))
+                StartCoroutine(DoFinish());
+        }
     }
 
     void M8.IModalPush.Push(M8.GenericParams parms) {

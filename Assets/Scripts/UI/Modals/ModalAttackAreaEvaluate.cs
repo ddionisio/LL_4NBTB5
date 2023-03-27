@@ -87,7 +87,11 @@ public class ModalAttackAreaEvaluate : M8.ModalController, M8.IModalPush, M8.IMo
         if(areaSolvedCount == areaValidCount) {
             Close();
 
-            M8.ModalManager.main.Open(GameData.instance.modalAttackSums, mAttackParms);
+            //if there's only one area, then it is already solved
+            if(areaSolvedCount > 1)
+                M8.ModalManager.main.Open(GameData.instance.modalAttackSums, mAttackParms);
+            else
+                signalInvokeAttackStateChange?.Invoke(AttackState.Success);
         }
         else {
             //show message
