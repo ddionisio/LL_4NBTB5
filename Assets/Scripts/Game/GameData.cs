@@ -9,6 +9,11 @@ public class GameData : M8.SingletonScriptableObject<GameData> {
 
     public const string modalParamOperationText = "opTxt";
 
+    public const string userDataKeyWarning = "healthWarning";
+    public const string userDataKeyFTUEBonusBlob = "ftue_bblob";
+    public const string userDataKeyFTUEDistributeMixup = "ftue_distmix";
+    public const string userDataKeyFTUEPartialProduct = "ftue_pprod";
+
     [System.Serializable]
     public struct LevelInfo {
         public M8.SceneAssetPath scene;
@@ -47,6 +52,9 @@ public class GameData : M8.SingletonScriptableObject<GameData> {
     public int mistakePenaltyPoints = 10;
 
     public int maxRetryCount = 2;
+
+    [Header("FTUE")] //first time user experience
+    public ModalDialogFlow bonusBlobDialog;
 
     public int retryCounter { get; set; }
 

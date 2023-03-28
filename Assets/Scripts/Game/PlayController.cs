@@ -421,6 +421,42 @@ public class PlayController : GameModeController<PlayController> {
             var bonusNumber = numberBonuses[0];
 
             blobSpawner.Spawn(blobBonusName, mBlobBonusTemplateInd, bonusNumber);
+
+            //show first time explanation
+            var isBonusBlobDialogDone = LoLManager.instance.userData.GetInt(GameData.userDataKeyFTUEBonusBlob, 0) > 0;
+            if(!isBonusBlobDialogDone) {
+                //wait for bonus blob to appear
+                while(blobSpawner.isSpawning)
+                    yield return null;
+
+                //make sure there's no connections made yet
+                if(connectControl.activeGroup == null) {
+                    LoLManager.instance.userData.SetInt(GameData.userDataKeyFTUEBonusBlob, 1);
+
+                    //clear out dragging
+                    connectControl.ReleaseDragging();
+
+                    var camCtrl = CameraController.main;
+                    if(camCtrl)
+                        camCtrl.raycastTarget = false; //disable blob input
+
+                    var bonusBlob = blobSpawner.GetBlobActiveByName(blobBonusName);
+
+                    while(bonusBlob.state != Blob.State.Normal)
+                        yield return null;
+
+                    //select bonus blob
+                    bonusBlob.highlightLock = true;
+
+                    //dialog
+                    yield return GameData.instance.bonusBlobDialog.Play();
+
+                    bonusBlob.highlightLock = false;
+
+                    if(camCtrl)
+                        camCtrl.raycastTarget = true; //resume input
+                }
+            }
         }
 
         mSpawnRout = null;

@@ -51,6 +51,9 @@ public class ModalAttackPartialProducts : M8.ModalController, M8.IModalPush, M8.
     public M8.SignalFloat signalListenNumpadUpdate;
     public M8.SignalFloat signalListenNumpadProceed;
 
+    [Header("Explain Dialog")]
+    public LoLExt.ModalDialogFlow explainDialog;
+
     public bool isProceeding { get { return mProceedRout != null; } }
 
     private List<ProductInputWidget> mPartialProductActives;
@@ -247,6 +250,13 @@ public class ModalAttackPartialProducts : M8.ModalController, M8.IModalPush, M8.
 
         if(mPartialProductInputs.Count > 0)
             OnProductWidgetClick(mPartialProductInputs[0]);
+
+        var isDialogDone = LoLExt.LoLManager.instance.userData.GetInt(GameData.userDataKeyFTUEPartialProduct, 0) > 0;
+        if(!isDialogDone) {
+            LoLExt.LoLManager.instance.userData.SetInt(GameData.userDataKeyFTUEPartialProduct, 1);
+
+            StartCoroutine(DoDialog());
+        }
     }
 
     void M8.IModalPop.Pop() {
@@ -374,6 +384,10 @@ public class ModalAttackPartialProducts : M8.ModalController, M8.IModalPush, M8.
         mNumpadParms[ModalCalculator.parmInitValue] = widget.inputNumber;
 
         M8.ModalManager.main.Open(GameData.instance.modalNumpad, mNumpadParms);
+    }
+
+    IEnumerator DoDialog() {
+        yield return explainDialog.Play();
     }
 
     IEnumerator DoProceed() {

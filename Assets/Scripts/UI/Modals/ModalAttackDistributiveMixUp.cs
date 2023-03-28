@@ -42,6 +42,9 @@ public class ModalAttackDistributiveMixUp : M8.ModalController, M8.IModalPush, M
     public SignalAttackState signalInvokeAttackStateChange;
     public M8.SignalBoolean signalInvokeActive;
 
+    [Header("Explain Dialog")]
+    public LoLExt.ModalDialogFlow explainDialog;
+
     private AreaOperation mAreaOp;
     private MistakeInfo mMistakeInfo;
 
@@ -82,6 +85,8 @@ public class ModalAttackDistributiveMixUp : M8.ModalController, M8.IModalPush, M
 
                 if(areaOpWidget.cellData.op.equal == mAreaOp.GetAreaOperation(r, c).op.equal)
                     areaMatchCount++;
+                else
+                    areaOpWidget.ShowError();
             }
         }
 
@@ -329,6 +334,13 @@ public class ModalAttackDistributiveMixUp : M8.ModalController, M8.IModalPush, M
             if(mistakeCounterDisplay)
                 mistakeCounterDisplay.Init(mMistakeInfo);
         }
+
+        var isDialogDone = LoLExt.LoLManager.instance.userData.GetInt(GameData.userDataKeyFTUEDistributeMixup, 0) > 0;
+        if(!isDialogDone) {
+            LoLExt.LoLManager.instance.userData.SetInt(GameData.userDataKeyFTUEDistributeMixup, 1);
+
+            StartCoroutine(DoDialog());
+        }
     }
 
     void M8.IModalPop.Pop() {
@@ -347,6 +359,10 @@ public class ModalAttackDistributiveMixUp : M8.ModalController, M8.IModalPush, M
 
             mAreaGridInd = -1;
         }
+    }
+
+    IEnumerator DoDialog() {
+        yield return explainDialog.Play();
     }
 
     IEnumerator DoError() {

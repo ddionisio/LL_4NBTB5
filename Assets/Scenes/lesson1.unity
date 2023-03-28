@@ -2403,10 +2403,13 @@ MonoBehaviour:
     dialogTextRefs:
     - lesson1_attack_distribute_1
     - lesson1_attack_distribute_2
+    - lesson1_attack_distribute_3
   tutorialAttackEvalDialog:
     dialogTextRefs:
     - lesson1_attack_eval_1
     - lesson1_attack_eval_2
+    - lesson1_attack_eval_3
+    - lesson1_attack_eval_4
   tutorialAttackSumsDialog:
     dialogTextRefs:
     - lesson1_attack_sums_1

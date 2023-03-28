@@ -26,6 +26,10 @@ public class AreaOperationCellWidget : MonoBehaviour, IPointerClickHandler, IPoi
     GameObject _highlightGO;
     [SerializeField]
     GameObject _solvedRootGO;
+    [SerializeField]
+    GameObject _errorRootGO;
+    [SerializeField]
+    float _errorDelay = 0.5f;
 
     [Header("Anchors")] //use for attaching digits and operators
     [SerializeField]
@@ -115,6 +119,8 @@ public class AreaOperationCellWidget : MonoBehaviour, IPointerClickHandler, IPoi
     private bool mIsPointerEnter;
     private bool mIsHighlight;
 
+    private Coroutine mShowErrorRout;
+
     public void Init() {
         if(!mIsInit) {
             mRectTrans = GetComponent<RectTransform>();
@@ -157,6 +163,15 @@ public class AreaOperationCellWidget : MonoBehaviour, IPointerClickHandler, IPoi
         RefreshDisplay(ignoreSolved);
     }
 
+    public void ShowError() {
+        if(_errorRootGO) {
+            if(mShowErrorRout != null)
+                StopCoroutine(mShowErrorRout);
+
+            mShowErrorRout = StartCoroutine(DoShowError());
+        }
+    }
+
     void OnApplicationFocus(bool focus) {
         if(!focus) {
             mIsPointerEnter = false;
@@ -165,8 +180,18 @@ public class AreaOperationCellWidget : MonoBehaviour, IPointerClickHandler, IPoi
     }
 
     void OnDisable() {
+        if(mShowErrorRout != null) {
+            StopCoroutine(mShowErrorRout);
+            mShowErrorRout = null;
+        }
+    }
+
+    void OnEnable() {
         mIsPointerEnter = false;
         RefreshHighlight();
+
+        if(_errorRootGO)
+            _errorRootGO.SetActive(false);
     }
 
     void IPointerClickHandler.OnPointerClick(PointerEventData eventData) {
@@ -181,6 +206,16 @@ public class AreaOperationCellWidget : MonoBehaviour, IPointerClickHandler, IPoi
     void IPointerExitHandler.OnPointerExit(PointerEventData eventData) {
         mIsPointerEnter = false;
         RefreshHighlight();
+    }
+
+    IEnumerator DoShowError() {
+        _errorRootGO.SetActive(true);
+
+        yield return new WaitForSeconds(_errorDelay);
+
+        _errorRootGO.SetActive(false);
+
+        mShowErrorRout = null;
     }
 
     private void RefreshDisplay(bool ignoreSolved) {

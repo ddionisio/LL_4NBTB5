@@ -64,3 +64,9 @@ MonoBehaviour:
   perfectPoints: 200
   mistakePenaltyPoints: 5
   maxRetryCount: 2
+  bonusBlobDialog:
+    dialogTextRefs:
+    - bonusBlob_1
+    - bonusBlob_2
+    - bonusBlob_3
+    - bonusBlob_4

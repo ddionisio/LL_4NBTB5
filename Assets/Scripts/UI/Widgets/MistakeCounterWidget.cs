@@ -4,8 +4,6 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class MistakeCounterWidget : MonoBehaviour {
-    public const string userDataKeyWarning = "healthWarning";
-
     [Header("Fill Info")]
     [SerializeField]
     Slider _fillBar;
@@ -104,9 +102,9 @@ public class MistakeCounterWidget : MonoBehaviour {
         if(_fillDangerGO)
             _fillDangerGO.SetActive(mistakeFillCount <= _fillDangerMinCount);
 
-        var isWarningDone = LoLExt.LoLManager.instance.userData.GetInt(userDataKeyWarning, 0) > 0;
+        var isWarningDone = LoLExt.LoLManager.instance.userData.GetInt(GameData.userDataKeyWarning, 0) > 0;
         if(!isWarningDone) {
-            LoLExt.LoLManager.instance.userData.SetInt(userDataKeyWarning, 1);
+            LoLExt.LoLManager.instance.userData.SetInt(GameData.userDataKeyWarning, 1);
             StartCoroutine(DoWarning());
         }
 

@@ -1492,6 +1492,12 @@ MonoBehaviour:
   signalListenNext: {fileID: 11400000, guid: 1e46c0f2ebb16d14dad0e2a4784daa4d, type: 2}
   signalListenNumpadUpdate: {fileID: 11400000, guid: a85acdd326517404d94f6f16038cf62d, type: 2}
   signalListenNumpadProceed: {fileID: 11400000, guid: 3c06c911a184d0a4c9ae2b6047c59a85, type: 2}
+  explainDialog:
+    dialogTextRefs:
+    - bonus_partial_products_1
+    - bonus_partial_products_2
+    - bonus_partial_products_3
+    - bonus_partial_products_4
 --- !u!114 &5839707916140422624
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7152,6 +7158,11 @@ MonoBehaviour:
   areaCellAnchorOpLeft: opLeft
   signalInvokeAttackStateChange: {fileID: 11400000, guid: ebf9b91bb8b25644084fe225f3a38b36, type: 2}
   signalInvokeActive: {fileID: 11400000, guid: 92d8c1349d22e75498b69b16bb3e34ae, type: 2}
+  explainDialog:
+    dialogTextRefs:
+    - bonus_distribute_mixup_1
+    - bonus_distribute_mixup_2
+    - bonus_distribute_mixup_3
 --- !u!114 &4747856029290649858
 MonoBehaviour:
   m_ObjectHideFlags: 0
