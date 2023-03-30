@@ -43,6 +43,8 @@ public class ModalAttackAreaEvaluate : M8.ModalController, M8.IModalPush, M8.IMo
 
     public bool isAnswerProcessing { get { return mAnswerProcessRout != null; } }
 
+    public AreaOperationCellWidget areaOpCellWidgetSelected { get; private set; }
+
     private AreaOperation mAreaOp;
     private MistakeInfo mMistakeInfo;
 
@@ -56,8 +58,6 @@ public class ModalAttackAreaEvaluate : M8.ModalController, M8.IModalPush, M8.IMo
     private M8.GenericParams mNumpadParms = new M8.GenericParams();
 
     private bool mIsInit;
-
-    private AreaOperationCellWidget mAreaOpCellWidgetSelected;
 
     private Coroutine mAnswerProcessRout;
 
@@ -222,7 +222,7 @@ public class ModalAttackAreaEvaluate : M8.ModalController, M8.IModalPush, M8.IMo
     void M8.IModalPop.Pop() {
         StopAnswerProcess();
 
-        mAreaOpCellWidgetSelected = null;
+        areaOpCellWidgetSelected = null;
 
         if(signalListenNumpadProceed)
             signalListenNumpadProceed.callback -= OnNumpadProceed;
@@ -240,7 +240,7 @@ public class ModalAttackAreaEvaluate : M8.ModalController, M8.IModalPush, M8.IMo
     void OnNumpadProceed(float val) {
         //M8.ModalManager.main.CloseUpTo(GameData.instance.modalNumpad, true);
 
-        if(!mAreaOpCellWidgetSelected)
+        if(!areaOpCellWidgetSelected)
             return;
 
         signalInvokeInputActive?.Invoke(false);
@@ -248,11 +248,11 @@ public class ModalAttackAreaEvaluate : M8.ModalController, M8.IModalPush, M8.IMo
         var num = Mathf.RoundToInt(val);
 
         //check if matches
-        if(num == mAreaOpCellWidgetSelected.cellData.op.equal) {
+        if(num == areaOpCellWidgetSelected.cellData.op.equal) {
             //apply solved to shared data
-            mAreaOp.SetAreaOperationSolved(mAreaOpCellWidgetSelected.row, mAreaOpCellWidgetSelected.col, true);
+            mAreaOp.SetAreaOperationSolved(areaOpCellWidgetSelected.row, areaOpCellWidgetSelected.col, true);
 
-            StartCorrect(mAreaOpCellWidgetSelected);
+            StartCorrect(areaOpCellWidgetSelected);
         }
         else { //error
             //update mistake count in shared data
@@ -291,7 +291,7 @@ public class ModalAttackAreaEvaluate : M8.ModalController, M8.IModalPush, M8.IMo
                     signalInvokeValueChange?.Invoke(0f);
                     signalInvokeChangeOpText?.Invoke(string.Format(numpadOpTextFormat, cell.op.operand1, Operation.GetOperatorTypeChar(cell.op.op), cell.op.operand2));
 
-                    mAreaOpCellWidgetSelected = areaCellWidget;
+                    areaOpCellWidgetSelected = areaCellWidget;
 
                     signalInvokeInputActive?.Invoke(true);
 

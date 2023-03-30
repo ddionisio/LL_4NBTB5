@@ -10384,7 +10384,7 @@ MonoBehaviour:
       foldout: 1
       _targetPath: 
       obj: {fileID: 5359169370943256856}
-      startActive: 0
+      startActive: 1
     _goSetActiveKeys:
     - interp: 0
       frame: 1
@@ -10393,14 +10393,6 @@ MonoBehaviour:
       period: 0
       customEase: []
       setActive: 1
-      endFrame: 24
-    - interp: 0
-      frame: 24
-      easeType: 1
-      amplitude: 0
-      period: 0
-      customEase: []
-      setActive: 0
       endFrame: -1
     - interp: 0
       frame: 1
@@ -11375,7 +11367,7 @@ MonoBehaviour:
       keyIndices: 0c0000000d000000
     - type: 4
       index: 0
-      keyIndices: 0000000001000000
+      keyIndices: 00000000
     - type: 7
       index: 7
       keyIndices: 0e0000000f000000
@@ -11420,7 +11412,7 @@ MonoBehaviour:
       keyIndices: 1a0000001b000000
     - type: 4
       index: 1
-      keyIndices: 0200000003000000
+      keyIndices: 0100000002000000
     _takeTrackCounts: 0f0000000f000000
 --- !u!1 &1695203778074562415
 GameObject:
@@ -29550,9 +29542,9 @@ MonoBehaviour:
   m_fontSize: 24
   m_fontSizeBase: 24
   m_fontWeight: 400
-  m_enableAutoSizing: 0
-  m_fontSizeMin: 18
-  m_fontSizeMax: 72
+  m_enableAutoSizing: 1
+  m_fontSizeMin: 8
+  m_fontSizeMax: 24
   m_fontStyle: 0
   m_HorizontalAlignment: 1
   m_VerticalAlignment: 256

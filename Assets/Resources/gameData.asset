@@ -31,6 +31,9 @@ MonoBehaviour:
       name: level3
       path: Assets/Scenes/level3.unity
   - scene:
+      name: lesson2
+      path: Assets/Scenes/lesson2.unity
+  - scene:
       name: level4
       path: Assets/Scenes/level4.unity
   endScene:
