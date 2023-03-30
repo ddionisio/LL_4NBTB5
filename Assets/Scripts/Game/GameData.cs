@@ -17,7 +17,10 @@ public class GameData : M8.SingletonScriptableObject<GameData> {
     [System.Serializable]
     public struct LevelInfo {
         public M8.SceneAssetPath scene;
-        //public bool isGameplay;
+        [M8.Localize]
+        public string titleRef;
+        public bool isGameplay; //used to determine which scene is gameplay (e.g. score tracking)
+        public int index; //used for certain scene
     }
 
     [System.Serializable]
@@ -60,8 +63,8 @@ public class GameData : M8.SingletonScriptableObject<GameData> {
 
     public bool isProceed { get; private set; }
 
-    public void ScoreApply(int level, int aScore, int aBonus, int aRoundCount, MistakeInfo mistakeInfo) {
-        var saveInfo = new SaveInfo(aScore, aBonus, aRoundCount, mistakeInfo);
+    public void ScoreApply(int level, int aScore, int aRoundCount, MistakeInfo mistakeInfo) {
+        var saveInfo = new SaveInfo(aScore, aRoundCount, mistakeInfo);
 
         saveInfo.SaveTo(LoLManager.instance.userData, level);
     }
@@ -85,6 +88,10 @@ public class GameData : M8.SingletonScriptableObject<GameData> {
     public int GetRankIndex(int roundCount, int score) {
         var maxScore = GetMaxScore(roundCount);
 
+        return GetRankIndexByScore(score, maxScore);
+    }
+
+    public int GetRankIndexByScore(int score, int maxScore) {
         float scoreScale = (float)score / maxScore;
 
         for(int i = 0; i < ranks.Length; i++) {

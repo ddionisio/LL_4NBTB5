@@ -9,6 +9,7 @@ public class RankWidget : MonoBehaviour {
     [Header("Display")]
     public TMP_Text rankText;
     public Image rankIcon;
+    public bool rankIconApplySize;
     public GameObject[] rankPlatings; //highest to lowest
 
     public void Apply(int rankIndex) {
@@ -30,7 +31,10 @@ public class RankWidget : MonoBehaviour {
         if(rankIcon) {
             if(rank.icon) {
                 rankIcon.sprite = rank.icon;
-                rankIcon.SetNativeSize();
+
+                if(rankIconApplySize)
+                    rankIcon.SetNativeSize();
+
                 rankIcon.gameObject.SetActive(true);
             }
             else

@@ -21,42 +21,60 @@ MonoBehaviour:
   - scene:
       name: lesson1
       path: Assets/Scenes/lesson1.unity
+    titleRef: 
+    isGameplay: 0
+    index: 0
   - scene:
       name: level1
       path: Assets/Scenes/level1.unity
+    titleRef: level_title_1
+    isGameplay: 1
+    index: 0
   - scene:
       name: level2
       path: Assets/Scenes/level2.unity
+    titleRef: level_title_2
+    isGameplay: 1
+    index: 0
   - scene:
       name: level3
       path: Assets/Scenes/level3.unity
+    titleRef: level_title_3
+    isGameplay: 1
+    index: 0
   - scene:
       name: lesson2
       path: Assets/Scenes/lesson2.unity
+    titleRef: 
+    isGameplay: 0
+    index: 0
   - scene:
       name: level4
       path: Assets/Scenes/level4.unity
+    titleRef: level_title_4
+    isGameplay: 1
+    index: 0
   endScene:
     name: 
     path: 
   ranks:
   - grade: S+
-    icon: {fileID: 0}
+    icon: {fileID: 21300000, guid: efb30510923c8e341a94021d37b90f02, type: 3}
     scale: 1
   - grade: S
-    icon: {fileID: 0}
+    icon: {fileID: 21300000, guid: 425bb223fc171864cbce99edbb973804, type: 3}
     scale: 0.9
   - grade: A
-    icon: {fileID: 0}
+    icon: {fileID: 21300000, guid: b6bf19d4ccd6b3d49a7e075574aabd0c, type: 3}
     scale: 0.75
   - grade: B
-    icon: {fileID: 0}
+    icon: {fileID: 21300000, guid: 998bcf7d461949f43b6363e2e6b63f42, type: 3}
     scale: 0.6
   - grade: C
-    icon: {fileID: 0}
+    icon: {fileID: 21300000, guid: 4ba7fa0f1f2067943a76978851a0a7d2, type: 3}
     scale: 0.5
   - grade: D
-    icon: {fileID: 0}
+    icon: {fileID: 21300000, guid: 1f5cadb50390689459d6d01efc5893db, type: 3}
     scale: 0
   rankIndexRetry: 4
   areaRowCapacity: 2

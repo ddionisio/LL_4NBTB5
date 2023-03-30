@@ -54,7 +54,7 @@ public class ModalVictory : M8.ModalController, M8.IModalPush, M8.IModalPop {
 
         //save level data and update score
         if(levelIndex >= 0) {
-            GameData.instance.ScoreApply(levelIndex, mScore, mBonusCount, mRoundCount, mMistakeInfo);
+            GameData.instance.ScoreApply(levelIndex, mScore, mRoundCount, mMistakeInfo);
 
             LoLManager.instance.curScore += mScore;
         }
