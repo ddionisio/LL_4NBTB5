@@ -12,12 +12,8 @@ public class StartController : GameModeController<StartController> {
     public GameObject loadingGO;
     public GameObject readyGO;
 
-    [Header("Title")]
-    [M8.Localize]
-    public string titleRef;
-    public TMP_Text titleText;
-
     [Header("Play")]
+    public AnimatorEnterExit readyAnim;
     public Button newButton;
     public Button continueButton;
 
@@ -33,11 +29,7 @@ public class StartController : GameModeController<StartController> {
 
         //Setup Play
         if(newButton) newButton.onClick.AddListener(OnPlayNew);
-
-        if(continueButton) {
-            continueButton.onClick.AddListener(OnPlayContinue);
-            continueButton.gameObject.SetActive(LoLManager.instance.curProgress > 0);
-        }
+        if(continueButton) continueButton.onClick.AddListener(OnPlayContinue);
     }
 
     protected override IEnumerator Start() {
@@ -46,19 +38,39 @@ public class StartController : GameModeController<StartController> {
         while(!LoLManager.instance.isReady)
             yield return null;
 
-        if(loadingGO) loadingGO.SetActive(false);
+        //setup continue
+        if(continueButton)
+            continueButton.gameObject.SetActive(LoLManager.instance.curProgress > 0);
 
-        //Title/Ready
+        //wait a bit
+        yield return new WaitForSeconds(0.3f);
+
+        if(loadingGO) loadingGO.SetActive(false);
 
         if(!string.IsNullOrEmpty(music))
             M8.MusicPlaylist.instance.Play(music, true, true);
 
-        //Setup Title
-        if(titleText) titleText.text = M8.Localize.Get(titleRef);
-
         if(readyGO) readyGO.SetActive(true);
 
         //enter animation
+        if(readyAnim)
+            yield return readyAnim.PlayEnterWait();
+    }
+
+    IEnumerator DoIntro() {
+        if(readyAnim)
+            yield return readyAnim.PlayExitWait();
+
+        //stuff
+
+        GameData.instance.ProceedFromCurrentProgress();
+    }
+
+    IEnumerator DoProceed() {
+        if(readyAnim)
+            yield return readyAnim.PlayExitWait();
+
+        GameData.instance.ProceedFromCurrentProgress();
     }
 
     void OnPlayNew() {
@@ -66,15 +78,13 @@ public class StartController : GameModeController<StartController> {
             GameData.instance.ResetProgress();
 
         //play intro
-
-        GameData.instance.ProceedFromCurrentProgress();
+        StartCoroutine(DoIntro());
     }
 
     void OnPlayContinue() {
-        if(LoLManager.instance.curProgress <= 0) {
-            //play intro
-        }
+        if(LoLManager.instance.curProgress <= 0)
+            StartCoroutine(DoIntro());
         else
-            GameData.instance.ProceedFromCurrentProgress();
+            StartCoroutine(DoProceed());
     }
 }

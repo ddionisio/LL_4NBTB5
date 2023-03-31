@@ -7,8 +7,7 @@
   "en": {
     "welcome": "Welcome!",
     "title": "Attack on Blob: Mega Multiply",
-    "company": "RENEGADEWARE",
-    "credits_desc": "Music from: Kevin Macleod",
+    "credits_desc": "Made by: RENEGADEWARE, Music from: Kevin MacLeod",
     "options": "OPTIONS",
     "music": "MUSIC",
     "sound": "SOUND",
@@ -25,6 +24,8 @@
     "bonus": "BONUS",
     "perfect": "PERFECT",
     "summary": "SUMMARY",
+    "new": "NEW GAME",
+    "continue": "CONTINUE",
     "victory_errorMult": "Multiply Error:",
     "victory_errorSums": "Sums Error:",
     "victory_score": "Score:",
