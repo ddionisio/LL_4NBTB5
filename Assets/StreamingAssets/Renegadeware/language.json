@@ -1,12 +1,10 @@
 {
   "_meta": {
     "maxChars": {
-      "welcome": "50"
     }
   },
   "en": {
-    "welcome": "Welcome!",
-    "title": "Attack on Blob: Mega Multiply",
+    "title": "<size=50>Attack on Blob</size>\nMega Multiply",
     "credits_desc": "Made by: RENEGADEWARE, Music from: Kevin MacLeod",
     "options": "OPTIONS",
     "music": "MUSIC",
@@ -37,6 +35,8 @@
     "level_title_2": "Level 2",
     "level_title_3": "Level 3",
     "level_title_4": "Level 4",
+    "intro_scan_idle": "Idle",
+    "intro_scan_danger": "DANGER!!!",
     "lesson1_intro_1": "Multiplying a number of two or more digits can be tricky, but there’s a special trick to make it easier!",
     "lesson1_intro_2": "Let’s take a quick look at a math concept that we will be using for this trick.",
     "lesson1_distribute_1": "By using the distributive property, we can split up the large number of an equation into smaller pieces.",

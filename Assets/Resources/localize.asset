@@ -16,6 +16,4 @@ MonoBehaviour:
   editorLanguageCode: en
   editorLanguageRef: Renegadeware\language.json
   editorLanguagePathExtra: D:\Lab\Legends of Learning\LL_4NBTB5\Assets\_Mockup\language.json
-  languageExtraInfos:
-  - key: welcome
-    voiceDuration: 1.5
+  languageExtraInfos: []
