@@ -17,6 +17,26 @@ public class StartController : GameModeController<StartController> {
     public Button newButton;
     public Button continueButton;
 
+    [Header("Intro")]
+    public AnimatorEnterExit introScan;
+    public GameObject introScanIdleGO;
+    public GameObject introScanDangerGO;
+    public GameObject introAttackIllustrateGO;
+
+    public M8.Animator.Animate introAnimator;
+    [M8.Animator.TakeSelector(animatorField = "introAnimator")]
+    public string introTakeLookUp;
+    [M8.Animator.TakeSelector(animatorField = "introAnimator")]
+    public string introTakeBlobShades;
+    [M8.Animator.TakeSelector(animatorField = "introAnimator")]
+    public string introTakePortalOpen;
+
+    public float introIdleDelay = 0.5f;
+    public float introPortalOpenStartDelay = 0.5f;
+
+    public ModalDialogFlow introDialog;
+    public ModalDialogFlow introAttackDialog;
+
     [Header("Music")]
     [M8.MusicPlaylist]
     public string music;
@@ -30,6 +50,12 @@ public class StartController : GameModeController<StartController> {
         //Setup Play
         if(newButton) newButton.onClick.AddListener(OnPlayNew);
         if(continueButton) continueButton.onClick.AddListener(OnPlayContinue);
+
+        //Setup Intro
+        if(introScan) introScan.gameObject.SetActive(false);
+        if(introScanIdleGO) introScanIdleGO.SetActive(false);
+        if(introScanDangerGO) introScanDangerGO.SetActive(false);
+        if(introAttackIllustrateGO) introAttackIllustrateGO.SetActive(false);
     }
 
     protected override IEnumerator Start() {
@@ -61,7 +87,47 @@ public class StartController : GameModeController<StartController> {
         if(readyAnim)
             yield return readyAnim.PlayExitWait();
 
-        //stuff
+        //show scanner
+        if(introScanIdleGO) introScanIdleGO.SetActive(true);
+
+        if(introScan) {
+            introScan.gameObject.SetActive(true);
+            introScan.PlayEnter();
+        }
+
+        //look up
+        if(introAnimator && !string.IsNullOrEmpty(introTakeLookUp))
+            yield return introAnimator.PlayWait(introTakeLookUp);
+
+        //wait a bit
+        yield return new WaitForSeconds(introIdleDelay);
+
+        //show shadow blobs
+        if(introAnimator && !string.IsNullOrEmpty(introTakeBlobShades))
+            yield return introAnimator.PlayWait(introTakeBlobShades);
+
+        yield return new WaitForSeconds(introPortalOpenStartDelay);
+
+        //danger!
+        if(introScanIdleGO) introScanIdleGO.SetActive(false);
+        if(introScanDangerGO) introScanDangerGO.SetActive(true);
+
+        //open portal
+        if(introAnimator && !string.IsNullOrEmpty(introTakePortalOpen))
+            yield return introAnimator.PlayWait(introTakePortalOpen);
+
+        if(introScan) {
+            introScan.PlayExit();
+            introScan.gameObject.SetActive(false);
+        }
+
+        //dialog
+        yield return introDialog.Play();
+
+        //attack blob
+        if(introAttackIllustrateGO) introAttackIllustrateGO.SetActive(true);
+
+        yield return introAttackDialog.Play();
 
         GameData.instance.ProceedFromCurrentProgress();
     }
