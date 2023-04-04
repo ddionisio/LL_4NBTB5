@@ -6,9 +6,23 @@ using UnityEngine.UI;
 using LoLExt;
 
 public class EndController : GameModeController<EndController> {
+    [Header("Animation")]
+    public M8.Animator.Animate animator;
+    [M8.Animator.TakeSelector]
+    public string takeAttackBlobEnter;
+    [M8.Animator.TakeSelector]
+    public string takeDaylight;
+    [M8.Animator.TakeSelector]
+    public string takeEnd;
+
+    [Header("Flow")]
+    public AnimatorEnterExit blobConsumeAnimate;
+    public float completeDelay = 2f;
 
     protected override void OnInstanceInit() {
         base.OnInstanceInit();
+
+        if(blobConsumeAnimate) blobConsumeAnimate.gameObject.SetActive(false);
     }
 
     protected override IEnumerator Start() {
@@ -16,5 +30,26 @@ public class EndController : GameModeController<EndController> {
 
         while(!LoLManager.instance.isReady)
             yield return null;
+
+        if(animator && !string.IsNullOrEmpty(takeAttackBlobEnter))
+            yield return animator.PlayWait(takeAttackBlobEnter);
+
+        if(blobConsumeAnimate) {
+            blobConsumeAnimate.gameObject.SetActive(true);
+
+            yield return blobConsumeAnimate.PlayEnterWait();
+
+            blobConsumeAnimate.gameObject.SetActive(false);
+        }
+
+        if(animator && !string.IsNullOrEmpty(takeDaylight))
+            yield return animator.PlayWait(takeDaylight);
+
+        if(animator && !string.IsNullOrEmpty(takeEnd))
+            yield return animator.PlayWait(takeEnd);
+
+        yield return new WaitForSeconds(completeDelay);
+
+        LoLManager.instance.Complete();
     }
 }

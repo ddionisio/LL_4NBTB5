@@ -5444,6 +5444,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mode: {fileID: 0}
   signalModeChanged: {fileID: 11400000, guid: 4f9dce914f15a6c4b8c0af0d08028ac5, type: 2}
+  animator: {fileID: 947938944}
+  takeAttackBlobEnter: attackBlobEnter
+  takeDaylight: attackBlobDaylight
+  takeEnd: end
+  blobConsumeAnimate: {fileID: 1644610194}
+  completeDelay: 2
 --- !u!4 &947938943
 Transform:
   m_ObjectHideFlags: 0
@@ -5609,7 +5615,7 @@ MonoBehaviour:
       foldout: 1
       _targetPath: 
       obj: {fileID: 190263816}
-      startActive: 1
+      startActive: 0
     - _version: 1
       id: 3
       name: Track2
@@ -5630,10 +5636,10 @@ MonoBehaviour:
       foldout: 1
       _targetPath: 
       obj: {fileID: 1813794404}
-      startActive: 1
+      startActive: 0
     _goSetActiveKeys:
     - interp: 0
-      frame: 15
+      frame: 30
       easeType: 1
       amplitude: 0
       period: 0
@@ -6092,14 +6098,14 @@ MonoBehaviour:
       amplitude: 0
       period: 0
       customEase: []
-      endFrame: 10
+      endFrame: 20
       isConstSpeed: 0
       _paths: []
       position: {x: 0, y: -11.52, z: 0}
       orientMode: 0
       orientLockAxis: 0
     - interp: 0
-      frame: 10
+      frame: 20
       easeType: 1
       amplitude: 0
       period: 0
@@ -17594,7 +17600,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4283993593
+    rgba: 5803513
   m_fontColor: {r: 0.97647065, g: 0.5529412, b: 0.34509805, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -19902,6 +19908,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1644610192}
+  - component: {fileID: 1644610194}
   - component: {fileID: 1644610193}
   m_Layer: 0
   m_Name: blobOut
@@ -19946,9 +19953,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   takeData:
   - name: active
-    frameRate: 30
+    frameRate: 20
     endFramePadding: 0
-    numLoop: -1
+    numLoop: 2
     loopMode: 0
     loopBackToFrame: 0
     trackCounter: 13
@@ -19959,11 +19966,11 @@ MonoBehaviour:
       elements: 02000000030000000400000005000000060000000700000008000000090000000a0000000b0000000c0000000d000000
       foldout: 1
     groupValues: []
-  _defaultTakeName: active
+  _defaultTakeName: 
   _meta: {fileID: 0}
   sequenceLoadAll: 1
   sequenceKillWhenDone: 0
-  playOnEnable: 1
+  playOnEnable: 0
   isGlobal: 0
   onDisableAction: 3
   updateType: 0
@@ -20599,6 +20606,23 @@ MonoBehaviour:
       index: 3
       keyIndices: 0600000007000000
     _takeTrackCounts: 0c000000
+--- !u!114 &1644610194
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1644610191}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c4f2794ac4d42274a865421bf1326528, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _rootGO: {fileID: 0}
+  animator: {fileID: 1644610193}
+  takeEnter: active
+  takeExit: 
+  resetOnEnable: 0
 --- !u!1 &1655429074
 GameObject:
   m_ObjectHideFlags: 0
@@ -21324,7 +21348,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4283993593
+    rgba: 5803513
   m_fontColor: {r: 0.97647065, g: 0.5529412, b: 0.34509805, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
