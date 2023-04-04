@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-using TMPro;
-
 using LoLExt;
 
 public class StartController : GameModeController<StartController> {

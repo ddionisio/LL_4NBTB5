@@ -54,9 +54,15 @@ MonoBehaviour:
     titleRef: level_title_4
     isGameplay: 1
     index: 0
+  - scene:
+      name: summary
+      path: Assets/Scenes/summary.unity
+    titleRef: 
+    isGameplay: 0
+    index: 0
   endScene:
-    name: 
-    path: 
+    name: end
+    path: Assets/Scenes/end.unity
   ranks:
   - grade: S+
     icon: {fileID: 21300000, guid: efb30510923c8e341a94021d37b90f02, type: 3}

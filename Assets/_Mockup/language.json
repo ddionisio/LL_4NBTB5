@@ -43,7 +43,7 @@
     "intro_dialog_3": "We must banish them immediately before they fall down to Earth!",
     "intro_attack_1": "With our latest advancements in blobology, we will be deploying Attack Blobs.",
     "intro_attack_2": "These blobs must be made with the power of multiplication, and who better to do it than you!",
-    "intro_attack_3": "Our intrepid hero, go forth, and use your mathematical might to banish these invading blobs back to their dimension!",
+    "intro_attack_3": "Our intrepid hero, go forth, and use your mathematical might to banish these invading blobs for good!",
     "lesson1_intro_1": "Multiplying a number of two or more digits can be tricky, but there’s a special trick to make it easier!",
     "lesson1_intro_2": "Let’s take a quick look at a math concept that we will be using for this trick.",
     "lesson1_distribute_1": "By using the distributive property, we can split up the large number of an equation into smaller pieces.",
@@ -83,6 +83,9 @@
     "bonus_partial_products_1": "Uh oh, some of the partial products are missing!",
     "bonus_partial_products_2": "Use the numpad to fill in the missing numbers, then press the left or right arrows to move to the next one.",
     "bonus_partial_products_3": "Once all the missing numbers are filled, press the ENTER button to proceed.",
-    "bonus_partial_products_4": "Just remember how you split the numbers up into multiples of 10’s like before, and you should have no problem!"
+    "bonus_partial_products_4": "Just remember how you split the numbers up into multiples of 10’s like before, and you should have no problem!",
+    "congratulations": "CONGRATULATIONS!",
+    "congrats_desc": "All the blobs have been banished for good! Earth is safe once more!",
+    "thank_you_for_playing": "Thank you for playing!"
   }
 }
