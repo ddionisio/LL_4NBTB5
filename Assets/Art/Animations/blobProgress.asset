@@ -1,0 +1,407 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b657d375560225e468bf4fd8259bab57, type: 3}
+  m_Name: blobProgress
+  m_EditorClassIdentifier: 
+  takeData:
+  - name: burst
+    frameRate: 30
+    endFramePadding: 0
+    numLoop: 1
+    loopMode: 0
+    loopBackToFrame: 0
+    trackCounter: 8
+    groupCounter: 0
+    rootGroup:
+      group_name: Group0
+      group_id: 0
+      elements: 02000000030000000400000005000000060000000700000008000000
+      foldout: 1
+    groupValues: []
+  serializeData:
+    _audioTracks: []
+    _audioKeys: []
+    _cameraSwitcherTracks: []
+    _cameraSwitcherKeys: []
+    _eventTracks: []
+    _eventKeys: []
+    _goSetActiveTracks:
+    - _version: 1
+      id: 3
+      name: Track2
+      foldout: 1
+      _targetPath: base/float/glow
+      obj: {fileID: 0}
+      startActive: 0
+    - _version: 1
+      id: 5
+      name: Track4
+      foldout: 1
+      _targetPath: base/float/burstFX
+      obj: {fileID: 0}
+      startActive: 1
+    - _version: 1
+      id: 7
+      name: Track6
+      foldout: 1
+      _targetPath: base/float/body
+      obj: {fileID: 0}
+      startActive: 1
+    - _version: 1
+      id: 8
+      name: Track7
+      foldout: 1
+      _targetPath: base/float/burstFX
+      obj: {fileID: 0}
+      startActive: 0
+    _goSetActiveKeys:
+    - interp: 0
+      frame: 15
+      easeType: 1
+      amplitude: 0
+      period: 0
+      customEase: []
+      setActive: 1
+      endFrame: -1
+    - interp: 0
+      frame: 25
+      easeType: 1
+      amplitude: 0
+      period: 0
+      customEase: []
+      setActive: 0
+      endFrame: -1
+    - interp: 0
+      frame: 25
+      easeType: 1
+      amplitude: 0
+      period: 0
+      customEase: []
+      setActive: 1
+      endFrame: -1
+    _materialTracks: []
+    _materialKeys: []
+    _orientationTracks: []
+    _orientationKeys: []
+    _propertyTracks:
+    - _version: 4
+      id: 4
+      name: Track3
+      foldout: 1
+      _targetPath: base/float/glow
+      valueType: 6
+      obj: {fileID: 0}
+      component: {fileID: 0}
+      componentName: SpriteRenderer
+      fieldName: 
+      propertyName: color
+    - _version: 4
+      id: 6
+      name: Track5
+      foldout: 1
+      _targetPath: base/float/body/mouth
+      valueType: 13
+      obj: {fileID: 0}
+      component: {fileID: 0}
+      componentName: SpriteRenderer
+      fieldName: 
+      propertyName: sprite
+    _propertyKeys:
+    - interp: 0
+      frame: 15
+      easeType: 1
+      amplitude: 0
+      period: 0
+      customEase: []
+      endFrame: 30
+      isConstSpeed: 0
+      _paths:
+      - type: 1
+        subdivisionsXSegment: 10
+        wps:
+        - vals:
+          - 1
+          - 0.8431373
+          - 0.6
+          - 0
+        - vals:
+          - 1
+          - 0.8431373
+          - 0.6
+          - 1
+        - vals:
+          - 1
+          - 0.8431373
+          - 0.6
+          - 1
+        - vals:
+          - 1
+          - 0.8431373
+          - 0.6
+          - 0
+        wpsTimeTable:
+        - 0.33333334
+        - 0.6666667
+        controlPoints:
+        - a:
+            vals:
+            - 1
+            - 0.8431373
+            - 0.6
+            - 1
+          b:
+            vals: []
+        - a:
+            vals:
+            - 1
+            - 0.8431373
+            - 0.6
+            - 1
+          b:
+            vals: []
+        length: 2.25
+        timesTable: []
+        lengthsTable: []
+        _isConstantSpeed: 0
+      val: 0
+      valString: 
+      valObj: {fileID: 0}
+      vect4: {x: 1, y: 0.8431373, z: 0.6, w: 0}
+    - interp: 0
+      frame: 20
+      easeType: 1
+      amplitude: 0
+      period: 0
+      customEase: []
+      endFrame: -1
+      isConstSpeed: 0
+      _paths: []
+      val: 0
+      valString: 
+      valObj: {fileID: 0}
+      vect4: {x: 1, y: 0.8431373, z: 0.6, w: 1}
+    - interp: 0
+      frame: 25
+      easeType: 1
+      amplitude: 0
+      period: 0
+      customEase: []
+      endFrame: -1
+      isConstSpeed: 0
+      _paths: []
+      val: 0
+      valString: 
+      valObj: {fileID: 0}
+      vect4: {x: 1, y: 0.8431373, z: 0.6, w: 1}
+    - interp: 0
+      frame: 30
+      easeType: 1
+      amplitude: 0
+      period: 0
+      customEase: []
+      endFrame: -1
+      isConstSpeed: 0
+      _paths: []
+      val: 0
+      valString: 
+      valObj: {fileID: 0}
+      vect4: {x: 1, y: 0.8431373, z: 0.6, w: 0}
+    - interp: 2
+      frame: 1
+      easeType: 1
+      amplitude: 0
+      period: 0
+      customEase: []
+      endFrame: 2
+      isConstSpeed: 0
+      _paths: []
+      val: 0
+      valString: 
+      valObj: {fileID: 21300000, guid: c8445985f38534a4891c13ed4c0a9dd2, type: 3}
+      vect4: {x: 0, y: 0, z: 0, w: 0}
+    - interp: 2
+      frame: 2
+      easeType: 1
+      amplitude: 0
+      period: 0
+      customEase: []
+      endFrame: 2
+      isConstSpeed: 0
+      _paths: []
+      val: 0
+      valString: 
+      valObj: {fileID: 21300000, guid: 1e895d6389f998c4781133379f3a9d30, type: 3}
+      vect4: {x: 0, y: 0, z: 0, w: 0}
+    _rotationEulerTracks: []
+    _rotationEulerKeys: []
+    _rotationTracks: []
+    _rotationKeys: []
+    _translationTracks:
+    - _version: 3
+      id: 2
+      name: Track1
+      foldout: 1
+      _targetPath: base
+      _obj: {fileID: 0}
+      pixelSnap: 0
+      pixelPerUnit: 100
+    _translationKeys:
+    - interp: 0
+      frame: 1
+      easeType: 1
+      amplitude: 0
+      period: 0
+      customEase: []
+      endFrame: 15
+      isConstSpeed: 0
+      _paths:
+      - type: 1
+        subdivisionsXSegment: 10
+        wps:
+        - vals:
+          - 0
+          - 0
+          - 0
+        - vals:
+          - -0.16
+          - 0
+          - 0
+        - vals:
+          - 0.18
+          - 0
+          - 0
+        - vals:
+          - -0.07
+          - 0
+          - 0
+        - vals:
+          - 0.09
+          - 0
+          - 0
+        - vals:
+          - 0
+          - 0
+          - 0
+        wpsTimeTable:
+        - 0.21428572
+        - 0.42857143
+        - 0.64285713
+        - 0.85714287
+        controlPoints:
+        - a:
+            vals:
+            - 0.09
+            - 0
+            - 0
+          b:
+            vals: []
+        - a:
+            vals:
+            - -0.16
+            - 0
+            - 0
+          b:
+            vals: []
+        length: 1.0113022
+        timesTable: []
+        lengthsTable: []
+        _isConstantSpeed: 0
+      position: {x: 0, y: 0, z: 0}
+      orientMode: 0
+      orientLockAxis: 0
+    - interp: 0
+      frame: 4
+      easeType: 1
+      amplitude: 0
+      period: 0
+      customEase: []
+      endFrame: -1
+      isConstSpeed: 0
+      _paths: []
+      position: {x: -0.16, y: 0, z: 0}
+      orientMode: 0
+      orientLockAxis: 0
+    - interp: 0
+      frame: 7
+      easeType: 1
+      amplitude: 0
+      period: 0
+      customEase: []
+      endFrame: -1
+      isConstSpeed: 0
+      _paths: []
+      position: {x: 0.18, y: 0, z: 0}
+      orientMode: 0
+      orientLockAxis: 0
+    - interp: 0
+      frame: 10
+      easeType: 1
+      amplitude: 0
+      period: 0
+      customEase: []
+      endFrame: -1
+      isConstSpeed: 0
+      _paths: []
+      position: {x: -0.07, y: 0, z: 0}
+      orientMode: 0
+      orientLockAxis: 0
+    - interp: 0
+      frame: 13
+      easeType: 1
+      amplitude: 0
+      period: 0
+      customEase: []
+      endFrame: -1
+      isConstSpeed: 0
+      _paths: []
+      position: {x: 0.09, y: 0, z: 0}
+      orientMode: 0
+      orientLockAxis: 0
+    - interp: 0
+      frame: 15
+      easeType: 1
+      amplitude: 0
+      period: 0
+      customEase: []
+      endFrame: -1
+      isConstSpeed: 0
+      _paths: []
+      position: {x: 0, y: 0, z: 0}
+      orientMode: 0
+      orientLockAxis: 0
+    _unityAnimationTracks: []
+    _unityAnimationKeys: []
+    _scaleTracks: []
+    _scaleKeys: []
+    _trackLookups:
+    - type: 4
+      index: 0
+      keyIndices: 00000000
+    - type: 7
+      index: 0
+      keyIndices: 00000000010000000200000003000000
+    - type: 4
+      index: 1
+      keyIndices: 
+    - type: 7
+      index: 1
+      keyIndices: 0400000005000000
+    - type: 4
+      index: 2
+      keyIndices: 01000000
+    - type: 4
+      index: 3
+      keyIndices: 02000000
+    - type: 10
+      index: 0
+      keyIndices: 000000000100000002000000030000000400000005000000
+    _takeTrackCounts: 07000000

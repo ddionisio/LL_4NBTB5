@@ -21,6 +21,7 @@ public class GameData : M8.SingletonScriptableObject<GameData> {
         public string titleRef;
         public bool isGameplay; //used to determine which scene is gameplay (e.g. score tracking)
         public int index; //used for certain scene
+        public M8.ColorPalette palette;
     }
 
     [System.Serializable]
