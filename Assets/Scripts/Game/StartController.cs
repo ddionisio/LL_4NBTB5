@@ -31,6 +31,7 @@ public class StartController : GameModeController<StartController> {
 
     public float introIdleDelay = 0.5f;
     public float introPortalOpenStartDelay = 0.5f;
+    public float introPortalDelay = 1f;
 
     public ModalDialogFlow introDialog;
     public ModalDialogFlow introAttackDialog;
@@ -114,8 +115,10 @@ public class StartController : GameModeController<StartController> {
         if(introAnimator && !string.IsNullOrEmpty(introTakePortalOpen))
             yield return introAnimator.PlayWait(introTakePortalOpen);
 
+        yield return new WaitForSeconds(introPortalDelay);
+
         if(introScan) {
-            introScan.PlayExit();
+            yield return introScan.PlayExitWait();
             introScan.gameObject.SetActive(false);
         }
 

@@ -40,12 +40,26 @@ MonoBehaviour:
     index: 0
     palette: {fileID: 0}
   - scene:
+      name: progress
+      path: Assets/Scenes/progress.unity
+    titleRef: level_title_2
+    isGameplay: 0
+    index: 1
+    palette: {fileID: 11400000, guid: 5055d14e827a6c84abe8d8b95ae1dd38, type: 2}
+  - scene:
       name: level2
       path: Assets/Scenes/level2.unity
     titleRef: level_title_2
     isGameplay: 1
     index: 0
     palette: {fileID: 0}
+  - scene:
+      name: progress
+      path: Assets/Scenes/progress.unity
+    titleRef: level_title_3
+    isGameplay: 0
+    index: 2
+    palette: {fileID: 11400000, guid: b289bff35539b364a83f2f9b3d487008, type: 2}
   - scene:
       name: level3
       path: Assets/Scenes/level3.unity
@@ -61,11 +75,25 @@ MonoBehaviour:
     index: 0
     palette: {fileID: 0}
   - scene:
+      name: progress
+      path: Assets/Scenes/progress.unity
+    titleRef: level_title_4
+    isGameplay: 0
+    index: 3
+    palette: {fileID: 11400000, guid: 5255741abdced0c4faf976030ec811a2, type: 2}
+  - scene:
       name: level4
       path: Assets/Scenes/level4.unity
     titleRef: level_title_4
     isGameplay: 1
     index: 0
+    palette: {fileID: 0}
+  - scene:
+      name: progress
+      path: Assets/Scenes/progress.unity
+    titleRef: 
+    isGameplay: 0
+    index: 4
     palette: {fileID: 0}
   - scene:
       name: summary
