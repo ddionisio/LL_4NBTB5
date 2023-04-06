@@ -5450,6 +5450,7 @@ MonoBehaviour:
   takeEnd: end
   blobConsumeAnimate: {fileID: 1644610194}
   completeDelay: 2
+  music: end
 --- !u!4 &947938943
 Transform:
   m_ObjectHideFlags: 0

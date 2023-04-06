@@ -12,8 +12,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c6a109ff7ad827d4396e6fc363da6b6b, type: 3}
   m_Name: musicPlaylist
   m_EditorClassIdentifier: 
-  music: []
+  music:
+  - name: lesson
+    source: {fileID: 8300000, guid: f6ffee782e1968e4d92ee6e16895b73c, type: 3}
+  - name: play
+    source: {fileID: 8300000, guid: 8fb20813dca81cf4987fd4adef083c3c, type: 3}
+  - name: intro
+    source: {fileID: 8300000, guid: a4f52b322097f964fb6ca48f9b05b167, type: 3}
+  - name: end
+    source: {fileID: 8300000, guid: c12719815a27acc4099afdbf16eaa909, type: 3}
+  - name: progress
+    source: {fileID: 8300000, guid: 4bcae6027ce8eb145b8cfdc1ce43840e, type: 3}
   audioMixer: {fileID: 0}
   muteOnFocusLost: 1
-  fadeInDelay: 0.3
-  fadeOutDelay: 0.3
+  fadeInDelay: 0.5
+  fadeOutDelay: 0.5

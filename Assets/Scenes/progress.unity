@@ -8530,7 +8530,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.52156866, g: 0.2627451, b: 0.6392157, a: 1}
+  m_Color: {r: 0.13725491, g: 0.34901962, b: 0.3372549, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -15040,7 +15040,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.52156866, g: 0.2627451, b: 0.6392157, a: 1}
+  m_Color: {r: 0.13725491, g: 0.34901962, b: 0.3372549, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -22429,7 +22429,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.39705884, g: 0.058823533, b: 0.40588236, a: 1}
+  m_Color: {r: 0.14411765, g: 0.35882354, b: 0.25, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -40835,7 +40835,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mode: {fileID: 0}
   signalModeChanged: {fileID: 11400000, guid: 4f9dce914f15a6c4b8c0af0d08028ac5, type: 2}
-  overrideIndex: 1
   paletteOverride: {fileID: 947938942}
   cameraRoot: {fileID: 949756155}
   cameraMoveDelay: 2
@@ -40859,12 +40858,14 @@ MonoBehaviour:
     blobsRoot: {fileID: 2008107355}
     shapesAnim: {fileID: 646593773}
     constellationGO: {fileID: 347151838}
+  blobClearStartDelay: 1
   blobClearDelay: 0.3
   shapesFadeStartDelay: 0.5
   constellationShowDelay: 0.3
   levelNextStartDelay: 2
   showLevelLabelStartDelay: 1
   proceedDelay: 2.5
+  music: progress
 --- !u!1001 &949756154
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -54457,7 +54458,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.52156866, g: 0.2627451, b: 0.6392157, a: 1}
+  m_Color: {r: 0.13725491, g: 0.34901962, b: 0.3372549, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -118247,7 +118248,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.5294118, g: 0.078431375, b: 0.5411765, a: 1}
+  m_Color: {r: 0.19215688, g: 0.4784314, b: 0.33333334, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1

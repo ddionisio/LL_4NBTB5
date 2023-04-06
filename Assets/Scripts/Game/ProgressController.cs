@@ -98,7 +98,6 @@ public class ProgressController : GameModeController<ProgressController> {
         }
     }
 
-    public int overrideIndex; //used if GameData has not properly proceeded
     public M8.ColorPaletteCopy paletteOverride;
 
     [Header("Camera")]
@@ -121,6 +120,10 @@ public class ProgressController : GameModeController<ProgressController> {
     public float levelNextStartDelay = 3f;
     public float showLevelLabelStartDelay = 1f;
     public float proceedDelay = 2.5f;
+
+    [Header("Music")]
+    [M8.MusicPlaylist]
+    public string music;
 
     private int mLevelIndex;
     private bool mIsInit;
@@ -149,7 +152,8 @@ public class ProgressController : GameModeController<ProgressController> {
 
         yield return base.Start();
 
-        M8.MusicPlaylist.instance.Stop(false);
+        if(!string.IsNullOrEmpty(music))
+            M8.MusicPlaylist.instance.Play(music, false, false);
 
         bool showLevelLabel = true;
 
@@ -212,7 +216,7 @@ public class ProgressController : GameModeController<ProgressController> {
         if(GameData.instance.isProceed)
             gameLevelIndex = LoLManager.instance.curProgress;
         else
-            gameLevelIndex = overrideIndex;
+            gameLevelIndex = 0;
 
         var levelDat = GameData.instance.levels[gameLevelIndex];
 

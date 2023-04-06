@@ -28872,6 +28872,7 @@ MonoBehaviour:
   introTakePortalOpen: portalOpen
   introIdleDelay: 1
   introPortalOpenStartDelay: 1
+  introPortalDelay: 1
   introDialog:
     dialogTextRefs:
     - intro_dialog_1
@@ -28882,7 +28883,7 @@ MonoBehaviour:
     - intro_attack_1
     - intro_attack_2
     - intro_attack_3
-  music: 
+  music: intro
 --- !u!4 &947938943
 Transform:
   m_ObjectHideFlags: 0

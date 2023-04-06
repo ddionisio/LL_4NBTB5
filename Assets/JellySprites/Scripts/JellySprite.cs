@@ -2160,6 +2160,7 @@ public abstract class JellySprite : MonoBehaviour
                             circleCollider.radius = circleCollider.radius * scaleRatio;
                         }
                     }
+#if PHYSICS_3D_ENABLED
                     else
                     {
                         SphereCollider sphereCollider = refPoint.GameObject.GetComponent<SphereCollider>();
@@ -2169,6 +2170,7 @@ public abstract class JellySprite : MonoBehaviour
                             sphereCollider.radius = sphereCollider.radius * scaleRatio;
                         }
                     }
+#endif
                 }
 
                 refPoint.transform.position = refPointPositions[0] + ((refPointPositions[index] - refPointPositions[0]) * scaleRatio);

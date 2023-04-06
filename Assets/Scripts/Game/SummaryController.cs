@@ -15,6 +15,10 @@ public class SummaryController : GameModeController<SummaryController> {
     [M8.Animator.TakeSelector]
     public string takeEnter;
 
+    [Header("Music")]
+    [M8.MusicPlaylist]
+    public string playMusic;
+
     public void Proceed() {
         GameData.instance.ProceedNext();
     }
@@ -44,6 +48,9 @@ public class SummaryController : GameModeController<SummaryController> {
 
         while(!LoLManager.instance.isReady)
             yield return null;
+
+        if(!string.IsNullOrEmpty(playMusic))
+            M8.MusicPlaylist.instance.Play(playMusic, true, false);
 
         var gameDat = GameData.instance;
 

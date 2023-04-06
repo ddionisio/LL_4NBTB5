@@ -19,6 +19,10 @@ public class EndController : GameModeController<EndController> {
     public AnimatorEnterExit blobConsumeAnimate;
     public float completeDelay = 2f;
 
+    [Header("Music")]
+    [M8.MusicPlaylist]
+    public string music;
+
     protected override void OnInstanceInit() {
         base.OnInstanceInit();
 
@@ -30,6 +34,11 @@ public class EndController : GameModeController<EndController> {
 
         while(!LoLManager.instance.isReady)
             yield return null;
+
+        if(!string.IsNullOrEmpty(music))
+            M8.MusicPlaylist.instance.Play(music, false, false);
+
+        //float lastTime = Time.time;
 
         if(animator && !string.IsNullOrEmpty(takeAttackBlobEnter))
             yield return animator.PlayWait(takeAttackBlobEnter);
@@ -51,5 +60,7 @@ public class EndController : GameModeController<EndController> {
         yield return new WaitForSeconds(completeDelay);
 
         LoLManager.instance.Complete();
+
+        //Debug.Log("Time: " + (Time.time - lastTime));
     }
 }

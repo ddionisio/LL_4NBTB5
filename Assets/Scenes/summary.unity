@@ -841,6 +841,7 @@ MonoBehaviour:
   proceedGO: {fileID: 2038500351}
   animator: {fileID: 683097900}
   takeEnter: enter
+  playMusic: lesson
 --- !u!114 &683097900
 MonoBehaviour:
   m_ObjectHideFlags: 0

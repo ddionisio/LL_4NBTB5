@@ -1577,7 +1577,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mode: {fileID: 0}
   signalModeChanged: {fileID: 11400000, guid: 4f9dce914f15a6c4b8c0af0d08028ac5, type: 2}
-  playMusic: 
+  playMusic: lesson
   boardHUDRootGO: {fileID: 1717019432157608628}
   boardDragGuide: {fileID: 895757119}
   clickInstructWidgetRoot: {fileID: 1102342356}

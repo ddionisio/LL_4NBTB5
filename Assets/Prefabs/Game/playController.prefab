@@ -14124,16 +14124,17 @@ MonoBehaviour:
   mode: {fileID: 0}
   signalModeChanged: {fileID: 11400000, guid: 4f9dce914f15a6c4b8c0af0d08028ac5, type: 2}
   blobAttackTemplate: {fileID: 11400000, guid: 20e319697439a9d418000be70bc023d2, type: 2}
-  blobSpawnCount: 4
+  blobSpawnLimit: 4
+  blobLeftTemplate: {fileID: 0}
+  blobRightTemplate: {fileID: 0}
   numberGroups:
-  - blobData: {fileID: 11400000, guid: 0fe7a69a59e63c243b736f4d5a5ab9fd, type: 2}
-    numbers: 7b000000000100006f000000d4000000
-  - blobData: {fileID: 11400000, guid: acd5723c30cdae64bbe2e8f18971de88, type: 2}
-    numbers: 02000000030000000400000005000000
+  - leftNumbers: 
+    rightNumbers: 
+  - leftNumbers: 
+    rightNumbers: 
   numberCriteriaUnlocked: 0
-  numberBonusGroup:
-    blobData: {fileID: 11400000, guid: 18bb64ee700701d4594f73009f6e1e00, type: 2}
-    numbers: 09030000c701000085000000
+  blobBonusTemplate: {fileID: 0}
+  numberBonuses: 
   numberBonusModal: attackSumsFill
   numberBonusModalParams:
   - key: emptyCount
@@ -14148,10 +14149,10 @@ MonoBehaviour:
     vectorVal: {x: 0, y: 0, z: 0, w: 0}
     sVal: 
     oVal: {fileID: 0}
-  connectControl: {fileID: 4001167663721069188}
-  blobSpawner: {fileID: 4001167664736534748}
   roundsRoot: {fileID: 4001167664905004009}
   roundCompleteBrightness: 0.3
+  connectControl: {fileID: 4001167663721069188}
+  blobSpawner: {fileID: 4001167664736534748}
   correctSpawnDelay: 0.5
   correctEvaluateDelay: 1
   bonusClearStartDelay: 0.4
@@ -14160,7 +14161,7 @@ MonoBehaviour:
   takeEnd: victory
   takeCorrect: correct
   takeBonus: bonus
-  playMusic: 
+  playMusic: play
   signalListenPlayStart: {fileID: 11400000, guid: 1c8954bb744cbad4e9567fecb9482514, type: 2}
   signalListenBlobDragBegin: {fileID: 11400000, guid: 0dd1c40d5bbeef54a8aaf4b6c89d5235, type: 2}
   signalListenBlobDragEnd: {fileID: 11400000, guid: e277b755729c85042a3893c829311846, type: 2}
