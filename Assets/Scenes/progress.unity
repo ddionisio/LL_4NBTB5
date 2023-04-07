@@ -40862,7 +40862,7 @@ MonoBehaviour:
   blobClearDelay: 0.3
   shapesFadeStartDelay: 0.5
   constellationShowDelay: 0.3
-  levelNextStartDelay: 2
+  levelNextStartDelay: 3
   showLevelLabelStartDelay: 1
   proceedDelay: 2.5
   music: progress

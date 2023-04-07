@@ -13,6 +13,10 @@ public class Lesson1Controller : LessonBoardController {
     public ModalDialogFlow distributeDialog;
     public AnimatorEnterExit areaIllustrate;
     public ModalDialogFlow areaDialog;
+    public GameObject areaSubGO;
+    public ModalDialogFlow areaSubDialog;
+    public GameObject areaSumsGO;
+    public ModalDialogFlow areaSumsDialog;
     public ModalDialogFlow tutorialConnectDialog;
     public ModalDialogFlow tutorialAttackDistributiveDialog;
     public ModalDialogFlow tutorialAttackEvalDialog;
@@ -29,6 +33,8 @@ public class Lesson1Controller : LessonBoardController {
         if(blobNumberIllustrate) blobNumberIllustrate.Hide();
         if(distributeIllustrate) distributeIllustrate.Hide();
         if(areaIllustrate) areaIllustrate.Hide();
+        if(areaSubGO) areaSubGO.SetActive(false);
+        if(areaSumsGO) areaSumsGO.SetActive(false);
     }
 
     protected override IEnumerator Start() {
@@ -72,6 +78,14 @@ public class Lesson1Controller : LessonBoardController {
         }
 
         yield return areaDialog.Play();
+
+        if(areaSubGO) areaSubGO.SetActive(true);
+
+        yield return areaSubDialog.Play();
+
+        if(areaSumsGO) areaSumsGO.SetActive(true);
+
+        yield return areaSumsDialog.Play();
 
         if(areaIllustrate) {            
             yield return areaIllustrate.PlayExitWait();

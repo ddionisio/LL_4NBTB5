@@ -73,19 +73,15 @@ public class ProgressController : GameModeController<ProgressController> {
         /// <summary>
         /// Clear out blobs and shapes, show constellation
         /// </summary>
-        public IEnumerator BlobsClear(string sfxBlobClear, string sfxConstellation, float blobClearDelay, float shapesFadeStartDelay, float constellationShowDelay) {
-            var blobAnimNextWait = new WaitForSeconds(blobClearDelay);
-
+        public IEnumerator BlobsClear(string sfxBlobClear, string sfxConstellation, float shapesFadeStartDelay, float constellationShowDelay) {
             for(int i = 0; i < blobAnims.Length; i++) {
                 var blobAnim = blobAnims[i];
                 if(blobAnim) {
-                    blobAnim.PlayExit();
+                    yield return blobAnim.PlayExitWait();
 
                     if(!string.IsNullOrEmpty(sfxBlobClear))
                         M8.SoundPlaylist.instance.Play(sfxBlobClear, false);
                 }
-
-                yield return blobAnimNextWait;
             }
 
             yield return new WaitForSeconds(shapesFadeStartDelay);
@@ -178,12 +174,12 @@ public class ProgressController : GameModeController<ProgressController> {
 
             yield return new WaitForSeconds(blobClearStartDelay);
 
-            yield return levels[prevLevelIndex].BlobsClear(sfxBlobClear, sfxConstellation, blobClearDelay, shapesFadeStartDelay, constellationShowDelay);
+            yield return levels[prevLevelIndex].BlobsClear(sfxBlobClear, sfxConstellation, shapesFadeStartDelay, constellationShowDelay);
+
+            yield return new WaitForSeconds(levelNextStartDelay);
 
             //check if we are at last level, otherwise, we just proceed
             if(mLevelIndex < levels.Length) {
-                yield return new WaitForSeconds(levelNextStartDelay);
-
                 var newLevel = levels[mLevelIndex];
 
                 //move camera
