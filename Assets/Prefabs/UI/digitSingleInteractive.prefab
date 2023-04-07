@@ -445,6 +445,9 @@ MonoBehaviour:
   _highlightGO: {fileID: 4458059096366665675}
   _numberRoot: {fileID: 7896386487563888983}
   _numberLabel: {fileID: 1519463051883515516}
+  _animator: {fileID: 0}
+  _takePulse: 
+  _sfxClick: boop
 --- !u!1 &8101387027485497627
 GameObject:
   m_ObjectHideFlags: 0

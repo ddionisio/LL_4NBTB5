@@ -5914,7 +5914,7 @@ MonoBehaviour:
   takeSpawn: spawn
   takeDespawn: despawn
   takeCorrect: correct
-  soundSpawn: 
+  soundSpawn: boop
   signalListenDespawn: {fileID: 0}
   signalInvokeDragBegin: {fileID: 11400000, guid: 0dd1c40d5bbeef54a8aaf4b6c89d5235, type: 2}
   signalInvokeDragEnd: {fileID: 11400000, guid: e277b755729c85042a3893c829311846, type: 2}

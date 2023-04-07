@@ -29,11 +29,13 @@ public class ModalAttackPartialProducts : M8.ModalController, M8.IModalPush, M8.
     [M8.Animator.TakeSelector]
     public string takeFinish;
 
-    [Header("Evaluate Info")]
+    [Header("SFX")]
     [M8.SoundPlaylist]
-    public string evaluateSfxCorrect;
+    public string sfxCorrect;
     [M8.SoundPlaylist]
-    public string evaluateSfxWrong;
+    public string sfxWrong;
+    [M8.SoundPlaylist]
+    public string sfxSuccess;
 
     [Header("Finish Info")]
     public float finishEndDelay = 0.5f;
@@ -421,6 +423,9 @@ public class ModalAttackPartialProducts : M8.ModalController, M8.IModalPush, M8.
                 }
 
                 if(isCorrect) {
+                    if(!string.IsNullOrEmpty(sfxCorrect))
+                        M8.SoundPlaylist.instance.Play(sfxCorrect, false);
+
                     productWidget.PlayCorrect();
                     while(productWidget.isAnimating)
                         yield return null;
@@ -432,6 +437,9 @@ public class ModalAttackPartialProducts : M8.ModalController, M8.IModalPush, M8.
                     i--;
                 }
                 else {
+                    if(!string.IsNullOrEmpty(sfxWrong))
+                        M8.SoundPlaylist.instance.Play(sfxWrong, false);
+
                     productWidget.PlayError();
                     while(productWidget.isAnimating)
                         yield return null;
@@ -445,7 +453,9 @@ public class ModalAttackPartialProducts : M8.ModalController, M8.IModalPush, M8.
 
         //all correct?
         if(incorrectCount == 0) {
-            //TODO: fanfare animation
+            if(!string.IsNullOrEmpty(sfxSuccess))
+                M8.SoundPlaylist.instance.Play(sfxSuccess, false);
+
             if(animator && !string.IsNullOrEmpty(takeFinish))
                 yield return animator.PlayWait(takeFinish);
 

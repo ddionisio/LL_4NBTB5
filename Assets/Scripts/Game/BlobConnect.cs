@@ -504,7 +504,8 @@ public class BlobConnect : MonoBehaviour, M8.IPoolSpawn, M8.IPoolDespawn, IPoint
                 break;
 
             case State.Connected:
-                M8.SoundPlaylist.instance.Play(soundConnected, false);
+                if(!string.IsNullOrEmpty(soundConnected))
+                    M8.SoundPlaylist.instance.Play(soundConnected, false);
 
                 SetPhysicsActive(true);
                 if(body) body.bodyType = RigidbodyType2D.Dynamic;
@@ -527,7 +528,8 @@ public class BlobConnect : MonoBehaviour, M8.IPoolSpawn, M8.IPoolDespawn, IPoint
                 break;
 
             case State.Connecting:
-                M8.SoundPlaylist.instance.Play(soundConnecting, false);
+                if(!string.IsNullOrEmpty(soundConnecting))
+                    M8.SoundPlaylist.instance.Play(soundConnecting, false);
 
                 SetPhysicsActive(false);
 
@@ -542,7 +544,8 @@ public class BlobConnect : MonoBehaviour, M8.IPoolSpawn, M8.IPoolDespawn, IPoint
                 break;
 
             case State.Releasing:
-                M8.SoundPlaylist.instance.Play(soundDelete, false);
+                if(!string.IsNullOrEmpty(soundDelete))
+                    M8.SoundPlaylist.instance.Play(soundDelete, false);
 
                 SetPhysicsActive(false);
 
@@ -566,7 +569,8 @@ public class BlobConnect : MonoBehaviour, M8.IPoolSpawn, M8.IPoolDespawn, IPoint
                 break;
 
             case State.Correct:
-                M8.SoundPlaylist.instance.Play(soundCorrect, false);
+                if(!string.IsNullOrEmpty(soundCorrect))
+                    M8.SoundPlaylist.instance.Play(soundCorrect, false);
 
                 SetPhysicsActive(true);
                 if(body) body.bodyType = RigidbodyType2D.Dynamic;
@@ -582,7 +586,8 @@ public class BlobConnect : MonoBehaviour, M8.IPoolSpawn, M8.IPoolDespawn, IPoint
                 break;
 
             case State.Error:
-                M8.SoundPlaylist.instance.Play(soundError, false);
+                if(!string.IsNullOrEmpty(soundError))
+                    M8.SoundPlaylist.instance.Play(soundError, false);
 
                 SetPhysicsActive(true);
                 if(body) body.bodyType = RigidbodyType2D.Dynamic;

@@ -25,6 +25,11 @@ public class DigitWidget : MonoBehaviour, IPointerClickHandler, IPointerEnterHan
     [SerializeField]
     string _takePulse;
 
+    [Header("SFX")]
+    [M8.SoundPlaylist]
+    [SerializeField]
+    string _sfxClick;
+
     public int index { get; private set; }
     public int number {
         get { return mNumber; }
@@ -129,6 +134,9 @@ public class DigitWidget : MonoBehaviour, IPointerClickHandler, IPointerEnterHan
     }
 
     void IPointerClickHandler.OnPointerClick(PointerEventData eventData) {
+        if(!string.IsNullOrEmpty(_sfxClick))
+            M8.SoundPlaylist.instance.Play(_sfxClick, false);
+
         clickCallback?.Invoke(index);
     }
 

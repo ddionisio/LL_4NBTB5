@@ -91,6 +91,12 @@ public class PlayController : GameModeController<PlayController> {
     [M8.MusicPlaylist]
     public string playMusic;
 
+    [Header("SFX")]
+    [M8.SoundPlaylist]
+    public string sfxBonusClear;
+    [M8.SoundPlaylist]
+    public string sfxBonusClearBlob;
+
     [Header("Signal Listen")]
     public M8.Signal signalListenPlayStart;
     public SignalBlob signalListenBlobDragBegin;
@@ -638,6 +644,9 @@ public class PlayController : GameModeController<PlayController> {
             var bonusClearCount = blobSpawner.spawnQueueCount;
             blobSpawner.SpawnStop();
 
+            if(!string.IsNullOrEmpty(sfxBonusClear))
+                M8.SoundPlaylist.instance.Play(sfxBonusClear, false);
+
             //do fancy animation on board
             if(animator && !string.IsNullOrEmpty(takeBonus))
                 animator.Play(takeBonus);
@@ -650,6 +659,9 @@ public class PlayController : GameModeController<PlayController> {
                     //wait for it to spawn
                     while(blob.state == Blob.State.Spawning)
                         yield return null;
+
+                    if(!string.IsNullOrEmpty(sfxBonusClearBlob))
+                        M8.SoundPlaylist.instance.Play(sfxBonusClearBlob, false);
 
                     blob.state = Blob.State.Correct;
 

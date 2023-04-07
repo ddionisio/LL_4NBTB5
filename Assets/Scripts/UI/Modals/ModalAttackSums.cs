@@ -41,6 +41,18 @@ public class ModalAttackSums : M8.ModalController, M8.IModalPush, M8.IModalPop, 
     [Header("Finish Info")]
     public float finishEndDelay = 1f;
 
+    [Header("SFX")]
+    [M8.SoundPlaylist]
+    public string sfxCarryOver;
+    [M8.SoundPlaylist]
+    public string sfxNext;
+    [M8.SoundPlaylist]
+    public string sfxCorrect;
+    [M8.SoundPlaylist]
+    public string sfxWrong;
+    [M8.SoundPlaylist]
+    public string sfxVictory;
+
     [Header("Signal Invoke")]
     public SignalAttackState signalInvokeAttackStateChange;
     public M8.SignalBoolean signalInvokeActive;
@@ -324,6 +336,9 @@ public class ModalAttackSums : M8.ModalController, M8.IModalPush, M8.IModalPop, 
             yield return null;
 
         //success
+        if(!string.IsNullOrEmpty(sfxVictory))
+            M8.SoundPlaylist.instance.Play(sfxVictory, false);
+
         if(animator && !string.IsNullOrEmpty(takeFinish))
             yield return animator.PlayWait(takeFinish);
 
@@ -333,6 +348,9 @@ public class ModalAttackSums : M8.ModalController, M8.IModalPush, M8.IModalPop, 
     }
 
     IEnumerator DoError() {
+        if(!string.IsNullOrEmpty(sfxWrong))
+            M8.SoundPlaylist.instance.Play(sfxWrong, false);
+
         //update mistake display
         mistakeCounterDisplay.UpdateMistakeCount(mMistakeInfo);
 
@@ -362,6 +380,9 @@ public class ModalAttackSums : M8.ModalController, M8.IModalPush, M8.IModalPop, 
     }
 
     IEnumerator DoCorrect(int digitIndex, int digitAnswer) {
+        if(!string.IsNullOrEmpty(sfxCorrect))
+            M8.SoundPlaylist.instance.Play(sfxCorrect, false);
+
         int singleDigit = digitAnswer % 10;
 
         int carryOverDigit = (digitAnswer / 10) % 10;
@@ -445,12 +466,18 @@ public class ModalAttackSums : M8.ModalController, M8.IModalPush, M8.IModalPop, 
                     }
                 }
 
+                if(!string.IsNullOrEmpty(sfxCarryOver))
+                    M8.SoundPlaylist.instance.Play(sfxCarryOver, false);
+
                 carryOverDigitWidget.PlayPulse();
             }
 
             //move highlight
             //double check next digit index if it's still valid
             if(nextDigitIndex < mAnswerDigitCount) {
+                if(!string.IsNullOrEmpty(sfxNext))
+                    M8.SoundPlaylist.instance.Play(sfxNext, false);
+
                 var curHighlightAnchorPos = highlightRoot.anchoredPosition;
 
                 var toHighlightPosX = -(mFactorElementWidth * nextDigitIndex) - (mFactorElementWidth * 0.5f);

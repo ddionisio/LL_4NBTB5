@@ -45,6 +45,12 @@ public class ModalAttackDistributiveMixUp : M8.ModalController, M8.IModalPush, M
     [Header("Explain Dialog")]
     public LoLExt.ModalDialogFlow explainDialog;
 
+    [Header("SFX")]
+    [M8.SoundPlaylist]
+    public string sfxSuccess;
+    [M8.SoundPlaylist]
+    public string sfxError;
+
     private AreaOperation mAreaOp;
     private MistakeInfo mMistakeInfo;
 
@@ -367,6 +373,9 @@ public class ModalAttackDistributiveMixUp : M8.ModalController, M8.IModalPush, M
 
     IEnumerator DoError() {
         if(mMistakeInfo != null) {
+            if(!string.IsNullOrEmpty(sfxError))
+                M8.SoundPlaylist.instance.Play(sfxError, false);
+
             mMistakeInfo.AppendAreaEvaluateCount();
 
             //update mistake display
@@ -389,6 +398,9 @@ public class ModalAttackDistributiveMixUp : M8.ModalController, M8.IModalPush, M
     }
 
     IEnumerator DoFinish() {
+        if(!string.IsNullOrEmpty(sfxSuccess))
+            M8.SoundPlaylist.instance.Play(sfxSuccess, false);
+
         if(finishAnimator && !string.IsNullOrEmpty(takeFinish))
             yield return finishAnimator.PlayWait(takeFinish);
 

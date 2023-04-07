@@ -1064,6 +1064,9 @@ MonoBehaviour:
   dropHighlightGO: {fileID: 8803226455787726653}
   dropMoveSpeed: 1000
   dropMoveEase: 3
+  sfxDragBegin: click
+  sfxDragHover: tap
+  sfxDragSwap: swipe
 --- !u!222 &5758827609898361783
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1685,6 +1688,9 @@ MonoBehaviour:
   dropHighlightGO: {fileID: 2029376074859683037}
   dropMoveSpeed: 1000
   dropMoveEase: 3
+  sfxDragBegin: click
+  sfxDragHover: tap
+  sfxDragSwap: swipe
 --- !u!222 &5758827610996539621
 CanvasRenderer:
   m_ObjectHideFlags: 0

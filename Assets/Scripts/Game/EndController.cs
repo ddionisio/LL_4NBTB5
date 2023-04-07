@@ -23,6 +23,14 @@ public class EndController : GameModeController<EndController> {
     [M8.MusicPlaylist]
     public string music;
 
+    [Header("SFX")]
+    [M8.SoundPlaylist]
+    public string sfxEnter;
+    [M8.SoundPlaylist]
+    public string sfxAttack;
+    [M8.SoundPlaylist]
+    public string sfxExplode;
+
     protected override void OnInstanceInit() {
         base.OnInstanceInit();
 
@@ -40,16 +48,25 @@ public class EndController : GameModeController<EndController> {
 
         //float lastTime = Time.time;
 
+        if(!string.IsNullOrEmpty(sfxEnter))
+            M8.SoundPlaylist.instance.Play(sfxEnter, false);
+
         if(animator && !string.IsNullOrEmpty(takeAttackBlobEnter))
             yield return animator.PlayWait(takeAttackBlobEnter);
 
         if(blobConsumeAnimate) {
+            if(!string.IsNullOrEmpty(sfxAttack))
+                M8.SoundPlaylist.instance.Play(sfxAttack, false);
+
             blobConsumeAnimate.gameObject.SetActive(true);
 
             yield return blobConsumeAnimate.PlayEnterWait();
 
             blobConsumeAnimate.gameObject.SetActive(false);
         }
+
+        if(!string.IsNullOrEmpty(sfxExplode))
+            M8.SoundPlaylist.instance.Play(sfxExplode, false);
 
         if(animator && !string.IsNullOrEmpty(takeDaylight))
             yield return animator.PlayWait(takeDaylight);

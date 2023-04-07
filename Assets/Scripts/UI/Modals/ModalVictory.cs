@@ -40,7 +40,11 @@ public class ModalVictory : M8.ModalController, M8.IModalPush, M8.IModalPop {
     [Header("Flow Info")]
     public Color flowLabelDisabled = Color.white;
     public Color flowLabelEnabled = Color.white;
-    public float flowDelay = 0.3f;    
+    public float flowDelay = 0.3f;
+
+    [Header("SFX")]
+    [M8.SoundPlaylist]
+    public string sfxVictory;
 
     private MistakeInfo mMistakeInfo;
     private int mScore;
@@ -140,6 +144,9 @@ public class ModalVictory : M8.ModalController, M8.IModalPush, M8.IModalPop {
     }
 
     IEnumerator DoProcess() {
+        if(!string.IsNullOrEmpty(sfxVictory))
+            M8.SoundPlaylist.instance.Play(sfxVictory, false);
+
         //wait for modal to finish entering
         var modalMain = M8.ModalManager.main;
         while(modalMain.isBusy)

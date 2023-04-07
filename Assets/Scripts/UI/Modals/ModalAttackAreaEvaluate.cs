@@ -29,6 +29,14 @@ public class ModalAttackAreaEvaluate : M8.ModalController, M8.IModalPush, M8.IMo
     [Header("Finish Info")]
     public float finishEndDelay = 1f;
 
+    [Header("SFX")]
+    [M8.SoundPlaylist]
+    public string sfxCorrect;
+    [M8.SoundPlaylist]
+    public string sfxError;
+    [M8.SoundPlaylist]
+    public string sfxSuccess;
+
     [Header("Signal Invoke")]
     public SignalAttackState signalInvokeAttackStateChange;
     public M8.SignalBoolean signalInvokeActive;
@@ -306,6 +314,8 @@ public class ModalAttackAreaEvaluate : M8.ModalController, M8.IModalPush, M8.IMo
             }
         }
 
+        areaOpCellWidgetSelected = null;
+
         //close up numpad
         modalMain.CloseUpTo(GameData.instance.modalNumpad, true);
 
@@ -313,6 +323,9 @@ public class ModalAttackAreaEvaluate : M8.ModalController, M8.IModalPush, M8.IMo
             yield return null;
 
         //success
+        if(!string.IsNullOrEmpty(sfxSuccess))
+            M8.SoundPlaylist.instance.Play(sfxSuccess, false);
+
         if(animator && !string.IsNullOrEmpty(takeFinish))
             yield return animator.PlayWait(takeFinish);
 
@@ -322,6 +335,9 @@ public class ModalAttackAreaEvaluate : M8.ModalController, M8.IModalPush, M8.IMo
     }
 
     IEnumerator DoError() {
+        if(!string.IsNullOrEmpty(sfxError))
+            M8.SoundPlaylist.instance.Play(sfxError, false);
+
         //update mistake display
         mistakeCounterDisplay.UpdateMistakeCount(mMistakeInfo);
 
@@ -349,6 +365,9 @@ public class ModalAttackAreaEvaluate : M8.ModalController, M8.IModalPush, M8.IMo
     }
 
     IEnumerator DoCorrect(AreaOperationCellWidget areaOpCellWidget) {
+        if(!string.IsNullOrEmpty(sfxCorrect))
+            M8.SoundPlaylist.instance.Play(sfxCorrect, false);
+
         //set display as solved
         areaOpCellWidget.ApplyCell(mAreaOp.GetAreaOperation(areaOpCellWidget.row, areaOpCellWidget.col), false);
 

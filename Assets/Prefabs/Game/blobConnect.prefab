@@ -912,11 +912,11 @@ MonoBehaviour:
   takeConnectedExit: connectedExit
   takeConnectedCorrect: connectedCorrect
   takeConnectedError: connectedError
-  soundConnecting: 
-  soundConnected: 
+  soundConnecting: swipe
+  soundConnected: tap
   soundDelete: 
-  soundCorrect: 
-  soundError: 
+  soundCorrect: clear
+  soundError: fail
   signalInvokeDelete: {fileID: 11400000, guid: 5757351d2caa2ca4db0f27afb133074e, type: 2}
 --- !u!114 &2052151854317760517
 MonoBehaviour:

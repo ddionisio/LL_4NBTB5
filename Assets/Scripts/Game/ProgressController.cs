@@ -73,13 +73,17 @@ public class ProgressController : GameModeController<ProgressController> {
         /// <summary>
         /// Clear out blobs and shapes, show constellation
         /// </summary>
-        public IEnumerator BlobsClear(float blobClearDelay, float shapesFadeStartDelay, float constellationShowDelay) {
+        public IEnumerator BlobsClear(string sfxBlobClear, string sfxConstellation, float blobClearDelay, float shapesFadeStartDelay, float constellationShowDelay) {
             var blobAnimNextWait = new WaitForSeconds(blobClearDelay);
 
             for(int i = 0; i < blobAnims.Length; i++) {
                 var blobAnim = blobAnims[i];
-                if(blobAnim)
+                if(blobAnim) {
                     blobAnim.PlayExit();
+
+                    if(!string.IsNullOrEmpty(sfxBlobClear))
+                        M8.SoundPlaylist.instance.Play(sfxBlobClear, false);
+                }
 
                 yield return blobAnimNextWait;
             }
@@ -93,6 +97,9 @@ public class ProgressController : GameModeController<ProgressController> {
             }
 
             yield return new WaitForSeconds(constellationShowDelay);
+
+            if(!string.IsNullOrEmpty(sfxConstellation))
+                M8.SoundPlaylist.instance.Play(sfxConstellation, false);
 
             constellationActive = true;
         }
@@ -124,6 +131,14 @@ public class ProgressController : GameModeController<ProgressController> {
     [Header("Music")]
     [M8.MusicPlaylist]
     public string music;
+
+    [Header("SFX")]
+    [M8.SoundPlaylist]
+    public string sfxBlobClear;
+    [M8.SoundPlaylist]
+    public string sfxConstellation;
+    [M8.SoundPlaylist]
+    public string sfxLevelLabel;
 
     private int mLevelIndex;
     private bool mIsInit;
@@ -163,7 +178,7 @@ public class ProgressController : GameModeController<ProgressController> {
 
             yield return new WaitForSeconds(blobClearStartDelay);
 
-            yield return levels[prevLevelIndex].BlobsClear(blobClearDelay, shapesFadeStartDelay, constellationShowDelay);
+            yield return levels[prevLevelIndex].BlobsClear(sfxBlobClear, sfxConstellation, blobClearDelay, shapesFadeStartDelay, constellationShowDelay);
 
             //check if we are at last level, otherwise, we just proceed
             if(mLevelIndex < levels.Length) {
@@ -196,6 +211,9 @@ public class ProgressController : GameModeController<ProgressController> {
 
         if(showLevelLabel) {
             yield return new WaitForSeconds(showLevelLabelStartDelay);
+
+            if(!string.IsNullOrEmpty(sfxLevelLabel))
+                M8.SoundPlaylist.instance.Play(sfxLevelLabel, false);
 
             //just show level label and proceed
             if(levelLabelDisplayGO)

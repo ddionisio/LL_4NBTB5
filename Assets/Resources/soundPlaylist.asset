@@ -12,7 +12,90 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 73fba05c719519b4db251fead2709c54, type: 3}
   m_Name: soundPlaylist
   m_EditorClassIdentifier: 
-  sounds: []
+  sounds:
+  - name: boop
+    clip: {fileID: 0}
+    clipVariants:
+    - {fileID: 8300000, guid: 3f33f2c107cb5b54faa5cc821ba7f71b, type: 3}
+    - {fileID: 8300000, guid: bd7a3140c005c9048bbebe6519eb7d45, type: 3}
+    - {fileID: 8300000, guid: 358a5089757a692449f3849b054b8e0c, type: 3}
+    - {fileID: 8300000, guid: 0a0e6a27f0058f843a5c6b091f4f2c38, type: 3}
+    spatialBlend: 0
+  - name: click
+    clip: {fileID: 8300000, guid: 9d18778d72ce9114e9bd29337e518944, type: 3}
+    clipVariants: []
+    spatialBlend: 0
+  - name: tap
+    clip: {fileID: 8300000, guid: 28b2df0ab3d233548886ec1e1e4d44ee, type: 3}
+    clipVariants: []
+    spatialBlend: 0
+  - name: swipe
+    clip: {fileID: 8300000, guid: cac0c56c0cb90fc42bc17d3b589ac1ef, type: 3}
+    clipVariants: []
+    spatialBlend: 0
+  - name: swipe_in
+    clip: {fileID: 8300000, guid: cac0c56c0cb90fc42bc17d3b589ac1ef, type: 3}
+    clipVariants: []
+    spatialBlend: 0
+  - name: swipe_out
+    clip: {fileID: 8300000, guid: 47c256ea65dff75489ada61925c20702, type: 3}
+    clipVariants: []
+    spatialBlend: 0
+  - name: correct
+    clip: {fileID: 8300000, guid: 331413503a37d074c817dee0eddf097b, type: 3}
+    clipVariants: []
+    spatialBlend: 0
+  - name: wrong
+    clip: {fileID: 8300000, guid: 1e1b18f65e30e0445bdd276ff4a23f88, type: 3}
+    clipVariants: []
+    spatialBlend: 0
+  - name: victory
+    clip: {fileID: 8300000, guid: dcf94dea48fd6874da5272aac56f21f6, type: 3}
+    clipVariants: []
+    spatialBlend: 0
+  - name: positive
+    clip: {fileID: 0}
+    clipVariants:
+    - {fileID: 8300000, guid: c571fc20928f2d34f979fdfd4b9c7572, type: 3}
+    - {fileID: 8300000, guid: 4ea712712944ed047a590e76f3df58e9, type: 3}
+    - {fileID: 8300000, guid: 38e856685ae15cc488409e6b3214e69a, type: 3}
+    spatialBlend: 0
+  - name: fail
+    clip: {fileID: 8300000, guid: fa4a4c70a4ae7b3449921c80c83a4ea6, type: 3}
+    clipVariants: []
+    spatialBlend: 0
+  - name: spawn_anomaly
+    clip: {fileID: 8300000, guid: b9dbd897f0416bc4aa82de20e82c42b5, type: 3}
+    clipVariants: []
+    spatialBlend: 0
+  - name: spawn_attack
+    clip: {fileID: 8300000, guid: ada8168d3220ecd4c897f46852e86e70, type: 3}
+    clipVariants: []
+    spatialBlend: 0
+  - name: clear
+    clip: {fileID: 8300000, guid: c168e96b11cb83e499f9dce0f50a1fd1, type: 3}
+    clipVariants: []
+    spatialBlend: 0
+  - name: clearBonus
+    clip: {fileID: 8300000, guid: e4dfb264145f57c4087b4ceed67f8be1, type: 3}
+    clipVariants: []
+    spatialBlend: 0
+  - name: beep01
+    clip: {fileID: 8300000, guid: daa1d0f54bd4a414e8f64a90101976f5, type: 3}
+    clipVariants: []
+    spatialBlend: 0
+  - name: beep02
+    clip: {fileID: 8300000, guid: 3830170af0bb6da479fa82f07fe820a5, type: 3}
+    clipVariants: []
+    spatialBlend: 0
+  - name: beeps
+    clip: {fileID: 8300000, guid: 28d0019f619aae34fa53177807420eb1, type: 3}
+    clipVariants: []
+    spatialBlend: 0
+  - name: portal
+    clip: {fileID: 8300000, guid: edbf90f882146f24cb0bde9a1e72e2db, type: 3}
+    clipVariants: []
+    spatialBlend: 0
   max: 32
   audioMixer: {fileID: 0}
   muteOnFocusLost: 1

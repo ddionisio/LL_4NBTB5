@@ -40,6 +40,10 @@ public class ModalAttackDistributive : M8.ModalController, M8.IModalPush, M8.IMo
     [Header("Finish Info")]
     public float finishEndDelay = 2f;
 
+    [Header("SFX")]
+    [M8.SoundPlaylist]
+    public string sfxSuccess;
+
     [Header("Signal Invoke")]
     public SignalAttackState signalInvokeAttackStateChange;
     public M8.SignalBoolean signalInvokeActive;
@@ -500,6 +504,9 @@ public class ModalAttackDistributive : M8.ModalController, M8.IModalPush, M8.IMo
     }
 
     IEnumerator DoFinish() {
+        if(!string.IsNullOrEmpty(sfxSuccess))
+            M8.SoundPlaylist.instance.Play(sfxSuccess, false);
+
         if(animator && !string.IsNullOrEmpty(takeFinish))
             yield return animator.PlayWait(takeFinish);
 

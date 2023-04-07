@@ -17,7 +17,7 @@ public class StartController : GameModeController<StartController> {
 
     [Header("Intro")]
     public AnimatorEnterExit introScan;
-    public GameObject introScanIdleGO;
+    public GameObject introScanIdleGO;    
     public GameObject introScanDangerGO;
     public GameObject introAttackIllustrateGO;
 
@@ -30,15 +30,26 @@ public class StartController : GameModeController<StartController> {
     public string introTakePortalOpen;
 
     public float introIdleDelay = 0.5f;
+    public float introBlobShadesDelay = 0.5f;
     public float introPortalOpenStartDelay = 0.5f;
     public float introPortalDelay = 1f;
 
     public ModalDialogFlow introDialog;
     public ModalDialogFlow introAttackDialog;
-
+        
     [Header("Music")]
     [M8.MusicPlaylist]
     public string music;
+
+    [Header("SFX")]
+    [M8.SoundPlaylist]
+    public string sfxScanEnter;
+    [M8.SoundPlaylist]
+    public string sfxScanDanger;
+    [M8.SoundPlaylist]
+    public string sfxAnomalies;
+    [M8.SoundPlaylist]
+    public string sfxPortalOpen;
 
     protected override void OnInstanceInit() {
         base.OnInstanceInit();
@@ -87,6 +98,9 @@ public class StartController : GameModeController<StartController> {
             yield return readyAnim.PlayExitWait();
 
         //show scanner
+        if(!string.IsNullOrEmpty(sfxScanEnter))
+            M8.SoundPlaylist.instance.Play(sfxScanEnter, false);
+
         if(introScanIdleGO) introScanIdleGO.SetActive(true);
 
         if(introScan) {
@@ -102,16 +116,27 @@ public class StartController : GameModeController<StartController> {
         yield return new WaitForSeconds(introIdleDelay);
 
         //show shadow blobs
+        if(!string.IsNullOrEmpty(sfxAnomalies))
+            M8.SoundPlaylist.instance.Play(sfxAnomalies, false);
+
         if(introAnimator && !string.IsNullOrEmpty(introTakeBlobShades))
             yield return introAnimator.PlayWait(introTakeBlobShades);
 
-        yield return new WaitForSeconds(introPortalOpenStartDelay);
+        yield return new WaitForSeconds(introBlobShadesDelay);
 
         //danger!
+        if(!string.IsNullOrEmpty(sfxScanDanger))
+            M8.SoundPlaylist.instance.Play(sfxScanDanger, false);
+
         if(introScanIdleGO) introScanIdleGO.SetActive(false);
         if(introScanDangerGO) introScanDangerGO.SetActive(true);
 
+        yield return new WaitForSeconds(introPortalOpenStartDelay);
+
         //open portal
+        if(!string.IsNullOrEmpty(sfxPortalOpen))
+            M8.SoundPlaylist.instance.Play(sfxPortalOpen, false);
+
         if(introAnimator && !string.IsNullOrEmpty(introTakePortalOpen))
             yield return introAnimator.PlayWait(introTakePortalOpen);
 

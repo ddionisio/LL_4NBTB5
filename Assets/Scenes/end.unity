@@ -5451,6 +5451,9 @@ MonoBehaviour:
   blobConsumeAnimate: {fileID: 1644610194}
   completeDelay: 2
   music: end
+  sfxEnter: swipe_in
+  sfxAttack: portal
+  sfxExplode: spawn_attack
 --- !u!4 &947938943
 Transform:
   m_ObjectHideFlags: 0

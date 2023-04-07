@@ -13888,13 +13888,13 @@ MonoBehaviour:
   poolGroup: blobs
   templateGroups:
   - blobData: {fileID: 11400000, guid: acd5723c30cdae64bbe2e8f18971de88, type: 2}
-    poolCapacity: 2
+    poolCapacity: 3
     spawnPointsRoot: {fileID: 4001167665286928876}
   - blobData: {fileID: 11400000, guid: bf714e321d9293d498da4fa5e0443c11, type: 2}
-    poolCapacity: 2
+    poolCapacity: 3
     spawnPointsRoot: {fileID: 4001167665284757762}
   - blobData: {fileID: 11400000, guid: 0fe7a69a59e63c243b736f4d5a5ab9fd, type: 2}
-    poolCapacity: 2
+    poolCapacity: 3
     spawnPointsRoot: {fileID: 4001167663986208210}
   - blobData: {fileID: 11400000, guid: 20e319697439a9d418000be70bc023d2, type: 2}
     poolCapacity: 1
@@ -14162,6 +14162,8 @@ MonoBehaviour:
   takeCorrect: correct
   takeBonus: bonus
   playMusic: play
+  sfxBonusClear: clearBonus
+  sfxBonusClearBlob: boop
   signalListenPlayStart: {fileID: 11400000, guid: 1c8954bb744cbad4e9567fecb9482514, type: 2}
   signalListenBlobDragBegin: {fileID: 11400000, guid: 0dd1c40d5bbeef54a8aaf4b6c89d5235, type: 2}
   signalListenBlobDragEnd: {fileID: 11400000, guid: e277b755729c85042a3893c829311846, type: 2}

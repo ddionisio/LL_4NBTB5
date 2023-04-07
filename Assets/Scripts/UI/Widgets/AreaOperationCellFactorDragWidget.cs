@@ -26,6 +26,12 @@ public class AreaOperationCellFactorDragWidget : MonoBehaviour, IDragHandler, IB
     public float dropMoveSpeed = 100;
     public DG.Tweening.Ease dropMoveEase = DG.Tweening.Ease.OutSine;
 
+    [Header("SFX")]
+    [M8.SoundPlaylist]
+    public string sfxDragBegin;
+    [M8.SoundPlaylist]
+    public string sfxDragSwap;
+
     public AreaOperationCellWidget areaOpWidget { get { return mAreaOpWidget; } }
 
     public bool isDragging { get; private set; }
@@ -159,6 +165,9 @@ public class AreaOperationCellFactorDragWidget : MonoBehaviour, IDragHandler, IB
                 dragLabel.text = otherCellNumber.ToString();
 
                 dragRoot.position = mHoverCellDragWidget.factorAnchor.position;
+
+                if(!string.IsNullOrEmpty(sfxDragSwap))
+                    M8.SoundPlaylist.instance.Play(sfxDragSwap, false);
             }
 
             mHoverCellDragWidget.dropHighlightActive = false;
@@ -236,6 +245,9 @@ public class AreaOperationCellFactorDragWidget : MonoBehaviour, IDragHandler, IB
             isDragging = true;
 
             RefreshHoverHighlight();
+
+            if(!string.IsNullOrEmpty(sfxDragBegin))
+                M8.SoundPlaylist.instance.Play(sfxDragBegin, false);
         }
     }
 

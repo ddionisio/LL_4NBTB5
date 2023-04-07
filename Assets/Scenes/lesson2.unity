@@ -1604,6 +1604,8 @@ MonoBehaviour:
   takeBoardBegin: enter
   takeBoardEnd: exit
   takeBoardCorrect: correct
+  sfxFailure: fail
+  sfxBlobClear: clear
   signalListenBlobDragBegin: {fileID: 11400000, guid: 0dd1c40d5bbeef54a8aaf4b6c89d5235, type: 2}
   signalListenBlobDragEnd: {fileID: 11400000, guid: e277b755729c85042a3893c829311846, type: 2}
   signalListenAttackStateChanged: {fileID: 11400000, guid: ebf9b91bb8b25644084fe225f3a38b36, type: 2}
