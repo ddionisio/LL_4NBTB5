@@ -20,6 +20,6 @@ MonoBehaviour:
   - key: congratulations
     voiceDuration: 2
   - key: congrats_desc
-    voiceDuration: 5
+    voiceDuration: 6
   - key: thank_you_for_playing
     voiceDuration: 4

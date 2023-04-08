@@ -5449,7 +5449,7 @@ MonoBehaviour:
   takeDaylight: attackBlobDaylight
   takeEnd: end
   blobConsumeAnimate: {fileID: 1644610194}
-  completeDelay: 2
+  completeDelay: 3
   music: end
   sfxEnter: swipe_in
   sfxAttack: portal
