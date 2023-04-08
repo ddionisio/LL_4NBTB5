@@ -20,6 +20,7 @@ public class Lesson1Controller : LessonBoardController {
     public ModalDialogFlow tutorialConnectDialog;
     public ModalDialogFlow tutorialAttackDistributiveDialog;
     public ModalDialogFlow tutorialAttackEvalDialog;
+    public ModalDialogFlow tutorialAttackEvalLastDigitDialog;
     public ModalDialogFlow tutorialAttackSumsDialog;
     public ModalDialogFlow tutorialEndDialog;
 
@@ -182,6 +183,23 @@ public class Lesson1Controller : LessonBoardController {
             }
         }
     }
+
+    IEnumerator DoAttackEvalTutorial() {
+        do {
+            yield return null;
+        } while(M8.ModalManager.main.isBusy);
+
+        yield return tutorialAttackEvalDialog.Play();
+
+        //wait for double digit eval.
+        var areaEvalModal = M8.ModalManager.main.GetBehaviour<ModalAttackAreaEvaluate>(GameData.instance.modalAttackAreaEvaluate);
+        if(areaEvalModal) {
+            while(areaEvalModal.areaOpCellWidgetSelected == null || areaEvalModal.areaOpCellWidgetSelected.cellData.op.operand1 < 10)
+                yield return null;
+        }
+
+        yield return tutorialAttackEvalLastDigitDialog.Play();
+    }
     
     protected override void OnSignalAttackDistributiveActive(bool aActive) {
         if(!mIsAttackDistributiveExplained && aActive) {
@@ -192,7 +210,7 @@ public class Lesson1Controller : LessonBoardController {
 
     protected override void OnSignalAttackEvaluateActive(bool aActive) {
         if(!mIsAttackEvaluateExplained && aActive) {
-            StartCoroutine(DoDialog(tutorialAttackEvalDialog));
+            StartCoroutine(DoAttackEvalTutorial());
             mIsAttackEvaluateExplained = true;
         }
     }
