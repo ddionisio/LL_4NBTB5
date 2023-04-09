@@ -16602,7 +16602,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4001167664792556543, guid: c85d8c55be7222b4f96044bd2bb175dd, type: 3}
       propertyPath: numberGroups.Array.data[1].leftNumbers.Array.data[1]
-      value: 316
+      value: 364
       objectReference: {fileID: 0}
     - target: {fileID: 4001167664792556543, guid: c85d8c55be7222b4f96044bd2bb175dd, type: 3}
       propertyPath: numberGroups.Array.data[1].leftNumbers.Array.data[2]

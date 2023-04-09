@@ -426,6 +426,11 @@ public class ModalAttackSums : M8.ModalController, M8.IModalPush, M8.IModalPop, 
 
                 var carryOverDigitRoot = carryOverDigitWidget.numberRoot;
 
+                //allow layout to refresh
+                carryOverDigitRoot.gameObject.SetActive(false);
+                yield return null;
+                carryOverDigitRoot.gameObject.SetActive(true);
+
                 Vector2 startPos = new Vector2(
                     answerDigitWidget.rectTransform.position.x - answerDigitWidget.rectTransform.sizeDelta.x * 0.5f - carryOverDigitRoot.sizeDelta.x * 0.5f,
                     answerDigitWidget.rectTransform.position.y);
