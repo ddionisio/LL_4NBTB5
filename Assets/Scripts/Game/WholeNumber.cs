@@ -44,4 +44,12 @@ public struct WholeNumber {
 
         return count;
     }
+
+    public static int ZeroCounts(int number) {
+        int count = 0;
+        for(int numStep = number; numStep % 10 == 0; count++)
+            numStep /= 10;
+
+        return count;
+    }
 }

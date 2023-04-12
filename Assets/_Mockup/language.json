@@ -86,6 +86,16 @@
     "bonus_partial_products_4": "Just remember how you split the numbers up into multiples of 10’s like before, and you should have no problem!",
     "congratulations": "CONGRATULATIONS!",
     "congrats_desc": "All the blobs have been banished for good! Earth is safe once more!",
-    "thank_you_for_playing": "Thank you for playing!"
+    "thank_you_for_playing": "Thank you for playing!",
+    "hint_zeroes_few": "Incorrect number of zeroes at the end! Looks like you missed a few zeroes.",
+    "hint_zeroes_many": "Incorrect number of zeroes at the end! Looks like you put in too many zeroes.",
+    "hint_mult_2": "Incorrect Multiplication: Remember that in multiples of 2, simply double the number.",
+    "hint_mult_3": "Incorrect Multiplication: The trick with multiples of 3 is to double the number, and then add the original number.",
+    "hint_mult_4": "Incorrect Multiplication: In multiples of 4, double the number, and then double it again.",
+    "hint_mult_5": "Incorrect Multiplication: If you are having trouble with multiples of 5, try multiplying the number by 10, and then half it.",
+    "hint_mult_6": "Incorrect Multiplication: A good way to solve multiples of 6 is to multiply the number by 5, and then add the original number.",
+    "hint_mult_7": "Incorrect Multiplication: A good way to solve multiples of 7 is to multiply the number by 5, and then add the original number twice.",
+    "hint_mult_8": "Incorrect Multiplication: If you are having trouble with multiples of 8, try multiplying the number by 2 three times.",
+    "hint_mult_9": "Incorrect Multiplication: One way to do multiples of 9 is to multiply the number by 10, and then subtract it by the original number."
   }
 }

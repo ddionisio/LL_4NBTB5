@@ -53,6 +53,8 @@ public class ModalAttackAreaEvaluate : M8.ModalController, M8.IModalPush, M8.IMo
 
     public AreaOperationCellWidget areaOpCellWidgetSelected { get; private set; }
 
+    public int lastAnswerNumber { get; private set; }
+
     private AreaOperation mAreaOp;
     private MistakeInfo mMistakeInfo;
 
@@ -254,6 +256,8 @@ public class ModalAttackAreaEvaluate : M8.ModalController, M8.IModalPush, M8.IMo
         signalInvokeInputActive?.Invoke(false);
 
         var num = Mathf.RoundToInt(val);
+
+        lastAnswerNumber = num;
 
         //check if matches
         if(num == areaOpCellWidgetSelected.cellData.op.equal) {

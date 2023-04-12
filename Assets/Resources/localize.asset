@@ -23,3 +23,23 @@ MonoBehaviour:
     voiceDuration: 6
   - key: thank_you_for_playing
     voiceDuration: 4
+  - key: hint_zeroes_few
+    voiceDuration: 6
+  - key: hint_zeroes_many
+    voiceDuration: 6
+  - key: hint_mult_2
+    voiceDuration: 6
+  - key: hint_mult_3
+    voiceDuration: 8
+  - key: hint_mult_4
+    voiceDuration: 6
+  - key: hint_mult_5
+    voiceDuration: 8
+  - key: hint_mult_6
+    voiceDuration: 8
+  - key: hint_mult_7
+    voiceDuration: 8
+  - key: hint_mult_8
+    voiceDuration: 8
+  - key: hint_mult_9
+    voiceDuration: 8

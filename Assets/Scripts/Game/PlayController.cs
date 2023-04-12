@@ -119,6 +119,9 @@ public class PlayController : GameModeController<PlayController> {
 
     public bool isBonusEnabled { get { return numberBonuses != null && numberBonuses.Length > 0 && mBlobBonusTemplateInd != -1; } }
 
+    public MistakeInfo mistakeCurrent { get { return mMistakeCurrent; } }
+    public MistakeInfo mistakeTotal { get { return mMistakeTotal; } }    
+
     //callbacks
     public event System.Action roundBeginCallback;
     public event System.Action roundEndCallback;
@@ -526,7 +529,7 @@ public class PlayController : GameModeController<PlayController> {
         }
 
         mAreaOp.Setup(factorLeft, factorRight);
-        //mAreaOp.Setup(250, 4);
+        //mAreaOp.Setup(200, 5);
 
         mMistakeCurrent.Reset();
 

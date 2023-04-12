@@ -99,9 +99,7 @@ namespace LoLExt {
 
         public LanguageExtraInfo GetExtraInfo(string key) {
             LanguageExtraInfo ret;
-            if(!mEntryExtras.TryGetValue(key, out ret)) {
-                Debug.LogWarning("No extra info for: " + key);
-            }
+            mEntryExtras.TryGetValue(key, out ret);
 
             return ret;
         }
