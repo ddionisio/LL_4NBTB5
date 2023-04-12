@@ -19001,6 +19001,7 @@ MonoBehaviour:
   signalInvokeError: {fileID: 11400000, guid: 4153d503682ef334f85e4874982c3846, type: 2}
   signalInvokeValueChange: {fileID: 11400000, guid: 94f572a35f200ad4a82e046146084b6a, type: 2}
   signalInvokeChangeOpText: {fileID: 11400000, guid: 2492900be86e36b4590dcabdec74683f, type: 2}
+  signalListenNumpadUpdate: {fileID: 11400000, guid: a85acdd326517404d94f6f16038cf62d, type: 2}
   signalListenNumpadProceed: {fileID: 11400000, guid: 3c06c911a184d0a4c9ae2b6047c59a85, type: 2}
 --- !u!114 &5720061319092510268
 MonoBehaviour:

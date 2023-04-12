@@ -63,6 +63,7 @@ public class ModalAttackSums : M8.ModalController, M8.IModalPush, M8.IModalPop, 
     public M8.SignalString signalInvokeChangeOpText;
 
     [Header("Signal Listen")]
+    public M8.SignalFloat signalListenNumpadUpdate;
     public M8.SignalFloat signalListenNumpadProceed;
 
     public bool isAnswerProcessing { get { return mAnswerProcessRout != null; } }
@@ -230,6 +231,9 @@ public class ModalAttackSums : M8.ModalController, M8.IModalPush, M8.IModalPop, 
 
         mInputAnswerDigitIndex = -1;
 
+        if(signalListenNumpadUpdate)
+            signalListenNumpadUpdate.callback += OnNumpadUpdate;
+
         if(signalListenNumpadProceed)
             signalListenNumpadProceed.callback += OnNumpadProceed;
 
@@ -239,10 +243,18 @@ public class ModalAttackSums : M8.ModalController, M8.IModalPush, M8.IModalPop, 
     void M8.IModalPop.Pop() {
         StopAnswerProcess();
 
+        if(signalListenNumpadUpdate)
+            signalListenNumpadUpdate.callback -= OnNumpadUpdate;
+
         if(signalListenNumpadProceed)
             signalListenNumpadProceed.callback -= OnNumpadProceed;
 
         ClearFactors();
+    }
+
+    void OnNumpadUpdate(float val) {
+        int iVal = Mathf.RoundToInt(val);
+        inputAnswerGroup.SetDigitNumber(mInputAnswerDigitIndex, iVal);
     }
 
     void OnNumpadProceed(float val) {
@@ -270,7 +282,8 @@ public class ModalAttackSums : M8.ModalController, M8.IModalPush, M8.IModalPop, 
 
         //open up numpad
         mNumpadParms[ModalCalculator.parmInitValue] = 0;
-        mNumpadParms[GameData.modalParamOperationText] = "";
+        mNumpadParms[ModalCalculator.parmMaxDigit] = 2;
+        mNumpadParms[GameData.modalParamOperationText] = "";        
 
         modalMain.Open(GameData.instance.modalNumpad, mNumpadParms);
 
@@ -316,6 +329,9 @@ public class ModalAttackSums : M8.ModalController, M8.IModalPush, M8.IModalPop, 
             signalInvokeValueChange?.Invoke(0f);
 
             signalInvokeInputActive?.Invoke(true);
+
+            inputAnswerGroup.SetDigitNumber(mInputAnswerDigitIndex, 0);
+            inputAnswerGroup.SetDigitVisible(mInputAnswerDigitIndex, true);
 
             //wait for correct answer
             mIsCorrectAnswerProcessed = false;
@@ -371,6 +387,8 @@ public class ModalAttackSums : M8.ModalController, M8.IModalPush, M8.IModalPop, 
             signalInvokeAttackStateChange?.Invoke(AttackState.Fail);
         }
         else {
+            inputAnswerGroup.SetDigitNumber(mInputAnswerDigitIndex, 0);
+
             signalInvokeValueChange?.Invoke(0f);
 
             signalInvokeInputActive?.Invoke(true);

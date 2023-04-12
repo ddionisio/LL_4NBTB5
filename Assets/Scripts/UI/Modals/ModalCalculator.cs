@@ -567,7 +567,7 @@ public class ModalCalculator : M8.ModalController, M8.IModalPush, M8.IModalPop, 
     }
 
     private void UpdateCurrentValueFromInput() {
-        var prevVal = mCurValue;
+        //var prevVal = mCurValue;
 
         int startInd = 0;
         int len = mCurInput.Length;
@@ -585,7 +585,8 @@ public class ModalCalculator : M8.ModalController, M8.IModalPush, M8.IModalPop, 
         //update display
         UpdateCurrentInputDisplay();
 
-        if(mCurValue != prevVal && signalValueUpdate)
+        //if(mCurValue != prevVal && signalValueUpdate)
+        if(signalValueUpdate)
             signalValueUpdate.Invoke((float)mCurValue);
     }
 

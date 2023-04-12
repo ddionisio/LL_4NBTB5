@@ -288,8 +288,11 @@ public class ModalAttackPartialProducts : M8.ModalController, M8.IModalPush, M8.
         if(mSelectedProductWidget) {
             //update value of current selected widget
             var numpadModal = M8.ModalManager.main.GetBehaviour<ModalCalculator>(GameData.instance.modalNumpad);
-            if(numpadModal)
-                mSelectedProductWidget.inputNumber = Mathf.RoundToInt(numpadModal.curValueFloat);
+            if(numpadModal) {
+                int iVal = Mathf.RoundToInt(numpadModal.curValueFloat);
+                if(iVal != 0 || !mSelectedProductWidget.isEmpty)
+                    mSelectedProductWidget.inputNumber = Mathf.RoundToInt(numpadModal.curValueFloat);
+            }
 
             inputInd = mPartialProductInputs.IndexOf(mSelectedProductWidget);
         }
@@ -308,6 +311,8 @@ public class ModalAttackPartialProducts : M8.ModalController, M8.IModalPush, M8.
 
             signalInvokeValueChange?.Invoke(mSelectedProductWidget.inputNumber);
         }
+
+        //NumpadEnterRefresh();
     }
 
     void OnNumpadNext() {
@@ -316,8 +321,11 @@ public class ModalAttackPartialProducts : M8.ModalController, M8.IModalPush, M8.
         if(mSelectedProductWidget) {
             //update value of current selected widget
             var numpadModal = M8.ModalManager.main.GetBehaviour<ModalCalculator>(GameData.instance.modalNumpad);
-            if(numpadModal)
-                mSelectedProductWidget.inputNumber = Mathf.RoundToInt(numpadModal.curValueFloat);
+            if(numpadModal) {
+                int iVal = Mathf.RoundToInt(numpadModal.curValueFloat);
+                if(iVal != 0 || !mSelectedProductWidget.isEmpty)
+                    mSelectedProductWidget.inputNumber = Mathf.RoundToInt(numpadModal.curValueFloat);
+            }
 
             inputInd = mPartialProductInputs.IndexOf(mSelectedProductWidget);
         }
@@ -336,6 +344,8 @@ public class ModalAttackPartialProducts : M8.ModalController, M8.IModalPush, M8.
 
             signalInvokeValueChange?.Invoke(mSelectedProductWidget.inputNumber);
         }
+
+        //NumpadEnterRefresh();
     }
 
     void OnNumpadUpdate(float val) {
@@ -346,26 +356,7 @@ public class ModalAttackPartialProducts : M8.ModalController, M8.IModalPush, M8.
         }
 
         //check if all inputs have values in them
-        int fillCount = 0;
-        for(int i = 0; i < mPartialProductInputs.Count; i++) {
-            var productWidget = mPartialProductInputs[i];
-            if(productWidget) {
-                if(productWidget.inputNumber > 0)
-                    fillCount++;
-                else if(productWidget != answerWidget) { //answer will never be '0'
-                    //check if there is a correct value as '0' (this is a fail-safe, should never have a partial product be '0')
-                    for(int j = 0; j < mCorrectAnswers.Count; j++) {
-                        if(productWidget.inputNumber == mCorrectAnswers[j]) {
-                            fillCount++;
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-
-        //allow submit once everything is filled
-        signalInvokeSubmitActive?.Invoke(fillCount == mPartialProductInputs.Count);
+        NumpadEnterRefresh();
     }
 
     void OnNumpadProceed(float val) {
@@ -548,5 +539,29 @@ public class ModalAttackPartialProducts : M8.ModalController, M8.IModalPush, M8.
         }
 
         mPartialProductActives.Clear();
+    }
+
+    private void NumpadEnterRefresh() {
+        //check if all inputs have values in them
+        int fillCount = 0;
+        for(int i = 0; i < mPartialProductInputs.Count; i++) {
+            var productWidget = mPartialProductInputs[i];
+            if(productWidget) {
+                if(!productWidget.isEmpty)
+                    fillCount++;
+                else if(productWidget != answerWidget) { //answer will never be '0'
+                    //check if there is a correct value as '0' (this is a fail-safe, should never have a partial product be '0')
+                    for(int j = 0; j < mCorrectAnswers.Count; j++) {
+                        if(productWidget.inputNumber == mCorrectAnswers[j]) {
+                            fillCount++;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        //allow submit once everything is filled
+        signalInvokeSubmitActive?.Invoke(fillCount == mPartialProductInputs.Count);
     }
 }

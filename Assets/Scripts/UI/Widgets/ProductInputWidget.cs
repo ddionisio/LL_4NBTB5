@@ -30,7 +30,7 @@ public class ProductInputWidget : MonoBehaviour, IPointerClickHandler {
     public int inputNumber { 
         get { return mInputNumber; }
         set {
-            if(mInputNumber != value) {
+            if(mInputNumber != value || isEmpty) {
                 mInputNumber = value;
 
                 //update text
@@ -85,6 +85,8 @@ public class ProductInputWidget : MonoBehaviour, IPointerClickHandler {
             return mRectTrans;
         }
     }
+
+    public bool isEmpty { get { return _numberLabel ? string.IsNullOrEmpty(_numberLabel.text) : true; } }
 
     public event System.Action<ProductInputWidget> clickCallback;
 
