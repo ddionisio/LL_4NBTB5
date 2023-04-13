@@ -12,11 +12,9 @@ public class ModalAttackAreaEvaluate : M8.ModalController, M8.IModalPush, M8.IMo
     [Header("Area Info")]
     public AreaGridControl[] areaGrids;
 
-    [Header("Mistake Display")]
+    [Header("Display")]
     public MistakeCounterWidget mistakeCounterDisplay;
-
-    [Header("Numpad Info")]
-    public string numpadOpTextFormat = "{0} {1} {2} =";
+    public Color numpadOpNumberHighlightColor;
 
     [Header("Animation")]
     public M8.Animator.Animate animator;
@@ -70,6 +68,9 @@ public class ModalAttackAreaEvaluate : M8.ModalController, M8.IModalPush, M8.IMo
     private bool mIsInit;
 
     private Coroutine mAnswerProcessRout;
+
+    private string mOpHighlightColorStr;
+    private System.Text.StringBuilder mOpStrBuild = new System.Text.StringBuilder();
 
     public void Back() {
         Close();
@@ -139,6 +140,8 @@ public class ModalAttackAreaEvaluate : M8.ModalController, M8.IModalPush, M8.IMo
                 areaGrid.Init();
                 areaGrid.gameObject.SetActive(false);
             }
+
+            mOpHighlightColorStr = ColorUtility.ToHtmlStringRGB(numpadOpNumberHighlightColor);
 
             mIsInit = true;
         }
@@ -301,7 +304,41 @@ public class ModalAttackAreaEvaluate : M8.ModalController, M8.IModalPush, M8.IMo
                     var cell = areaCellWidget.cellData;
 
                     signalInvokeValueChange?.Invoke(0f);
-                    signalInvokeChangeOpText?.Invoke(string.Format(numpadOpTextFormat, cell.op.operand1, Operation.GetOperatorTypeChar(cell.op.op), cell.op.operand2));
+
+                    //build op string
+                    var op1ZeroCount = WholeNumber.ZeroCounts(cell.op.operand1);
+                    var op2ZeroCount = WholeNumber.ZeroCounts(cell.op.operand2);
+
+                    var op1NonZero = cell.op.operand1 / WholeNumber.TenExponent(op1ZeroCount);
+                    var op2NonZero = cell.op.operand2 / WholeNumber.TenExponent(op2ZeroCount);
+
+                    mOpStrBuild.Clear();
+
+                    mOpStrBuild.Append("<color=#");
+                    mOpStrBuild.Append(mOpHighlightColorStr);
+                    mOpStrBuild.Append('>');
+                    mOpStrBuild.Append(op1NonZero);
+                    mOpStrBuild.Append("</color>");
+
+                    for(int i = 0; i < op1ZeroCount; i++)
+                        mOpStrBuild.Append('0');
+
+                    mOpStrBuild.Append(' ');
+                    mOpStrBuild.Append(Operation.GetOperatorTypeChar(cell.op.op));
+                    mOpStrBuild.Append(' ');
+
+                    mOpStrBuild.Append("<color=#");
+                    mOpStrBuild.Append(mOpHighlightColorStr);
+                    mOpStrBuild.Append('>');
+                    mOpStrBuild.Append(op2NonZero);
+                    mOpStrBuild.Append("</color>");
+
+                    for(int i = 0; i < op2ZeroCount; i++)
+                        mOpStrBuild.Append('0');
+
+                    mOpStrBuild.Append(" =");
+
+                    signalInvokeChangeOpText?.Invoke(mOpStrBuild.ToString());
 
                     areaOpCellWidgetSelected = areaCellWidget;
 

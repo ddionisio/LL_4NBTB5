@@ -16602,15 +16602,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4001167664792556543, guid: c85d8c55be7222b4f96044bd2bb175dd, type: 3}
       propertyPath: numberGroups.Array.data[1].leftNumbers.Array.data[1]
-      value: 364
+      value: 346
       objectReference: {fileID: 0}
     - target: {fileID: 4001167664792556543, guid: c85d8c55be7222b4f96044bd2bb175dd, type: 3}
       propertyPath: numberGroups.Array.data[1].leftNumbers.Array.data[2]
-      value: 372
+      value: 357
       objectReference: {fileID: 0}
     - target: {fileID: 4001167664792556543, guid: c85d8c55be7222b4f96044bd2bb175dd, type: 3}
       propertyPath: numberGroups.Array.data[2].leftNumbers.Array.data[0]
-      value: 384
+      value: 348
       objectReference: {fileID: 0}
     - target: {fileID: 4001167664792556543, guid: c85d8c55be7222b4f96044bd2bb175dd, type: 3}
       propertyPath: numberGroups.Array.data[2].leftNumbers.Array.data[1]
@@ -16618,7 +16618,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4001167664792556543, guid: c85d8c55be7222b4f96044bd2bb175dd, type: 3}
       propertyPath: numberGroups.Array.data[2].leftNumbers.Array.data[2]
-      value: 417
+      value: 437
       objectReference: {fileID: 0}
     - target: {fileID: 4001167664792556543, guid: c85d8c55be7222b4f96044bd2bb175dd, type: 3}
       propertyPath: numberGroups.Array.data[3].leftNumbers.Array.data[0]

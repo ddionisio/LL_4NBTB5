@@ -259,7 +259,7 @@ MonoBehaviour:
   - {fileID: 4360600173774073015}
   - {fileID: 497178674169598286}
   mistakeCounterDisplay: {fileID: 959825000}
-  numpadOpTextFormat: '{0} {1} {2} ='
+  numpadOpNumberHighlightColor: {r: 1, g: 0.8431373, b: 0.6, a: 1}
   animator: {fileID: 429450092753380103}
   takeFinish: success
   errorEndDelay: 0.3
@@ -450,7 +450,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 207217346}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: -0.9902681, w: 0.13917312}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
