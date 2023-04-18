@@ -443,6 +443,7 @@ public class ModalAttackSums : M8.ModalController, M8.IModalPush, M8.IModalPop, 
                     carryOverDigitWidget = carryOverGroup.SetDigitNumber(nextDigitIndex, carryOverDigit);
 
                 var carryOverDigitRoot = carryOverDigitWidget.numberRoot;
+                var carryOverDigitRootLocalPos = carryOverDigitRoot.localPosition;
 
                 //allow layout to refresh
                 carryOverDigitRoot.gameObject.SetActive(false);
@@ -488,6 +489,9 @@ public class ModalAttackSums : M8.ModalController, M8.IModalPush, M8.IModalPop, 
                         carryOverDigitRoot.position = new Vector3(endPos.x, curY, 0f);
                     }
                 }
+
+                //ensure it is back to its position
+                carryOverDigitRoot.localPosition = carryOverDigitRootLocalPos;
 
                 if(!string.IsNullOrEmpty(sfxCarryOver))
                     M8.SoundPlaylist.instance.Play(sfxCarryOver, false);

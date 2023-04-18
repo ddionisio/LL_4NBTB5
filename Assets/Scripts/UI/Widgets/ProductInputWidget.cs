@@ -88,6 +88,8 @@ public class ProductInputWidget : MonoBehaviour, IPointerClickHandler {
 
     public bool isEmpty { get { return _numberLabel ? string.IsNullOrEmpty(_numberLabel.text) : true; } }
 
+    public Operation op { get; set; } //use as a guidance what the number represents
+
     public event System.Action<ProductInputWidget> clickCallback;
 
     private int mInputNumber;

@@ -529,7 +529,7 @@ public class PlayController : GameModeController<PlayController> {
         }
 
         mAreaOp.Setup(factorLeft, factorRight);
-        //mAreaOp.Setup(200, 5);
+        mAreaOp.Setup(428, 4);
 
         mMistakeCurrent.Reset();
 

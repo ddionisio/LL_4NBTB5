@@ -93,6 +93,8 @@ public class DigitWidget : MonoBehaviour, IPointerClickHandler, IPointerEnterHan
 
     private bool mIsPointerEnter;
 
+    private Vector3 mNumberRootLocalPos;
+
     public void Init(int aInd) {
         index = aInd;
 
@@ -105,7 +107,14 @@ public class DigitWidget : MonoBehaviour, IPointerClickHandler, IPointerEnterHan
 
             SetNumberEmpty();
 
+            if(_numberRoot)
+                mNumberRootLocalPos = _numberRoot.localPosition;
+
             mIsInit = true;
+        }
+        else {
+            if(_numberRoot) //fail-safe if number root is screwed by something outside before recycled
+                _numberRoot.localPosition = mNumberRootLocalPos;
         }
 
         interactable = false;

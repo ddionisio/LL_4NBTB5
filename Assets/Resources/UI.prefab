@@ -1487,6 +1487,7 @@ MonoBehaviour:
   sfxWrong: wrong
   sfxSuccess: correct
   finishEndDelay: 0.3
+  signalInvokeChangeOpText: {fileID: 11400000, guid: 2492900be86e36b4590dcabdec74683f, type: 2}
   signalInvokeValueChange: {fileID: 11400000, guid: 94f572a35f200ad4a82e046146084b6a, type: 2}
   signalInvokeInputActive: {fileID: 11400000, guid: d79671a069ec85e4c9acf437963766f5, type: 2}
   signalInvokeSubmitActive: {fileID: 11400000, guid: 6aa779755d89735409521b417f3fdade, type: 2}

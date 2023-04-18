@@ -41,6 +41,7 @@ public class ModalAttackPartialProducts : M8.ModalController, M8.IModalPush, M8.
     public float finishEndDelay = 0.5f;
 
     [Header("Signal Invoke")]
+    public M8.SignalString signalInvokeChangeOpText;
     public M8.SignalFloat signalInvokeValueChange;
     public M8.SignalBoolean signalInvokeInputActive;
     public M8.SignalBoolean signalInvokeSubmitActive;
@@ -77,6 +78,7 @@ public class ModalAttackPartialProducts : M8.ModalController, M8.IModalPush, M8.
     private M8.GenericParams mNumpadParms;
 
     private bool mIsInit;
+    private bool mIsShowHint;
 
     private Coroutine mProceedRout;
 
@@ -127,6 +129,8 @@ public class ModalAttackPartialProducts : M8.ModalController, M8.IModalPush, M8.
             mIsInit = true;
         }
 
+        mIsShowHint = false;
+
         //setup shared data across attack phases
         int emptyCount = 0;
         bool answerIsEmpty = false;
@@ -172,6 +176,7 @@ public class ModalAttackPartialProducts : M8.ModalController, M8.IModalPush, M8.
                         partialProductWidget.selectedActive = false;
                         partialProductWidget.correctActive = false;                        
                         partialProductWidget.interactable = false;
+                        partialProductWidget.op = cell.op;
 
                         mPartialProductIndices[partialProductCount] = partialProductCount;
                         partialProductCount++;
@@ -221,7 +226,8 @@ public class ModalAttackPartialProducts : M8.ModalController, M8.IModalPush, M8.
 
             //setup answer
             if(answerIsEmpty) {
-                answerWidget.SetEmpty();                
+                answerWidget.op = new Operation { op=OperatorType.None };
+                answerWidget.SetEmpty();
                 answerWidget.interactable = true;
 
                 mPartialProductInputs.Add(answerWidget);
@@ -309,6 +315,11 @@ public class ModalAttackPartialProducts : M8.ModalController, M8.IModalPush, M8.
         if(mSelectedProductWidget) {
             mSelectedProductWidget.selectedActive = true;
 
+            if(mIsShowHint && mSelectedProductWidget.op.op != OperatorType.None)
+                signalInvokeChangeOpText?.Invoke(string.Format("{0} {1} {2} =", mSelectedProductWidget.op.operand1, Operation.GetOperatorTypeChar(mSelectedProductWidget.op.op), mSelectedProductWidget.op.operand2));
+            else
+                signalInvokeChangeOpText?.Invoke("");
+
             signalInvokeValueChange?.Invoke(mSelectedProductWidget.inputNumber);
         }
 
@@ -342,6 +353,11 @@ public class ModalAttackPartialProducts : M8.ModalController, M8.IModalPush, M8.
         if(mSelectedProductWidget) {
             mSelectedProductWidget.selectedActive = true;
 
+            if(mIsShowHint && mSelectedProductWidget.op.op != OperatorType.None)
+                signalInvokeChangeOpText?.Invoke(string.Format("{0} {1} {2} =", mSelectedProductWidget.op.operand1, Operation.GetOperatorTypeChar(mSelectedProductWidget.op.op), mSelectedProductWidget.op.operand2));
+            else
+                signalInvokeChangeOpText?.Invoke("");
+
             signalInvokeValueChange?.Invoke(mSelectedProductWidget.inputNumber);
         }
 
@@ -373,8 +389,15 @@ public class ModalAttackPartialProducts : M8.ModalController, M8.IModalPush, M8.
 
         mSelectedProductWidget = widget;
         mSelectedProductWidget.selectedActive = true;
-
+                
         mNumpadParms[ModalCalculator.parmInitValue] = widget.inputNumber;
+
+        if(mSelectedProductWidget) {
+            if(mIsShowHint && mSelectedProductWidget.op.op != OperatorType.None)
+                mNumpadParms[GameData.modalParamOperationText] = string.Format("{0} {1} {2} =", mSelectedProductWidget.op.operand1, Operation.GetOperatorTypeChar(mSelectedProductWidget.op.op), mSelectedProductWidget.op.operand2);
+            else
+                mNumpadParms[GameData.modalParamOperationText] = "";
+        }
 
         M8.ModalManager.main.Open(GameData.instance.modalNumpad, mNumpadParms);
     }
@@ -477,6 +500,9 @@ public class ModalAttackPartialProducts : M8.ModalController, M8.IModalPush, M8.
                 }
                 else {
                     mProceedRout = null;
+
+                    //one life left?
+                    mIsShowHint = mMistakeInfo.totalMistakeCount + 1 >= mMistakeInfo.maxMistakeCount;
 
                     //select new product input
                     if(mPartialProductInputs.Count > 0)
