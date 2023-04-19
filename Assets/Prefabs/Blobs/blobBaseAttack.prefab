@@ -12960,6 +12960,7 @@ MonoBehaviour:
   takeCorrect: correct
   soundSpawn: spawn_attack
   signalListenDespawn: {fileID: 0}
+  signalInvokeClick: {fileID: 11400000, guid: 472fce4ec1d549849bd83078d05b26dd, type: 2}
   signalInvokeDragBegin: {fileID: 11400000, guid: 0dd1c40d5bbeef54a8aaf4b6c89d5235, type: 2}
   signalInvokeDragEnd: {fileID: 11400000, guid: e277b755729c85042a3893c829311846, type: 2}
   signalInvokeDespawn: {fileID: 11400000, guid: 7b62e099b2cb63e40b85c16f921a5bde, type: 2}

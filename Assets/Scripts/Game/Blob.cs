@@ -90,6 +90,7 @@ public class Blob : MonoBehaviour, M8.IPoolSpawn, M8.IPoolDespawn {
     public M8.Signal signalListenDespawn; //use to animate and then despawn
 
     [Header("Signal Invokes")]
+    public SignalBlob signalInvokeClick;
     public SignalBlob signalInvokeDragBegin;
     public SignalBlob signalInvokeDragEnd;
     public SignalBlob signalInvokeDespawn;
@@ -103,6 +104,8 @@ public class Blob : MonoBehaviour, M8.IPoolSpawn, M8.IPoolDespawn {
             }
         }
     }
+
+    public int penaltyCounter { get; set; }
 
     public int dragRefPointIndex { get; private set; }
     public Vector2 dragPoint { get; private set; } //world
@@ -313,6 +316,7 @@ public class Blob : MonoBehaviour, M8.IPoolSpawn, M8.IPoolDespawn {
         }
 
         mNumber = 0;
+        penaltyCounter = 0;
         mInputLocked = false;
         mInputLockedInternal = false;
 
@@ -371,6 +375,13 @@ public class Blob : MonoBehaviour, M8.IPoolSpawn, M8.IPoolDespawn {
         ApplyNumberDisplay();
 
         state = State.Spawning;
+    }
+
+    public void OnPointerClick(JellySprite jellySprite, int index, PointerEventData eventData) {
+        if(inputLocked)
+            return;
+
+        signalInvokeClick?.Invoke(this);
     }
 
     public void OnPointerEnter(JellySprite jellySprite, int index, PointerEventData eventData) {

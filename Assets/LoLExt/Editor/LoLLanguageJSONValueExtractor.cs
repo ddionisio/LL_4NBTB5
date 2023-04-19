@@ -17,8 +17,8 @@ namespace LoLExt {
         }
 
         void OnGUI() {
-            lookupTextAsset = EditorGUILayout.ObjectField("Look-Up Text", lookupTextAsset, typeof(TextAsset), false) as TextAsset;
-            sourceTextAsset = EditorGUILayout.ObjectField("Source Text", sourceTextAsset, typeof(TextAsset), false) as TextAsset;
+            lookupTextAsset = EditorGUILayout.ObjectField("Original Text", lookupTextAsset, typeof(TextAsset), false) as TextAsset;
+            sourceTextAsset = EditorGUILayout.ObjectField("Modified Text", sourceTextAsset, typeof(TextAsset), false) as TextAsset;
             outputTextAsset = EditorGUILayout.ObjectField("Output Text", outputTextAsset, typeof(TextAsset), false) as TextAsset;
 
             GUI.enabled = lookupTextAsset && sourceTextAsset && outputTextAsset;

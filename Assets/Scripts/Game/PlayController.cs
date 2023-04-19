@@ -99,12 +99,15 @@ public class PlayController : GameModeController<PlayController> {
 
     [Header("Signal Listen")]
     public M8.Signal signalListenPlayStart;
+    public SignalBlob signalListenBlobClick;
     public SignalBlob signalListenBlobDragBegin;
     public SignalBlob signalListenBlobDragEnd;
 
     public SignalAttackState signalListenAttackStateChanged;
 
     [Header("Signal Invoke")]
+    public M8.SignalInteger signalInvokeScoreUpdate;
+    public M8.SignalBoolean signalInvokeActionActive;
     public M8.Signal signalInvokePlayEnd;
 
     public int roundCount { get { return numberGroups.Length; } }
@@ -112,7 +115,17 @@ public class PlayController : GameModeController<PlayController> {
     public OperatorType curRoundOp { get { return OperatorType.Multiply; } }
     public int comboCount { get; private set; }
     public bool comboIsActive { get { return comboCount > 1; } }
-    public int curScore { get; private set; }
+    public int curScore { 
+        get { return mCurScore; } 
+
+        private set {
+            if(mCurScore != value) {
+                mCurScore = value;
+                signalInvokeScoreUpdate?.Invoke(value);
+            }
+        }
+    }
+
     public int blobClearedCount { get; private set; }
 
     public float curPlayTime { get { return Time.time - mPlayLastTime; } }
@@ -120,7 +133,9 @@ public class PlayController : GameModeController<PlayController> {
     public bool isBonusEnabled { get { return numberBonuses != null && numberBonuses.Length > 0 && mBlobBonusTemplateInd != -1; } }
 
     public MistakeInfo mistakeCurrent { get { return mMistakeCurrent; } }
-    public MistakeInfo mistakeTotal { get { return mMistakeTotal; } }    
+    public MistakeInfo mistakeTotal { get { return mMistakeTotal; } }
+
+    public bool isActionActive { get { return mActionRout != null; } }
 
     //callbacks
     public event System.Action roundBeginCallback;
@@ -139,7 +154,7 @@ public class PlayController : GameModeController<PlayController> {
     private RoundWidget[] mRoundWidgets;
 
     private Coroutine mSpawnRout;
-    private Coroutine mAttackRout;
+    private Coroutine mActionRout;
 
     private AttackState mCurAttackState;
 
@@ -151,6 +166,18 @@ public class PlayController : GameModeController<PlayController> {
     private int mBonusCount;
 
     private ModalAttackParams mModalAttackParms;
+    private M8.GenericParams mModalDigitRemoverParms = new M8.GenericParams();
+
+    private Blob mBlobClicked;
+
+    private int mCurScore = 0;
+
+    public void StartDigitDestroyer() {
+        if(mActionRout != null)
+            StopCoroutine(mActionRout);
+
+        mActionRout = StartCoroutine(DoDigitDestroyer());
+    }
 
     public void DebugClearActiveBlobs() {
         for(int i = blobSpawner.blobActives.Count - 1; i >= 0; i--) {
@@ -168,7 +195,10 @@ public class PlayController : GameModeController<PlayController> {
     }
 
     public void DebugAutoConnect() {
-        StartCoroutine(DoAutoConnect());
+        if(mActionRout != null)
+            StopCoroutine(mActionRout);
+
+        mActionRout = StartCoroutine(DoAutoConnect());
     }
 
     public void DebugComboSubtract() {
@@ -177,12 +207,15 @@ public class PlayController : GameModeController<PlayController> {
     }
 
     protected override void OnInstanceDeinit() {
+        mBlobClicked = null;
+
         if(connectControl) {
             connectControl.groupAddedCallback -= OnGroupAdded;
             connectControl.evaluateCallback -= OnGroupEval;
         }
 
         if(signalListenPlayStart) signalListenPlayStart.callback -= OnSignalPlayBegin;
+        if(signalListenBlobClick) signalListenBlobClick.callback -= OnSignalBlobClick;
         if(signalListenBlobDragBegin) signalListenBlobDragBegin.callback -= OnSignalBlobDragBegin;
         if(signalListenBlobDragEnd) signalListenBlobDragEnd.callback -= OnSignalBlobDragEnd;
 
@@ -193,9 +226,9 @@ public class PlayController : GameModeController<PlayController> {
             mSpawnRout = null;
         }
 
-        if(mAttackRout != null) {
-            StopCoroutine(mAttackRout);
-            mAttackRout = null;
+        if(mActionRout != null) {
+            StopCoroutine(mActionRout);
+            mActionRout = null;
         }
 
         base.OnInstanceDeinit();
@@ -246,11 +279,12 @@ public class PlayController : GameModeController<PlayController> {
         connectControl.groupAddedCallback += OnGroupAdded;
         connectControl.evaluateCallback += OnGroupEval;
 
-        signalListenPlayStart.callback += OnSignalPlayBegin;
-        signalListenBlobDragBegin.callback += OnSignalBlobDragBegin;
-        signalListenBlobDragEnd.callback += OnSignalBlobDragEnd;
+        if(signalListenPlayStart) signalListenPlayStart.callback += OnSignalPlayBegin;
+        if(signalListenBlobClick) signalListenBlobClick.callback += OnSignalBlobClick;
+        if(signalListenBlobDragBegin) signalListenBlobDragBegin.callback += OnSignalBlobDragBegin;
+        if(signalListenBlobDragEnd) signalListenBlobDragEnd.callback += OnSignalBlobDragEnd;
 
-        signalListenAttackStateChanged.callback += OnSignalAttackStateChanged;
+        if(signalListenAttackStateChanged) signalListenAttackStateChanged.callback += OnSignalAttackStateChanged;
     }
 
     protected override IEnumerator Start() {
@@ -274,7 +308,14 @@ public class PlayController : GameModeController<PlayController> {
         mPlayLastTime = Time.time;
     }
 
+    void OnSignalBlobClick(Blob blob) {
+        mBlobClicked = blob;
+    }
+
     void OnSignalBlobDragBegin(Blob blob) {
+        if(connectControl.isDragDisabled)
+            return;
+
         var blobActives = blobSpawner.blobActives;
         for(int i = 0; i < blobActives.Count; i++) {
             var blobActive = blobActives[i];
@@ -291,18 +332,15 @@ public class PlayController : GameModeController<PlayController> {
     }
 
     void OnSignalBlobDragEnd(Blob blob) {
+        if(connectControl.isDragDisabled)
+            return;
+
         var blobActives = blobSpawner.blobActives;
         for(int i = 0; i < blobActives.Count; i++) {
             var blobActive = blobActives[i];
-            if(blobActive == blob)
-                continue;
 
-            if(numberCriteriaUnlocked || CheckBlobConnectCriteria(blob, blobActive)) {
-                blobActive.highlightLock = false;
-            }
-            else {
-                blobActive.inputLocked = false;
-            }
+            blobActive.highlightLock = false;
+            blobActive.inputLocked = false;
         }
     }
 
@@ -352,6 +390,8 @@ public class PlayController : GameModeController<PlayController> {
 
             //signal complete round
             roundEndCallback?.Invoke();
+
+            mBlobClicked = null;
         }
 
         //var playTotalTime = curPlayTime;
@@ -471,7 +511,71 @@ public class PlayController : GameModeController<PlayController> {
         mSpawnRout = null;
     }
 
+    IEnumerator DoDigitDestroyer() {
+        signalInvokeActionActive?.Invoke(true);
+
+        connectControl.isDragDisabled = true;
+
+        //wait for blobs to spawn
+        while(blobSpawner.isSpawning)
+            yield return null;
+
+        //highlight potential targets
+        var blobActives = blobSpawner.blobActives;
+        for(int i = 0; i < blobActives.Count; i++) {
+            var blobActive = blobActives[i];
+            if(!(blobActive.state == Blob.State.Normal || blobActive.state == Blob.State.Spawning)) //don't include
+                continue;
+
+            while(blobActive.state == Blob.State.Spawning)
+                yield return null;
+
+            if(blobActive.name != blobBonusName && WholeNumber.NonZeroCount(blobActive.number) > 1) {
+                blobActive.highlightLock = true;
+            }
+            else {
+                blobActive.inputLocked = true;
+            }
+        }
+
+        //wait for a valid blob click
+        mBlobClicked = null;
+        while(!mBlobClicked)
+            yield return null;
+
+        //open modal for digit removal
+        mModalDigitRemoverParms[ModalDigitRemover.parmBlob] = mBlobClicked;
+
+        M8.ModalManager.main.Open(GameData.instance.modalDigitRemover, mModalDigitRemoverParms);
+
+        //wait for process to finish
+        while(M8.ModalManager.main.isBusy || M8.ModalManager.main.IsInStack(GameData.instance.modalDigitRemover))
+            yield return null;
+
+        //clear out highlights
+        blobActives = blobSpawner.blobActives;
+        for(int i = 0; i < blobActives.Count; i++) {
+            var blobActive = blobActives[i];
+
+            blobActive.highlightLock = false;
+            blobActive.inputLocked = false;
+        }
+
+        connectControl.isDragDisabled = false;
+
+        //add penalty counter for later
+        mBlobClicked.penaltyCounter++;
+
+        mBlobClicked = null;
+
+        mActionRout = null;
+
+        signalInvokeActionActive?.Invoke(false);
+    }
+
     IEnumerator DoAutoConnect() {
+        signalInvokeActionActive?.Invoke(true);
+
         //wait for blobs to spawn
         while(blobSpawner.isSpawning)
             yield return null;
@@ -494,7 +598,7 @@ public class PlayController : GameModeController<PlayController> {
         Blob blobTarget = null;
         for(int i = 0; i < blobSpawner.blobActives.Count; i++) {
             var blobCheck = blobSpawner.blobActives[i];
-            if(blobCheck && blobCheck != blob && blobCheck.state == Blob.State.Normal && CheckBlobConnectCriteria(blob, blobCheck)) {
+            if(blobCheck && blobCheck != blob && blobCheck.state == Blob.State.Normal && (numberCriteriaUnlocked || CheckBlobConnectCriteria(blob, blobCheck))) {
                 blobTarget = blobCheck;
                 break;
             }
@@ -510,9 +614,15 @@ public class PlayController : GameModeController<PlayController> {
         mMistakeCurrent.Reset();
 
         yield return DoAttackSuccess(grp);
+
+        mActionRout = null;
+
+        signalInvokeActionActive?.Invoke(false);
     }
 
     IEnumerator DoAttack(BlobConnectController.Group grp) {
+        signalInvokeActionActive?.Invoke(true);
+
         var bonusBlob = blobSpawner.GetBlobActiveByName(blobBonusName);
         var bonusBlobIsConnected = bonusBlob ? grp.IsBlobInGroup(bonusBlob) : false;
 
@@ -529,7 +639,7 @@ public class PlayController : GameModeController<PlayController> {
         }
 
         mAreaOp.Setup(factorLeft, factorRight);
-        mAreaOp.Setup(428, 4);
+        //mAreaOp.Setup(428, 4);
 
         mMistakeCurrent.Reset();
 
@@ -591,7 +701,9 @@ public class PlayController : GameModeController<PlayController> {
                 break;
         }
 
-        mAttackRout = null;
+        mActionRout = null;
+
+        signalInvokeActionActive?.Invoke(false);
     }
 
     IEnumerator DoAttackSuccess(BlobConnectController.Group grp) {
@@ -701,8 +813,8 @@ public class PlayController : GameModeController<PlayController> {
     void OnGroupAdded(BlobConnectController.Group grp) {
         if(grp.isOpFilled) {
             //Debug.Log("Launch attack: " + grp.blobOpLeft.number + " x " + grp.blobOpRight.number);
-            if(mAttackRout == null)
-                mAttackRout = StartCoroutine(DoAttack(grp));
+            if(mActionRout == null)
+                mActionRout = StartCoroutine(DoAttack(grp));
         }
         //else {
             //Debug.Log("Can't attack yet!");
@@ -716,9 +828,8 @@ public class PlayController : GameModeController<PlayController> {
         var op = grp.connectOp.op;
 
         bool isCorrect = false;
-        bool isOpComplete = grp.isComplete;
 
-        if(isOpComplete) {
+        if(grp.isComplete) {
             switch(op) {
                 case OperatorType.Multiply:
                     isCorrect = op1 * op2 == eq;
@@ -735,15 +846,21 @@ public class PlayController : GameModeController<PlayController> {
         BlobConnect connectOp = grp.connectOp, connectEq = grp.connectEq;
 
         if(isCorrect) {
+            int penaltyCounter = 0;
+
             //do sparkly thing for blobs
             if(blobLeft) {
                 blobLeft.state = Blob.State.Correct;
                 blobSpawner.RemoveFromActive(blobLeft);
+
+                penaltyCounter += blobLeft.penaltyCounter;
             }
 
-            if(blobLeft) {
+            if(blobRight) {
                 blobRight.state = Blob.State.Correct;
                 blobSpawner.RemoveFromActive(blobRight);
+
+                penaltyCounter += blobRight.penaltyCounter;
             }
 
             if(blobEq) {
@@ -755,12 +872,18 @@ public class PlayController : GameModeController<PlayController> {
             if(connectOp) connectOp.state = BlobConnect.State.Correct;
             if(connectEq) connectEq.state = BlobConnect.State.Correct;
 
-            int correctPoints = 0;
+            int correctPoints = GameData.instance.correctPoints;
 
             //subtract mistake penalties
-            var mistakePenaltyPoints = GameData.instance.mistakePenaltyPoints * mMistakeCurrent.totalMistakeCount;
-            if(GameData.instance.correctPoints > mistakePenaltyPoints)
-                correctPoints = GameData.instance.correctPoints - mistakePenaltyPoints;
+            if(mMistakeCurrent.totalMistakeCount > 0)
+                correctPoints -= GameData.instance.mistakePenaltyPoints * mMistakeCurrent.totalMistakeCount;
+
+            //subtract penalties
+            if(penaltyCounter > 0)
+                correctPoints -= penaltyCounter * GameData.instance.digitDestroyPenalityPoints;
+
+            if(correctPoints < 0)
+                correctPoints = 0;
 
             //add score
             curScore += correctPoints * comboCount;
@@ -789,9 +912,7 @@ public class PlayController : GameModeController<PlayController> {
 
         connectControl.ClearGroup(grp);
 
-        //only call if the whole operation is valid
-        if(isOpComplete)
-            groupEvalCallback?.Invoke(new Operation { operand1=(int)op1, operand2= (int)op2, op=op }, (int)eq, isCorrect);
+        groupEvalCallback?.Invoke(new Operation { operand1=(int)op1, operand2= (int)op2, op=op }, (int)eq, isCorrect);
     }
 
     private bool CheckBlobConnectCriteria(Blob blobSource, Blob blobTarget) {

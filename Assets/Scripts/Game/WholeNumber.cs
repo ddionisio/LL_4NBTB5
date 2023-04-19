@@ -45,10 +45,21 @@ public struct WholeNumber {
         return count;
     }
 
-    public static int ZeroCounts(int number) {
+    public static int ZeroCount(int number) {
         int count = 0;
         for(int numStep = number; numStep % 10 == 0; count++)
             numStep /= 10;
+
+        return count;
+    }
+
+    public static int NonZeroCount(int number) {
+        int count = 0;
+
+        for(int numStep = number; numStep > 0; numStep /= 10) {
+            if(numStep % 10 != 0)
+                count++;
+        }
 
         return count;
     }

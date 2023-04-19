@@ -10730,6 +10730,7 @@ MonoBehaviour:
   takeCorrect: correct
   soundSpawn: spawn_anomaly
   signalListenDespawn: {fileID: 0}
+  signalInvokeClick: {fileID: 11400000, guid: 472fce4ec1d549849bd83078d05b26dd, type: 2}
   signalInvokeDragBegin: {fileID: 11400000, guid: 0dd1c40d5bbeef54a8aaf4b6c89d5235, type: 2}
   signalInvokeDragEnd: {fileID: 11400000, guid: e277b755729c85042a3893c829311846, type: 2}
   signalInvokeDespawn: {fileID: 11400000, guid: 7b62e099b2cb63e40b85c16f921a5bde, type: 2}
@@ -10946,7 +10947,7 @@ MonoBehaviour:
   - {fileID: 844375532857789312}
   - {fileID: 9038606311261177535}
   - {fileID: 6411791925239152398}
-  m_Color: {r: 1, g: 0.72156864, b: 0.45098042, a: 1}
+  m_Color: {r: 1, g: 0.84313726, b: 0.6, a: 1}
   m_ReferencePointParent: {fileID: 0}
   m_Sprite: {fileID: 21300000, guid: fd8bdc991d5d8f34f96a5d836e37056c, type: 3}
   m_Material: {fileID: 2100000, guid: 0122f3125cabba14faf9d2fcb348e854, type: 2}

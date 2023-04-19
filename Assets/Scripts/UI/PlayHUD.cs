@@ -69,6 +69,7 @@ public class PlayHUD : MonoBehaviour {
     public string correctEqPopTakeExit;
 
     [Header("Incorrect Equation Pop Up")]
+    public bool incorrectShow;
     public GameObject incorrectEqPopRoot;
     public TMP_Text incorrectEqPopText;
     public float incorrectEqPopShowDelay = 1.5f;
@@ -81,6 +82,7 @@ public class PlayHUD : MonoBehaviour {
     public string incorrectEqPopTakeExit;
 
     [Header("Signal Listens")]
+    public M8.SignalInteger signalListenScoreUpdate;
     public GameModeSignal signalListenGameMode;
     public M8.Signal signalListenPlayEnd;
 
@@ -147,6 +149,7 @@ public class PlayHUD : MonoBehaviour {
                 playCtrl.connectControl.groupAddedCallback -= OnGroupAdded;
         }
 
+        signalListenScoreUpdate.callback -= OnSignalScoreUpdate;
         signalListenGameMode.callback -= OnSignalGameMode;
         signalListenPlayEnd.callback -= OnSignalPlayEnd;
     }
@@ -174,6 +177,7 @@ public class PlayHUD : MonoBehaviour {
                 animator.ResetTake(takeEnter);
         }
 
+        signalListenScoreUpdate.callback += OnSignalScoreUpdate;
         signalListenGameMode.callback += OnSignalGameMode;
         signalListenPlayEnd.callback += OnSignalPlayEnd;
     }
@@ -198,22 +202,23 @@ public class PlayHUD : MonoBehaviour {
         SetEquationUpdateActive(false);
     }
 
+    void OnSignalScoreUpdate(int aScore) {
+        if(scoreCounter) {
+            if(scoreCounter.count != aScore) {
+                scoreCounter.count = aScore;
+
+                if(scoreAnimator && !scoreAnimator.isPlaying && !string.IsNullOrEmpty(scoreTakeUpdate))
+                    scoreAnimator.Play(scoreTakeUpdate);
+            }
+        }
+    }
+
     void OnRoundBegin() {
         //var playerCtrl = PlayController.instance;
     }
 
     void OnRoundEnd() {
         var playerCtrl = PlayController.instance;
-
-        //update score
-        if(scoreCounter) {
-            if(scoreCounter.count != playerCtrl.curScore) {
-                scoreCounter.count = playerCtrl.curScore;
-
-                if(scoreAnimator && !string.IsNullOrEmpty(scoreTakeUpdate))
-                    scoreAnimator.Play(scoreTakeUpdate);
-            }
-        }
 
         //do combo display if available
         if(playerCtrl.comboIsActive) {
@@ -231,7 +236,7 @@ public class PlayHUD : MonoBehaviour {
             if(mCorrectPopUpRout == null)
                 mCorrectPopUpRout = StartCoroutine(DoCorrectPopUp());
         }
-        else {
+        else if(incorrectShow) {
             if(incorrectEqPopText) incorrectEqPopText.text = dat.GetString(false);
 
             if(mIncorrectPopUpRout != null)

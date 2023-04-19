@@ -178,6 +178,18 @@ public class BlobConnectController : MonoBehaviour {
         }
     }
 
+    public bool isDragDisabled {
+        get { return mIsDragDisabled; }
+        set {
+            if(mIsDragDisabled != value) {
+                mIsDragDisabled = value;
+
+                if(mIsDragDisabled)
+                    ReleaseDragging();
+            }
+        }
+    }
+
     [Header("Connect Template")]
     public string poolGroup = "connect";
     public GameObject connectTemplate;
@@ -220,6 +232,8 @@ public class BlobConnectController : MonoBehaviour {
 
     private M8.CacheList<Group> mGroupActives;
     private M8.CacheList<Group> mGroupCache;
+
+    private bool mIsDragDisabled;
 
     public bool IsGroupActive(Group grp) {
         return mGroupActives.Exists(grp);
@@ -424,6 +438,9 @@ public class BlobConnectController : MonoBehaviour {
     }
 
     void OnBlobDragBegin(Blob blob) {
+        if(isDragDisabled)
+            return;
+
         if(!mCurConnectDragging) {
             mConnectSpawnParms.Clear();
             //params?
@@ -457,6 +474,9 @@ public class BlobConnectController : MonoBehaviour {
     }
 
     void OnBlobDragEnd(Blob blob) {
+        if(isDragDisabled)
+            return;
+
         SetCurGroupDraggingOtherBlobHighlight(false);
 
         //determine if we can connect to a new blob

@@ -13,6 +13,7 @@ public class GameData : M8.SingletonScriptableObject<GameData> {
     public const string userDataKeyFTUEBonusBlob = "ftue_bblob";
     public const string userDataKeyFTUEDistributeMixup = "ftue_distmix";
     public const string userDataKeyFTUEPartialProduct = "ftue_pprod";
+    public const string userDataKeyFTUEDigitDestroyer = "ftue_ddestroy";
 
     [System.Serializable]
     public struct LevelInfo {
@@ -36,6 +37,7 @@ public class GameData : M8.SingletonScriptableObject<GameData> {
     public string modalAttackAreaEvaluate = "attackAreaEvaluate";
     public string modalAttackSums = "attackSums";
     public string modalNumpad = "numpad";
+    public string modalDigitRemover = "digitRemover";
     public string modalVictory = "victory";
 
     [Header("Game Flow")]
@@ -54,8 +56,11 @@ public class GameData : M8.SingletonScriptableObject<GameData> {
     public int bonusPoints = 1000;
     public int perfectPoints = 500;
     public int mistakePenaltyPoints = 10;
+    public int digitDestroyPenalityPoints = 25;
 
     public int maxRetryCount = 2;
+    public int digitDestroyShowAfterIncorrect = 2;
+    public int digitDestroyCount = 3;
 
     [Header("FTUE")] //first time user experience
     public ModalDialogFlow bonusBlobDialog;

@@ -16,6 +16,7 @@ MonoBehaviour:
   modalAttackAreaEvaluate: attackAreaEvaluate
   modalAttackSums: attackSums
   modalNumpad: numpad
+  modalDigitRemover: digitRemover
   modalVictory: victory
   levels:
   - scene:
@@ -129,10 +130,13 @@ MonoBehaviour:
   areaColCapacity: 4
   mistakeCount: 3
   correctPoints: 150
-  bonusPoints: 300
+  bonusPoints: 200
   perfectPoints: 200
   mistakePenaltyPoints: 5
+  digitDestroyPenalityPoints: 25
   maxRetryCount: 2
+  digitDestroyShowAfterIncorrect: 2
+  digitDestroyCount: 3
   bonusBlobDialog:
     dialogTextRefs:
     - bonusBlob_1

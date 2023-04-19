@@ -306,8 +306,8 @@ public class ModalAttackAreaEvaluate : M8.ModalController, M8.IModalPush, M8.IMo
                     signalInvokeValueChange?.Invoke(0f);
 
                     //build op string
-                    var op1ZeroCount = WholeNumber.ZeroCounts(cell.op.operand1);
-                    var op2ZeroCount = WholeNumber.ZeroCounts(cell.op.operand2);
+                    var op1ZeroCount = WholeNumber.ZeroCount(cell.op.operand1);
+                    var op2ZeroCount = WholeNumber.ZeroCount(cell.op.operand2);
 
                     var op1NonZero = cell.op.operand1 / WholeNumber.TenExponent(op1ZeroCount);
                     var op2NonZero = cell.op.operand2 / WholeNumber.TenExponent(op2ZeroCount);

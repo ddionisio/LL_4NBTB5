@@ -5916,6 +5916,7 @@ MonoBehaviour:
   takeCorrect: correct
   soundSpawn: boop
   signalListenDespawn: {fileID: 0}
+  signalInvokeClick: {fileID: 11400000, guid: 472fce4ec1d549849bd83078d05b26dd, type: 2}
   signalInvokeDragBegin: {fileID: 11400000, guid: 0dd1c40d5bbeef54a8aaf4b6c89d5235, type: 2}
   signalInvokeDragEnd: {fileID: 11400000, guid: e277b755729c85042a3893c829311846, type: 2}
   signalInvokeDespawn: {fileID: 11400000, guid: 7b62e099b2cb63e40b85c16f921a5bde, type: 2}
@@ -5934,7 +5935,19 @@ MonoBehaviour:
   jellySprite: {fileID: 8983797535604395103}
   clickEvent:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 8983797535604395077}
+        m_TargetAssemblyTypeName: Blob, Assembly-CSharp
+        m_MethodName: OnPointerClick
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   downEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -6132,7 +6145,7 @@ MonoBehaviour:
   - {fileID: 844375532857789312}
   - {fileID: 9038606311261177535}
   - {fileID: 6411791925239152398}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 0.84313726, b: 0.6, a: 1}
   m_ReferencePointParent: {fileID: 0}
   m_Sprite: {fileID: 21300000, guid: 25f029e6fd1dbe34f9442686a376cbff, type: 3}
   m_Material: {fileID: 2100000, guid: 486d2082e3b7d794997d86149b0d0cb9, type: 2}

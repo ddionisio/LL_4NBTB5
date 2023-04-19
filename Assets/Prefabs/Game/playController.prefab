@@ -13888,13 +13888,13 @@ MonoBehaviour:
   poolGroup: blobs
   templateGroups:
   - blobData: {fileID: 11400000, guid: acd5723c30cdae64bbe2e8f18971de88, type: 2}
-    poolCapacity: 4
+    poolCapacity: 5
     spawnPointsRoot: {fileID: 4001167665286928876}
   - blobData: {fileID: 11400000, guid: bf714e321d9293d498da4fa5e0443c11, type: 2}
-    poolCapacity: 4
+    poolCapacity: 5
     spawnPointsRoot: {fileID: 4001167665284757762}
   - blobData: {fileID: 11400000, guid: 0fe7a69a59e63c243b736f4d5a5ab9fd, type: 2}
-    poolCapacity: 4
+    poolCapacity: 5
     spawnPointsRoot: {fileID: 4001167663986208210}
   - blobData: {fileID: 11400000, guid: 20e319697439a9d418000be70bc023d2, type: 2}
     poolCapacity: 1
@@ -14165,9 +14165,12 @@ MonoBehaviour:
   sfxBonusClear: clearBonus
   sfxBonusClearBlob: boop
   signalListenPlayStart: {fileID: 11400000, guid: 1c8954bb744cbad4e9567fecb9482514, type: 2}
+  signalListenBlobClick: {fileID: 11400000, guid: 472fce4ec1d549849bd83078d05b26dd, type: 2}
   signalListenBlobDragBegin: {fileID: 11400000, guid: 0dd1c40d5bbeef54a8aaf4b6c89d5235, type: 2}
   signalListenBlobDragEnd: {fileID: 11400000, guid: e277b755729c85042a3893c829311846, type: 2}
   signalListenAttackStateChanged: {fileID: 11400000, guid: ebf9b91bb8b25644084fe225f3a38b36, type: 2}
+  signalInvokeScoreUpdate: {fileID: 11400000, guid: eec024818a0cdc44c80e21bc2d85c801, type: 2}
+  signalInvokeActionActive: {fileID: 11400000, guid: f8da6f13b4163f94ea7cd2e588e0133e, type: 2}
   signalInvokePlayEnd: {fileID: 11400000, guid: 127cfa7748ca7294ab1ff53ec219a30c, type: 2}
 --- !u!114 &4001167664792556513
 MonoBehaviour:

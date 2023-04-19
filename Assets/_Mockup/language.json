@@ -96,6 +96,11 @@
     "hint_mult_6": "Incorrect Multiplication: A good way to solve multiples of 6 is to multiply the number by 5, and then add the original number.",
     "hint_mult_7": "Incorrect Multiplication: A good way to solve multiples of 7 is to multiply the number by 5, and then add the original number twice.",
     "hint_mult_8": "Incorrect Multiplication: If you are having trouble with multiples of 8, try multiplying the number by 2 three times.",
-    "hint_mult_9": "Incorrect Multiplication: One way to do multiples of 9 is to multiply the number by 10, and then subtract it by the original number."
+    "hint_mult_9": "Incorrect Multiplication: One way to do multiples of 9 is to multiply the number by 10, and then subtract it by the original number.",
+    "digitDestroy": "DIGIT DESTROYER",
+    "digitDestroy_desc": "Select a blob to proceed.",
+    "digitDestroy_modal_desc": "Select a digit to destroy.",
+    "digitDestroy_dialog_1": "If you are having difficulty with certain numbers, press this button to remove some of its digits.",
+    "digitDestroy_dialog_2": "However, this will subtract from your score, so use it sparingly!"
   }
 }

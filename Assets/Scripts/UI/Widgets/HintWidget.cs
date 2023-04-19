@@ -82,12 +82,34 @@ public class HintWidget : MonoBehaviour {
 
         LoLManager.instance.SpeakText(mCurTextRef);
 
+        var isSkip = false;
+
+        var modalMgr = M8.ModalManager.main;
+
+        var curTime = 0f;
+
         //wait based on duration of speech
-        yield return new WaitForSeconds(textInfo.voiceDuration);
+        while(!isSkip && curTime < textInfo.voiceDuration) {
+            yield return null;
+            curTime += Time.deltaTime;
+
+            //cancel if dialog appears
+            if(modalMgr.IsInStack(ModalDialog.modalNameGeneric))
+                isSkip = true;
+        }
 
         if(talkActiveGO) talkActiveGO.SetActive(false);
 
-        yield return new WaitForSeconds(endDelay);
+        //wait a bit
+        curTime = 0f;
+        while(!isSkip && curTime < endDelay) {
+            yield return null;
+            curTime += Time.deltaTime;
+
+            //cancel if dialog appears
+            if(modalMgr.IsInStack(ModalDialog.modalNameGeneric))
+                isSkip = true;
+        }
 
         //exit
         if(animator && !string.IsNullOrEmpty(takeExit))
@@ -142,8 +164,8 @@ public class HintWidget : MonoBehaviour {
         var evalOp = areaCellWidget.cellData.op;
 
         //NOTE: assume we are solving in multiples of 10's
-        var lFactorZeroCount = WholeNumber.ZeroCounts(evalOp.operand1);
-        var rFactorZeroCount = WholeNumber.ZeroCounts(evalOp.operand2);
+        var lFactorZeroCount = WholeNumber.ZeroCount(evalOp.operand1);
+        var rFactorZeroCount = WholeNumber.ZeroCount(evalOp.operand2);
 
         var factorZeroTotal = lFactorZeroCount + rFactorZeroCount;
 
