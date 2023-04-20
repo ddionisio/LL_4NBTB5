@@ -20074,7 +20074,7 @@ MonoBehaviour:
   _digitTemplate: {fileID: 3649598146943443121, guid: e037831913cde3b4a866c11dd1b58fe4, type: 3}
   _digitCapacity: 4
   _digitContainer: {fileID: 7228220718052281942}
-  _hideLeadingZeroes: 0
+  _hideLeadingZeroes: 1
   _animator: {fileID: 0}
   _takePulse: 
 --- !u!114 &7814366647046722678

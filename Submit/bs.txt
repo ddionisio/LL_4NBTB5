@@ -1,3 +1,7 @@
 Multiple space blobs have pierced through the sky! Banish these threats with the power of mathematics before they wreak havoc!
 
 Use the touchpad or mouse to drag and connect a blob to another. Once connected, you will go through the process of generating the product of the equation. If correct, an attack blob will appear to banish the paired blobs.
+
+The game will display hints after failing one attack. These will show up during multiplication, and will give tips on how to tackle certain numbers.
+
+After two failed consecutive attacks, a “digit destroyer” will be available to the players to remove non-zero digits on certain blobs.

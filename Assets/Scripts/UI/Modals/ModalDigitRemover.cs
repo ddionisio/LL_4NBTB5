@@ -19,8 +19,11 @@ public class ModalDigitRemover : M8.ModalController, M8.IModalPush, M8.IModalPop
                 mBlob = parms.GetValue<Blob>(parmBlob);
         }
 
+        int interactCount = 0;
+
         if(blobDigitWidget) {
             blobDigitWidget.Init();
+            blobDigitWidget.SetDigitVisibleAll(false);
 
             if(mBlob) {
                 var num = mBlob.number;
@@ -29,17 +32,24 @@ public class ModalDigitRemover : M8.ModalController, M8.IModalPush, M8.IModalPop
 
                 //setup interactive for non-zero digits
                 for(int i = 0; i < blobDigitWidget.digitCount; i++) {
-                    //don't allow blob to become single digit
+                    blobDigitWidget.SetDigitVisible(i, true);
+                    
                     var digitNum = blobDigitWidget.GetDigitNumber(i);
-                    if(digitNum > 0) {
+
+                    bool isInteract = digitNum > 0;
+
+                    if(isInteract) {
+                        //don't allow blob to become single digit
                         var numResult = num - (digitNum * WholeNumber.TenExponent(i));
-                        if(WholeNumber.DigitCount(numResult) < 2) {
+                        if(WholeNumber.DigitCount(numResult) < 2)
                             blobDigitWidget.SetDigitInteractive(i, false);
-                            continue;
+                        else {
+                            blobDigitWidget.SetDigitInteractive(i, true);
+                            interactCount++;
                         }
                     }
-
-                    blobDigitWidget.SetDigitInteractive(i, digitNum > 0);
+                    else
+                        blobDigitWidget.SetDigitInteractive(i, false);
                 }
             }
 
@@ -47,6 +57,10 @@ public class ModalDigitRemover : M8.ModalController, M8.IModalPush, M8.IModalPop
         }
 
         mIsComplete = false;
+
+        //fail-safe
+        if(interactCount <= 0)
+            Close();
     }
 
     void M8.IModalPop.Pop() {

@@ -112,7 +112,7 @@ MonoBehaviour:
     scale: 1
   - grade: S
     icon: {fileID: 21300000, guid: 425bb223fc171864cbce99edbb973804, type: 3}
-    scale: 0.9
+    scale: 0.95
   - grade: A
     icon: {fileID: 21300000, guid: b6bf19d4ccd6b3d49a7e075574aabd0c, type: 3}
     scale: 0.75
@@ -130,13 +130,13 @@ MonoBehaviour:
   areaColCapacity: 4
   mistakeCount: 3
   correctPoints: 150
-  bonusPoints: 200
+  bonusPoints: 100
   perfectPoints: 200
   mistakePenaltyPoints: 5
-  digitDestroyPenalityPoints: 25
+  digitDestroyPenalityPoints: 35
   maxRetryCount: 2
   digitDestroyShowAfterIncorrect: 2
-  digitDestroyCount: 3
+  digitDestroyCount: 2
   bonusBlobDialog:
     dialogTextRefs:
     - bonusBlob_1

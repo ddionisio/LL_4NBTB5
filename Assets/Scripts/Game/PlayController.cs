@@ -524,7 +524,7 @@ public class PlayController : GameModeController<PlayController> {
         var blobActives = blobSpawner.blobActives;
         for(int i = 0; i < blobActives.Count; i++) {
             var blobActive = blobActives[i];
-            if(!(blobActive.state == Blob.State.Normal || blobActive.state == Blob.State.Spawning)) //don't include
+            if(!(blobActive.state == Blob.State.Normal || blobActive.state == Blob.State.Spawning)) //don't include things that are despawning, etc.
                 continue;
 
             while(blobActive.state == Blob.State.Spawning)
@@ -532,6 +532,7 @@ public class PlayController : GameModeController<PlayController> {
 
             if(blobActive.name != blobBonusName && WholeNumber.NonZeroCount(blobActive.number) > 1) {
                 blobActive.highlightLock = true;
+                blobActive.inputLocked = false;
             }
             else {
                 blobActive.inputLocked = true;
