@@ -594,7 +594,7 @@ public class JellySpriteEditor : Editor
 						Handles.color = jellySprite.m_FreeModeBodyKinematic[i]? Color.red : Color.green;
 						
 						Vector3 point = transform.TransformPoint(jellySprite.m_FreeModeBodyPositions[i]);
-						Vector3 newPosition = transform.InverseTransformPoint(Handles.FreeMoveHandle(point, Quaternion.identity, 0.1f, Vector3.zero, Handles.DotHandleCap));
+						Vector3 newPosition = transform.InverseTransformPoint(Handles.FreeMoveHandle(point, 0.1f, Vector3.zero, Handles.DotHandleCap));
 						newPosition.z = 0.0f;
 
 						if(jellySprite.m_FreeModeBodyPositions[i] != newPosition)

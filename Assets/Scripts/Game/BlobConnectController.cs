@@ -191,9 +191,9 @@ public class BlobConnectController : MonoBehaviour {
     }
 
     [Header("Connect Template")]
-    public string poolGroup = "connect";
+    public const string poolGroup = "connect";
     public GameObject connectTemplate;
-    public int capacity = 5;
+    public const int capacity = 5;
 
     [Header("Data")]
     public int groupCapacity = 3;
@@ -235,7 +235,26 @@ public class BlobConnectController : MonoBehaviour {
 
     private bool mIsDragDisabled;
 
-    public bool IsGroupActive(Group grp) {
+    public static bool checkBlobConnectCriteriaDisabled = false;
+
+	public static bool CheckBlobConnectCriteria(Blob blobSource, Blob blobTarget) {
+        if(checkBlobConnectCriteriaDisabled)
+            return true;
+
+		var blobSrcVal = blobSource.number;
+		var blobTgtVal = blobTarget.number;
+
+		if(blobSrcVal > 9) {
+			//can only connect to single digit values
+			return blobTgtVal < 10;
+		}
+		else {
+			//can only connect to two or more digit values
+			return blobTgtVal > 9;
+		}
+	}
+
+	public bool IsGroupActive(Group grp) {
         return mGroupActives.Exists(grp);
     }
         
@@ -351,8 +370,13 @@ public class BlobConnectController : MonoBehaviour {
     }
 
     void Awake() {
-        mPool = M8.PoolController.CreatePool(poolGroup);
-        mPool.AddType(connectTemplate, capacity, capacity);
+        mPool = M8.PoolController.GetPool(poolGroup);
+        if(!mPool) {
+            mPool = M8.PoolController.CreatePool(poolGroup);
+            mPool.AddType(connectTemplate, capacity, capacity);
+
+            mPool.gameObject.DontDestroyOnLoad();
+		}
 
         //setup group
         mGroupActives = new M8.CacheList<Group>(groupCapacity);
@@ -489,7 +513,8 @@ public class BlobConnectController : MonoBehaviour {
             //determine op
             var toOp = mCurOp;
 
-            if(!endBlob.inputLocked) {
+            //check criteria
+            if(!endBlob.inputLocked && CheckBlobConnectCriteria(blob, endBlob)) {
                 if(curGroupDragging != null) {
                     if(curGroupDragging.IsBlobOp(curBlobDragging)) {
                         //cancel if dragging to the same group as ops

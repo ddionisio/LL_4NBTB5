@@ -276,7 +276,9 @@ public class PlayController : GameModeController<PlayController> {
         mModalAttackParms.SetAreaOperation(mAreaOp);
         mModalAttackParms.SetMistakeInfo(mMistakeCurrent);
 
-        connectControl.groupAddedCallback += OnGroupAdded;
+        BlobConnectController.checkBlobConnectCriteriaDisabled = numberCriteriaUnlocked;
+
+		connectControl.groupAddedCallback += OnGroupAdded;
         connectControl.evaluateCallback += OnGroupEval;
 
         if(signalListenPlayStart) signalListenPlayStart.callback += OnSignalPlayBegin;
@@ -322,7 +324,7 @@ public class PlayController : GameModeController<PlayController> {
             if(blobActive == blob)
                 continue;
 
-            if(numberCriteriaUnlocked || CheckBlobConnectCriteria(blob, blobActive)) {
+            if(numberCriteriaUnlocked || BlobConnectController.CheckBlobConnectCriteria(blob, blobActive)) {
                 blobActive.highlightLock = true;
             }
             else {
@@ -599,7 +601,8 @@ public class PlayController : GameModeController<PlayController> {
         Blob blobTarget = null;
         for(int i = 0; i < blobSpawner.blobActives.Count; i++) {
             var blobCheck = blobSpawner.blobActives[i];
-            if(blobCheck && blobCheck != blob && blobCheck.state == Blob.State.Normal && (numberCriteriaUnlocked || CheckBlobConnectCriteria(blob, blobCheck))) {
+            if(blobCheck && blobCheck != blob && blobCheck.state == Blob.State.Normal 
+                && (numberCriteriaUnlocked || BlobConnectController.CheckBlobConnectCriteria(blob, blobCheck))) {
                 blobTarget = blobCheck;
                 break;
             }
@@ -914,19 +917,5 @@ public class PlayController : GameModeController<PlayController> {
         connectControl.ClearGroup(grp);
 
         groupEvalCallback?.Invoke(new Operation { operand1=(int)op1, operand2= (int)op2, op=op }, (int)eq, isCorrect);
-    }
-
-    private bool CheckBlobConnectCriteria(Blob blobSource, Blob blobTarget) {
-        var blobSrcVal = blobSource.number;
-        var blobTgtVal = blobTarget.number;
-
-        if(blobSrcVal > 9) {
-            //can only connect to single digit values
-            return blobTgtVal < 10;
-        }
-        else {
-            //can only connect to two or more digit values
-            return blobTgtVal > 9;
-        }
     }
 }

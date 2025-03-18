@@ -20,7 +20,9 @@ public class Lesson2Controller : LessonBoardController {
     protected override void OnInstanceInit() {
         base.OnInstanceInit();
 
-        if(blobNumberIllustrate) blobNumberIllustrate.Hide();
+        BlobConnectController.checkBlobConnectCriteriaDisabled = true;
+
+		if(blobNumberIllustrate) blobNumberIllustrate.Hide();
         if(doubleDigitMultIllustrate) doubleDigitMultIllustrate.Hide();
     }
 

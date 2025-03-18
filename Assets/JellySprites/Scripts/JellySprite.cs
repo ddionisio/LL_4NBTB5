@@ -492,6 +492,8 @@ public abstract class JellySprite : MonoBehaviour
 #endif
 
 			m_ReferencePointParent = new GameObject();
+			//MODIFIED: allow for caching in global pool, ie. allocate objects within the spawn root
+			m_ReferencePointParent.transform.SetParent(transform.parent);
 			m_ReferencePointParent.name = this.name + " Reference Points";
 
 			m_ReferencePoints = new List<ReferencePoint>();

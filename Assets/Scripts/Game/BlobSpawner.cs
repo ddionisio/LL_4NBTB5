@@ -51,7 +51,7 @@ public class BlobSpawner : MonoBehaviour {
     }
 
     [Header("Template")]
-    public string poolGroup = "blobs";
+    public const string poolGroup = "blobs";
     public TemplateGroup[] templateGroups;
 
     [Header("Spawn")]
@@ -103,8 +103,11 @@ public class BlobSpawner : MonoBehaviour {
 
     public void InitBlobTemplate(int templateInd) {
         //setup template (pool init, spawn points)
-        if(!mPool)
+        mPool = M8.PoolController.GetPool(poolGroup);
+        if(!mPool) {
             mPool = M8.PoolController.CreatePool(poolGroup);
+            mPool.gameObject.DontDestroyOnLoad();
+		}
 
         var grp = templateGroups[templateInd];
 

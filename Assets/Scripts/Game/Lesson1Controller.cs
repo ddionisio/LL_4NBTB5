@@ -31,7 +31,9 @@ public class Lesson1Controller : LessonBoardController {
     protected override void OnInstanceInit() {
         base.OnInstanceInit();
 
-        if(blobNumberIllustrate) blobNumberIllustrate.Hide();
+		BlobConnectController.checkBlobConnectCriteriaDisabled = false;
+
+		if(blobNumberIllustrate) blobNumberIllustrate.Hide();
         if(distributeIllustrate) distributeIllustrate.Hide();
         if(areaIllustrate) areaIllustrate.Hide();
         if(areaSubGO) areaSubGO.SetActive(false);
