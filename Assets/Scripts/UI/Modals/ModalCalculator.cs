@@ -67,6 +67,7 @@ public class ModalCalculator : M8.ModalController, M8.IModalPush, M8.IModalPop, 
     InputKeyboardFlag _inputKeyboardFlags = InputKeyboardFlag.Numeric | InputKeyboardFlag.Proceed | InputKeyboardFlag.Erase;
 
     [Header("Display")]
+    public CanvasGroup panelCanvasGroup; //used for when enabling/disabling input
     public TMP_Text inputLabel;
     public TMP_Text numericLabel;
 
@@ -81,6 +82,16 @@ public class ModalCalculator : M8.ModalController, M8.IModalPush, M8.IModalPop, 
 
     public float curValueFloat { get { return (float)mCurValue; } }
 
+    public bool inputActive {
+        get { return mInputActive; }
+        set {
+            if(mInputActive != value) {
+                mInputActive = value;
+                ApplyInputActive();
+            }
+        }
+    }
+
     private InputKeyboardFlag mInputKeyboardFlags;
 
     private double mCurValue;
@@ -91,6 +102,7 @@ public class ModalCalculator : M8.ModalController, M8.IModalPush, M8.IModalPop, 
     private List<InputData> mInputs = new List<InputData>();
 
     private bool mIsActive;
+    private bool mInputActive;
 
     public void Clear() {
         mInputs.Clear();
@@ -279,7 +291,9 @@ public class ModalCalculator : M8.ModalController, M8.IModalPush, M8.IModalPop, 
                 mInputKeyboardFlags = _inputKeyboardFlags;
         }
 
-        SetCurrentValue(val);
+        inputActive = true;
+
+		SetCurrentValue(val);
 
         if(signalValueChanged)
             signalValueChanged.callback += OnValueChanged;
@@ -294,7 +308,7 @@ public class ModalCalculator : M8.ModalController, M8.IModalPush, M8.IModalPop, 
     }
 
     void Update() {
-        if(mIsActive) {
+        if(mIsActive && mInputActive) {
             //allow keyboard input?
             if((mInputKeyboardFlags & InputKeyboardFlag.Numeric) != InputKeyboardFlag.None) {
                 if(Input.GetKeyDown(KeyCode.Alpha0) || Input.GetKeyDown(KeyCode.Keypad0))
@@ -353,6 +367,10 @@ public class ModalCalculator : M8.ModalController, M8.IModalPush, M8.IModalPop, 
     private static bool IsOperator(InputType type) {
         return type != InputType.Invalid && type != InputType.Numeric;
     }
+
+    private void ApplyInputActive() {
+        if(panelCanvasGroup) panelCanvasGroup.interactable = mInputActive;
+	}
 
     private void ApplyMod(ValueMod mod) {
         var inputLastInd = mInputs.Count - 1;
